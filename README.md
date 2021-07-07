@@ -1,35 +1,43 @@
 # Foodie Chain
 
-## client
+## Client
 **Requirements**
 - NPM
 - Node v16
 
 **Run App Locally**
 
-Navigate to the client folder
+1. Navigate to the client folder
 
-```$ cd client```
+    ```
+    $ cd client
+    ```
 
-Run app (Port 3000)
+2. Run app (Port 3000)
 
-```$ npm run start```
+    ```
+    $ npm run start
+    ```
 
 
-## server
+## Server
 **Requirements**
 - NPM
 - Node v16
 
 **Run App Locally**
 
-Navigate to the server folder
+1. Navigate to the server folder
 
-`$ cd server`
+    ```
+    $ cd server
+    ```
 
-Run app (Port 5000)
+2. Run app (Port 5000)
 
-`$ npm run server`
+    ```
+    $ npm run server
+    ```
 
 
 
