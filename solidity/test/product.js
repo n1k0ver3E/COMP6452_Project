@@ -21,20 +21,21 @@ contract('Product', (accounts) => {
         assert.equal(status.toNumber(), 0, "status wasn't 0 in the init contract");
     });
 
-    it('should emit an event when recall', async () => {
-        let emit = await product.emitEvent({ from: creator });
 
-        //truffleAssert.prettyPrintEmittedEvents(emit);
+    // it('should emit an event when recall', async () => {
+    //     let emit = await product.emitEvent({ from: creator });
 
-        truffleAssert.eventEmitted(emit, 'RecallEvent', (ev) => {
-            // console.log(ev);
+    //     //truffleAssert.prettyPrintEmittedEvents(emit);
 
-            assert.equal(ev.number, 2, 'Number should be 2');
+    //     truffleAssert.eventEmitted(emit, 'RecallEvent', (ev) => {
+    //         // console.log(ev);
 
-            // Must return true.
-            return true;
-        });
-    });
+    //         assert.equal(ev.number, 2, 'Number should be 2');
+
+    //         // Must return true.
+    //         return true;
+    //     });
+    // });
 
     it('should set status to 2 when recall the product', async () => {
         let recall = await product.recallProduct({ from: creator });
@@ -47,6 +48,16 @@ contract('Product', (accounts) => {
             // Must return true.
             return true;
         });
+
+        truffleAssert.prettyPrintEmittedEvents(recall);
+
+        // truffleAssert.eventEmitted(productRecallContract, 'RecallEvent', (ev) => {
+        //     console.log(ev);
+        //     console.log(ev.product, product.address, ev.product == product.address);
+
+
+        //     return ev.product == product.address;
+        // });
 
         let result = await product.status();
 
