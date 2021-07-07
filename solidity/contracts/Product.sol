@@ -1,26 +1,48 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity >=0.8.0 <0.9.0;
 
-contract Product {
-    uint8 public status = 0;
+pragma solidity ^0.8.0;
 
-    event RecallEvent( address indexed _from, uint8 number );
+import "./Profile.sol";
 
-    function recallProduct() public returns (bool success) {
-        if( status == 0 ) {
-            status = 1;
-            emit RecallEvent( msg.sender, 1 );
-            return true;
-        } else {
-            return false;
-        }
-    }
 
-    function emitEvent() public returns (uint8 result) {
-        status = 2;
-        emit RecallEvent( msg.sender, 2 );
-        return 8;
-    }
-
+contract Product{
     
+    enum ProcessType {Farming, Manufacturing, Shipping, Retailing, Purchasing, Recalling}
+    
+    struct Farming {
+        uint recordBlock;
+        ProcessType productType;
+        uint farmingTime;
+        uint harvestTime;
+    }
+    
+    // Copy from Profile
+    struct Account{
+        address  accountAddress;
+        AccountType accountType;
+        AccountStatus  accountStatus;
+        bool isValue; // To check duplicate account
+    }
+    
+    mapping (address => Account) public operator;
+    
+    
+    //Creates a new lunch venue contract
+    constructor () {
+        manager = msg.sender; //Set contract creator as manager 
+    }
+    
+    function addProduct() public isFarmer isApprove returns (uint){
+        
+    }
+    
+    
+    modifier isFarmer() {
+        require(operator[msg.sender].accountType == Profile.AccountType.Farmer, "This function can only be executed by the farmer."); 
+        _;
+    } 
+    modifier isApprove() {
+        require(operator[msg.sender].accountStatus == Profile.AccountStatus.Approved, "This action need to be approved.");
+        _;
+    }
 }
