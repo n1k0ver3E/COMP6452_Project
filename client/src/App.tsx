@@ -26,9 +26,17 @@ const App: React.VFC = () => {
 
   console.log('CONTRACT', contract)
 
+  const example = async() => {
+    const regAddr = await contract?.methods.regulatorAddress().call();
+    setValue(regAddr);
+  }
+
   return (
     <div className="App">
       <h1>Foodie Chain</h1>
+      <div>The stored value is: {value}</div>
+      <p>Click here to run the contract↓</p>
+      <button onClick={example} >click</button>
     </div>
   );
 }

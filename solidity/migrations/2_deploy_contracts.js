@@ -9,6 +9,7 @@ module.exports = function(deployer) {
   // deployer.deploy(MetaCoin);
 
   // NOTE: Please ensure to enter 2 parameters when deploying Profile contract
-  // deployer.deploy(Profile, <address>, <regulator_name>);
-  deployer.deploy(Product)
+  //deployer.deploy(Profile, <address>, <regulator_name>);
+  deployer.deploy(Profile, '0x594c7debe766841e7680121273bde93cce250794', 'regulator');
+  //deployer.deploy(Product)
 };
