@@ -88,6 +88,17 @@ contract Profile {
        emit ApproveAccount(accountInfoByAddress[_accountAddress].accountAddress,uint256(accountInfoByAddress[_accountAddress].accountStatus));
     }
     
+    
+    /// @notice Function 3: getAccountInfoByAddress.(For the frontend off-chain)
+   /// @param _accountAddress Each participant can have only one accountAddress for this phase. 
+    function getAccountInfoByAddress(address _accountAddress) public view returns(string memory accountName,uint256  accountId,uint256 accountTypeValue,uint256 accountStatusValue){
+        Account memory acc = accountInfoByAddress[_accountAddress];
+        accountName = acc.accountName;
+        accountId = acc.accountId;
+        accountTypeValue = uint256(acc.accountType);
+        accountStatusValue =   uint256(acc.accountStatus);
+    }
+    
     // private functions
     // Does account address exist?
     function isExisAccount(address _accountAddress) private view returns(bool){
@@ -96,7 +107,6 @@ contract Profile {
         }
         return false;
     }    
-
 
    // modifier
    modifier onlyRegulator{
