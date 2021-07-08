@@ -7,42 +7,65 @@ import "./Profile.sol";
 
 contract Product{
     
-    enum ProcessType {Farming, Manufacturing, Shipping, Retailing, Purchasing, Recalling}
+    enum ProcessType {FARMING, MANUFACTURING, SHIPPING, RETAILING, PURCHASING, RECALLING}
     
     struct Farming {
+        uint productId;
         uint recordBlock;
-        ProcessType productType;
         uint farmingTime;
         uint harvestTime;
+        ProcessType pType;
     }
     
-    // Copy from Profile
-    struct Account{
-        address  accountAddress;
-        AccountType accountType;
-        AccountStatus  accountStatus;
-        bool isValue; // To check duplicate account
+    struct Manufacturing {
+        uint productId;
+        uint recordBlock;
+        uint processingType;
+        ProcessType pType;
     }
     
-    mapping (address => Account) public operator;
-    
-    
-    //Creates a new lunch venue contract
-    constructor () {
-        manager = msg.sender; //Set contract creator as manager 
+    struct Product {
+        uint productId;
+        string productName;
+        // ProcessType processType;
     }
     
-    function addProduct() public isFarmer isApprove returns (uint){
+    
+    uint public numProducts = 0; 
+    mapping (uint => Product) public products;
+    mapping (uint => Farming) public farming_process;
+    mapping (uint => Manufacturing) public manu_process;
+    
+    function createProduct(string memory name) public returns (uint){
+        Product memory p;
+        p.productName = name;
+        numProducts = numProducts + 1;
+        p.productId = numProducts;
+        products[p.productId] = p;
+        return numProducts;
+    }
+    
+    function addProductFarmingInfo(uint pid, uint farmtime, uint harvtime) public returns (bool){
+        require(harvtime > farmtime, "Harvest time should be later than farm time.");
+        
+        Farming memory f;
+        f.productId = pid;
+        f.farmingTime = farmtime;
+        f.harvestTime = harvtime;
+        f.recordBlock = block.number;
+        f.pType = ProcessType.FARMING;
+        farming_process[pid] = f;
+        return true;
         
     }
     
     
-    modifier isFarmer() {
-        require(operator[msg.sender].accountType == Profile.AccountType.Farmer, "This function can only be executed by the farmer."); 
-        _;
-    } 
-    modifier isApprove() {
-        require(operator[msg.sender].accountStatus == Profile.AccountStatus.Approved, "This action need to be approved.");
-        _;
-    }
+    // modifier isFarmer() {
+    //     require(operator[msg.sender].accountType == Profile.AccountType.Farmer, "This function can only be executed by the farmer."); 
+    //     _;
+    // } 
+    // modifier isApprove() {
+    //     require(operator[msg.sender].accountStatus == Profile.AccountStatus.Approved, "This action need to be approved.");
+    //     _;
+    // }
 }
