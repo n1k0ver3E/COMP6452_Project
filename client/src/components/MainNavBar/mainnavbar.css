@@ -1,0 +1,8 @@
+.logo {
+  width: 250px;
+  margin: auto;
+}
+
+.navbar {
+  display: flex;
+}
