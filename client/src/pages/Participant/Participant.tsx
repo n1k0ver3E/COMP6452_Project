@@ -3,10 +3,16 @@ import HomeNavbar from '../../components/HomeNavbar'
 
 const Participant: FC = () => {
   return (
-    <div>
+    <>
       <HomeNavbar type={'participant'} />
-      <h1>Participant Page</h1>
-    </div>
+      <div className="container">
+        <div className="columns">
+          <div className="column is-3">SIDE NAVIGATION HERE</div>
+
+          <div className="column is-9">CONTENT HERE</div>
+        </div>
+      </div>
+    </>
   )
 }
 
