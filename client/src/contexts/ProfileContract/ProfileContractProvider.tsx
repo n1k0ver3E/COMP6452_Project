@@ -12,7 +12,7 @@ export const ProfileContractContext =
   createContext<IProfileContract>(contextDefaultValues)
 
 const ProfileContextProvider: FC = ({ children }): any => {
-  const { isLoading, isWeb3, web3, accounts } = useWeb3()
+  const { isLoading, isWeb3, web3 } = useWeb3()
   const [profileContract, setProfileContract] = useState<
     Contract | IProfileContract | undefined | any
   >(contextDefaultValues.profileContract)
