@@ -1,8 +1,12 @@
 .logo {
-  width: 250px;
+  width: 320px;
+}
+
+.anchor {
   margin: auto;
 }
 
-.navbar {
+.navigation {
   display: flex;
+  width: 100%;
 }
