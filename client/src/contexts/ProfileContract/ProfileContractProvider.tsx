@@ -1,7 +1,6 @@
 import React, { FC, createContext, useState, useEffect } from 'react'
 import { IProfileContract } from '../../interfaces/profileContract'
 import json from '../../contracts/Profile.json'
-import { Contract } from 'web3-eth-contract'
 import useWeb3 from '../../hooks/web3'
 
 const contextDefaultValues: IProfileContract = {
@@ -13,9 +12,9 @@ export const ProfileContractContext =
 
 const ProfileContextProvider: FC = ({ children }): any => {
   const { isLoading, isWeb3, web3 } = useWeb3()
-  const [profileContract, setProfileContract] = useState<
-    Contract | IProfileContract | undefined | any
-  >(contextDefaultValues.profileContract)
+  const [profileContract, setProfileContract] = useState(
+    contextDefaultValues.profileContract
+  )
 
   const abi: any = json.abi
 

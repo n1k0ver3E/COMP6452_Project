@@ -16,7 +16,7 @@ const ProfileContract = () => {
 
   return (
     <div>
-      <h3>INTERACT WITH THE PROFILE CONTRACT</h3>
+      <h3>TEST COMPONENT TO SEE IF WE CAN CONNECT TO PROFILE CONTRACT</h3>
       <div>The stored value is: {value}</div>
       <p>Click here to run the contract↓</p>
       <button onClick={example}>click</button>
