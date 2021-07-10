@@ -22,7 +22,7 @@ const App: React.VFC = () => {
         setContract(instance);
       }
     })();
-  }, [isLoading, isWeb3]);
+  }, [isLoading, isWeb3])
 
   console.log('CONTRACT', contract)
 
