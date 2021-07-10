@@ -11,9 +11,8 @@ const Landing: FC = () => {
   const abi: any = json.abi
 
   useEffect(() => {
-    ;(async () => {
+    const getProfileContract = () => {
       if (web3 !== null) {
-        // const networkId = await web3.eth.net.getId();
         const deployedNetwork = json.networks[5777]
         const instance = new web3.eth.Contract(
           abi,
@@ -21,7 +20,9 @@ const Landing: FC = () => {
         )
         setContract(instance)
       }
-    })()
+    }
+
+    getProfileContract()
   }, [isLoading, isWeb3])
 
   console.log('CONTRACT', contract)
