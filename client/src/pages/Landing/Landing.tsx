@@ -33,6 +33,7 @@ const Landing: FC = () => {
 
   return (
     <div className="App">
+      <h1>LANDING PAGE</h1>
       <h1>Foodie Chain</h1>
       <div>The stored value is: {value}</div>
       <p>Click here to run the contract↓</p>
