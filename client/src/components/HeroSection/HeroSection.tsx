@@ -7,7 +7,7 @@ const HeroSection: FC = () => {
     <section className="hero is-fullheight wrapper">
       <div className="hero-body">
         <div className="container">
-          <div className="columns  is-vcentered reverse-columns">
+          <div className="columns is-vcentered reverse-columns">
             <div
               className="column
           is-10-mobile is-offset-1-mobile
@@ -20,17 +20,20 @@ const HeroSection: FC = () => {
               <h1 className="title titled is-1 mb-6">
                 A modern solution for the world’s food supply.
               </h1>
-              <h2 className=" subtitled subtitle has-text-grey is-4 has-text-weight-normal is-family-sans-serif">
+              <h2 className="subtitled subtitle has-text-grey is-4 has-text-weight-normal is-family-sans-serif">
                 Join us in creating a smarter, safer, more sustainable food
                 system with Blockchain technology.
               </h2>
               <div className="buttons">
-                <button className="button is-primary is-outlined">
+                <a
+                  className="button is-primary is-outlined"
+                  href={'/regulator'}
+                >
                   Regulator
-                </button>
-                <button className="button is-link is-outlined">
+                </a>
+                <a className="button is-link is-outlined" href={'/participant'}>
                   Participant
-                </button>
+                </a>
               </div>
             </div>
             <div
