@@ -1,33 +1,47 @@
 // SPDX-License-Identifier: UNLICENSED
 
+// test
 pragma solidity ^0.8.0;
 
 import "./Profile.sol";
 
 
-contract Product{
+contract ProductSC{
     
-    enum ProcessType {FARMING, MANUFACTURING, SHIPPING, RETAILING, PURCHASING, RECALLING}
+    enum status {
+        FARMING, 
+        HARVESTING,
+        MANUFACTURING, 
+        SHIPPING, 
+        RETAILING, 
+        PURCHASING, 
+        RECALLING
+    }
     
     struct Farming {
         uint productId;
         uint recordBlock;
         uint farmingTime;
         uint harvestTime;
-        ProcessType pType;
+        
     }
     
     struct Manufacturing {
         uint productId;
         uint recordBlock;
-        uint processingType;
-        ProcessType pType;
+        
     }
     
     struct Product {
         uint productId;
         string productName;
-        // ProcessType processType;
+        status statusType;
+        uint productPrice;
+        address FarmerId;
+        address manufacturerId;
+        address distributorId;
+        address retailerId;
+        address ConsumerId;
     }
     
     
@@ -41,6 +55,7 @@ contract Product{
         p.productName = name;
         numProducts = numProducts + 1;
         p.productId = numProducts;
+        p.statusType = status.FARMING;
         products[p.productId] = p;
         return numProducts;
     }
@@ -48,18 +63,22 @@ contract Product{
     function addProductFarmingInfo(uint pid, uint farmtime, uint harvtime) public returns (bool){
         require(harvtime > farmtime, "Harvest time should be later than farm time.");
         
+        Product storage existProduct = products[pid];
+        existProduct.FarmerId = msg.sender;
+        existProduct.statusType = status.HARVESTING;
+        
         Farming memory f;
         f.productId = pid;
         f.farmingTime = farmtime;
         f.harvestTime = harvtime;
         f.recordBlock = block.number;
-        f.pType = ProcessType.FARMING;
         farming_process[pid] = f;
-        return true;
         
+        
+    
     }
     
-    
+
     // modifier isFarmer() {
     //     require(operator[msg.sender].accountType == Profile.AccountType.Farmer, "This function can only be executed by the farmer."); 
     //     _;
@@ -68,4 +87,5 @@ contract Product{
     //     require(operator[msg.sender].accountStatus == Profile.AccountStatus.Approved, "This action need to be approved.");
     //     _;
     // }
+
 }

@@ -1,0 +1,20 @@
+import express, { Application } from 'express'
+import cors from 'cors'
+import { Logger } from './utils'
+import Mongoose from './config/db'
+
+const app: Application = express()
+
+app.use(express.json())
+app.use(cors())
+
+const PORT = process.env.PORT || 5000
+
+const startServer = async (): Promise<void> => {
+  await Mongoose().initialiseMongoConnection()
+  app.listen(PORT, () => {
+    Logger.info(`Server is running on port ${PORT}`)
+  })
+}
+
+startServer()
