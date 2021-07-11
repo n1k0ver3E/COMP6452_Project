@@ -1,6 +1,6 @@
 import React, { FC } from 'react'
 import { useHistory } from 'react-router-dom'
-import { IUserTypeProps, IMenuList } from '../../interfaces/profileContract'
+import { IUserTypeProps, IMenuList } from '../../interfaces/contract'
 
 const SideNavBar: FC<IUserTypeProps> = ({ type }) => {
   const isRegulator = type === 'regulator'

@@ -1,5 +1,5 @@
 import React, { FC, createContext, useState, useEffect } from 'react'
-import { IProfileContract } from '../../interfaces/profileContract'
+import { IProfileContract } from '../../interfaces/contract'
 import json from '../../contracts/Profile.json'
 import useWeb3 from '../../hooks/web3'
 

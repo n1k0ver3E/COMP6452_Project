@@ -12,3 +12,8 @@ export interface IMenuList {
   title: string
   link: string
 }
+
+export interface IAccountTypeDropdown {
+  value: number
+  account: string
+}
