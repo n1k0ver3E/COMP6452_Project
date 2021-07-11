@@ -3,6 +3,7 @@ import { useHistory } from 'react-router-dom'
 import './sidenavbar.css'
 import { ProfileContractContext } from '../../contexts/ProfileContract'
 import { IUserTypeProps, IMenuList } from '../../interfaces/contract'
+import ConnectionStatus from '../ConnectionStatus'
 
 const SideNavBar: FC<IUserTypeProps> = ({ type }) => {
   const { profileContract } = useContext(ProfileContractContext)
@@ -21,10 +22,6 @@ const SideNavBar: FC<IUserTypeProps> = ({ type }) => {
     if (pathName.includes('participant')) {
       navigateTo('/participant')
     }
-  }
-
-  const reConnect = () => {
-    window.location.reload()
   }
 
   const regulatorMenu = [
@@ -95,26 +92,7 @@ const SideNavBar: FC<IUserTypeProps> = ({ type }) => {
     <div>
       <aside className="menu is-hidden-mobile">
         <div className="menu-label">
-          {profileContract ? (
-            <span className="tag is-success is-light">Connected</span>
-          ) : (
-            <span className="tag is-warning is-light">Not Connected</span>
-          )}
-
-          {!profileContract && (
-            <>
-              <span className="icon-text pointer" onClick={reConnect}>
-                <span className="icon has-text-info icon-size">
-                  <i className="fas fa-link" />
-                </span>
-              </span>
-
-              <div className="notification notification-box mt-2">
-                Please ensure that you have meta-mask properly configured before
-                connecting. To connect, simply click on the chain icon.
-              </div>
-            </>
-          )}
+          <ConnectionStatus />
         </div>
         <ul className="menu-list">
           <li>
