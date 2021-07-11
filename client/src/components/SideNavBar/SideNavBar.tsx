@@ -1,29 +1,86 @@
 import React, { FC } from 'react'
-import { IUserTypeProps } from '../../interfaces/profileContract'
+import { useHistory } from 'react-router-dom'
+import { IUserTypeProps, IMenuList } from '../../interfaces/profileContract'
 
 const SideNavBar: FC<IUserTypeProps> = ({ type }) => {
   const isRegulator = type === 'regulator'
+  const history = useHistory()
+  const pathName = window.location.pathname
 
-  const regulatorMenu: string[] = ['Approve Account', 'Verify Document']
-  const participationMenu: string[] = [
-    'Register Account',
-    'View Account',
-    'Add Document',
-    'View Document',
-    'Product',
-    'Tracking',
-    'Recall',
+  const navigateTo = (url: string) => {
+    history.push(url)
+  }
+
+  const navigateToDashboard = () => {
+    if (pathName.includes('regulator')) {
+      navigateTo('/regulator')
+    }
+    if (pathName.includes('participant')) {
+      navigateTo('/participant')
+    }
+  }
+
+  const regulatorMenu = [
+    {
+      title: 'Approve Account',
+      link: '/regulator/approve-document',
+    },
+    {
+      title: 'Verify Document',
+      link: '/regulator/verify-document',
+    },
+  ]
+
+  const participationMenu: IMenuList[] = [
+    {
+      title: 'Register Account',
+      link: '/participant/register',
+    },
+    {
+      title: 'View Account',
+      link: '/participant/view-account',
+    },
+    {
+      title: 'Add Document',
+      link: '/participant/add-document',
+    },
+    {
+      title: 'View Document',
+      link: '/participant/view-document',
+    },
+    {
+      title: 'Product',
+      link: '/participant/product',
+    },
+    {
+      title: 'Tracking',
+      link: '/participant/tracking',
+    },
+    {
+      title: 'Recall',
+      link: '/participant/recall',
+    },
   ]
 
   const navigationLinks = isRegulator
-    ? regulatorMenu.map((menu: string, idx: number) => (
+    ? regulatorMenu.map((menu: IMenuList, idx: number) => (
         <li key={idx}>
-          <a>{menu}</a>
+          <a
+            className={pathName === menu.link ? 'is-active' : ''}
+            onClick={() => navigateTo(menu.link)}
+          >
+            {menu.title}
+          </a>
         </li>
       ))
-    : participationMenu.map((menu: string, idx: number) => (
+    : participationMenu.map((menu, idx: number) => (
         <li key={idx}>
-          <a>{menu}</a>
+          <a
+            className={pathName === menu.link ? 'is-active' : ''}
+            onClick={() => navigateTo(menu.link)}
+          >
+            {menu.title}
+          </a>
         </li>
       ))
 
@@ -33,7 +90,16 @@ const SideNavBar: FC<IUserTypeProps> = ({ type }) => {
         <p className="menu-label">MENU</p>
         <ul className="menu-list">
           <li>
-            <a className="is-active">Dashboard</a>
+            <a
+              className={
+                pathName === '/regulator' || pathName === '/participant'
+                  ? 'is-active'
+                  : ''
+              }
+              onClick={() => navigateToDashboard()}
+            >
+              Dashboard
+            </a>
             <ul>{navigationLinks}</ul>
           </li>
         </ul>

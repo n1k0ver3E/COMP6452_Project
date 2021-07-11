@@ -7,3 +7,8 @@ export interface IUserTypeProps {
 export interface IProfileContract {
   profileContract: any
 }
+
+export interface IMenuList {
+  title: string
+  link: string
+}
