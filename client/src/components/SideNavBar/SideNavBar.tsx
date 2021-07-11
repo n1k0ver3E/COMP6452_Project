@@ -3,7 +3,6 @@ import { IUserTypeProps } from '../../interfaces/profileContract'
 
 const SideNavBar: FC<IUserTypeProps> = ({ type }) => {
   const isRegulator = type === 'regulator'
-  const isParticipant = type === 'participant'
 
   const regulatorMenu: string[] = ['Approve Account', 'Verify Document']
   const participationMenu: string[] = [
