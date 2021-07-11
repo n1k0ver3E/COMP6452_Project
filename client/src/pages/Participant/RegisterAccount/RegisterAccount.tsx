@@ -1,31 +1,41 @@
-import React, { FC } from 'react'
+import React, { FC, useState } from 'react'
 import RegistrationImage from '../../../assets/registration.png'
-import { IAccountTypeDropdown } from '../../../interfaces/contract'
+import {
+  IAccountTypeDropdown,
+  IRegisterAccountDetails,
+} from '../../../interfaces/contract'
+import { AccountType } from '../../../enums/contract'
 
 const RegisterAccount: FC = () => {
+  const [data, setData] = useState<IRegisterAccountDetails>({
+    accountAddress: '',
+    accountName: '',
+    accountType: 0,
+  })
+
   const accountTypeDropDownOptions: IAccountTypeDropdown[] = [
     {
-      value: 1,
+      value: AccountType.FARMER,
       account: 'Farmer',
     },
     {
-      value: 2,
+      value: AccountType.MANUFACTURER,
       account: 'Manufacturer',
     },
     {
-      value: 3,
+      value: AccountType.RETAILER,
       account: 'Retailer',
     },
     {
-      value: 4,
+      value: AccountType.CONSUMER,
       account: 'Consumer',
     },
     {
-      value: 5,
+      value: AccountType.LOGISTICS,
       account: 'Logistic',
     },
     {
-      value: 6,
+      value: AccountType.ORACLE,
       account: 'Oracle',
     },
   ]

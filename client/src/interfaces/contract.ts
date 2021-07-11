@@ -17,3 +17,9 @@ export interface IAccountTypeDropdown {
   value: number
   account: string
 }
+
+export interface IRegisterAccountDetails {
+  accountAddress: string
+  accountName: string
+  accountType: number
+}
