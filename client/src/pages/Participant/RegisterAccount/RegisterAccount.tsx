@@ -8,21 +8,27 @@ import {
 import { AccountType } from '../../../enums/contract'
 import useWeb3 from '../../../hooks/web3'
 
+const initialState: IRegisterAccountDetails = {
+  accountAddress: '',
+  accountName: '',
+  accountType: null,
+}
+
 const RegisterAccount: FC = () => {
   const { accounts } = useWeb3()
 
   const { profileContract } = useContext(ProfileContractContext)
-  const [data, setData] = useState<IRegisterAccountDetails>({
-    accountAddress: '',
-    accountName: '',
-    accountType: null,
-  })
+  const [data, setData] = useState<IRegisterAccountDetails>(initialState)
   const [isAccountAddressFieldValid, setIsAccountAddressFieldValid] =
     useState<boolean>(true)
   const [isAccountNameFieldValid, setIsAccountNameFieldValid] =
     useState<boolean>(true)
   const [accountAddressFieldErrorMsg, setAccountAddressFieldErrorMsg] =
     useState<string>('')
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [showErrorNotice, setShowErrorNotice] = useState<boolean>(false)
+  const [errorMessage, setErrorMessage] = useState<string>('')
+  // FOR TESTING ONLY
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -51,7 +57,6 @@ const RegisterAccount: FC = () => {
         setIsAccountNameFieldValid(true)
       }
     }
-
     // Custom validation ends here
 
     setData({ ...data, [name]: value })
@@ -61,14 +66,46 @@ const RegisterAccount: FC = () => {
     e.preventDefault()
 
     const { accountAddress, accountName, accountType } = data
+    setIsLoading(true)
+    setShowErrorNotice(false)
 
     try {
       const registerAccount = await profileContract?.methods
         .registerAccount(accountAddress, accountName, accountType)
         .send({ from: accounts[0] })
 
-      console.log('registeredAccount', registerAccount)
+      setTimeout(() => {
+        setData(initialState)
+        setIsLoading(false)
+
+        // TO BE REMOVED
+        alert(
+          `Success!! ${JSON.stringify(
+            registerAccount?.events?.RegisterAccount?.returnValues
+          )}`
+        )
+
+        console.log('registeredAccount', registerAccount)
+
+        // TODO - SHOW REGISTRATION SUCCESS
+        // TODO - SAVE INFO TO LOCAL STORAGE
+        // TODO - Save TO DATABASE
+      }, 2000)
     } catch (error) {
+      let customErrorMsg: string
+
+      if (error.message.includes('invalid address')) {
+        customErrorMsg =
+          'Account address invalid. Please try again with a different address.'
+      } else if (error.message.includes('duplicate account')) {
+        customErrorMsg = 'This account has already been registered.'
+      } else {
+        customErrorMsg = 'Something went wrong. Please try again shortly.'
+      }
+
+      setIsLoading(false)
+      setErrorMessage(customErrorMsg)
+      setShowErrorNotice(true)
       console.log(error.message)
     }
   }
@@ -100,8 +137,6 @@ const RegisterAccount: FC = () => {
     },
   ]
 
-  console.log('data', data)
-
   return (
     <section className="container has-background-light">
       <div className="columns is-multiline">
@@ -110,6 +145,13 @@ const RegisterAccount: FC = () => {
             <div className="column left mt-6">
               <h1 className="title is-4">Register today</h1>
               <p className="description">Join us now to deliver value!</p>
+
+              {showErrorNotice && (
+                <div className="notification is-danger is-light mt-3">
+                  {errorMessage}
+                </div>
+              )}
+
               <form className="mt-5">
                 <div className="field">
                   <div className="control">
@@ -180,7 +222,11 @@ const RegisterAccount: FC = () => {
                   </select>
                 </div>
                 <button
-                  className="button is-block is-link is-fullwidth mt-3"
+                  className={
+                    isLoading
+                      ? 'button is-block is-link is-fullwidth mt-3 is-loading'
+                      : 'button is-block is-link is-fullwidth mt-3'
+                  }
                   onClick={handleRegister}
                   disabled={
                     !isAccountAddressFieldValid ||
