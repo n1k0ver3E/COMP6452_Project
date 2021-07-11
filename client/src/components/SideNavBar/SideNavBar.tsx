@@ -94,7 +94,7 @@ const SideNavBar: FC<IUserTypeProps> = ({ type }) => {
   return (
     <div>
       <aside className="menu is-hidden-mobile">
-        <p className="menu-label">
+        <div className="menu-label">
           {profileContract ? (
             <span className="tag is-success is-light">Connected</span>
           ) : (
@@ -103,19 +103,19 @@ const SideNavBar: FC<IUserTypeProps> = ({ type }) => {
 
           {!profileContract && (
             <>
-              <span className="icon-text pointer">
-                <span className="icon">
-                  <i className="fas fa-info-circle" />
-                </span>
-              </span>
               <span className="icon-text pointer" onClick={reConnect}>
-                <span className="icon">
-                  <i className="fas fa-redo-alt" />
+                <span className="icon has-text-info icon-size">
+                  <i className="fas fa-link" />
                 </span>
               </span>
+
+              <div className="notification notification-box mt-2">
+                Please ensure that you have meta-mask properly configured before
+                connecting. To connect, simply click on the chain icon.
+              </div>
             </>
           )}
-        </p>
+        </div>
         <ul className="menu-list">
           <li>
             <a
