@@ -28,6 +28,7 @@ contract ProductSC{
     
     struct Manufacturing {
         uint productId;
+        string processType;
         uint recordBlock;
         
     }
@@ -60,7 +61,7 @@ contract ProductSC{
         return numProducts;
     }
     
-    function addProductFarmingInfo(uint pid, uint farmtime, uint harvtime) public returns (bool){
+    function addProductFarmingInfo(uint pid, uint farmtime, uint harvtime) public {
         require(harvtime > farmtime, "Harvest time should be later than farm time.");
         
         Product storage existProduct = products[pid];
@@ -73,12 +74,21 @@ contract ProductSC{
         f.harvestTime = harvtime;
         f.recordBlock = block.number;
         farming_process[pid] = f;
-        
-        
     
     }
     
-
+    function manuProductInfo(uint pid, string memory processtype) public {
+        Product storage existProduct = products[pid];
+        existProduct.manufacturerId = msg.sender;
+        existProduct.statusType = status.MANUFACTURING;
+        
+        Manufacturing memory m;
+        m.productId = pid;
+        m.processType = processtype;
+        m.recordBlock = block.number;
+        manu_process[pid] = m;
+    }
+    
     // modifier isFarmer() {
     //     require(operator[msg.sender].accountType == Profile.AccountType.Farmer, "This function can only be executed by the farmer."); 
     //     _;
