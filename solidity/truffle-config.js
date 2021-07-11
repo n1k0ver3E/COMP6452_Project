@@ -1,3 +1,5 @@
+const path = require("path");
+
 module.exports = {
   // Uncommenting the defaults below
   // provides for an easier quick-start with Ganache.
@@ -5,7 +7,7 @@ module.exports = {
   // see <http://truffleframework.com/docs/advanced/configuration>
   // for more details on how to specify configuration options!
   //
-  //contracts_build_directory: path.join(__dirname, "../client/src/contracts"),
+  contracts_build_directory: path.join(__dirname, "../client/src/contracts"),
   networks: {
     development: {
       host: "127.0.0.1",
