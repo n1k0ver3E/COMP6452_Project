@@ -1,8 +1,21 @@
 import React, { FC } from 'react'
+import { useHistory } from 'react-router-dom'
 import './herosection.css'
 import FoodSupply from '../../assets/food-supply.jpg'
 
 const HeroSection: FC = () => {
+  // NOTE: History.push is preferred over href because href causes the page to re-render.
+  // Please ignore the warning on the console for now
+  const history = useHistory()
+
+  const goToRegulator = () => {
+    history.push('/regulator')
+  }
+
+  const goToParticipant = () => {
+    history.push('/participant')
+  }
+
   return (
     <section className="hero is-fullheight wrapper">
       <div className="hero-body">
@@ -27,11 +40,14 @@ const HeroSection: FC = () => {
               <div className="buttons">
                 <a
                   className="button is-primary is-outlined"
-                  href={'/regulator'}
+                  onClick={goToRegulator}
                 >
                   Regulator
                 </a>
-                <a className="button is-link is-outlined" href={'/participant'}>
+                <a
+                  className="button is-link is-outlined"
+                  onClick={goToParticipant}
+                >
                   Participant
                 </a>
               </div>

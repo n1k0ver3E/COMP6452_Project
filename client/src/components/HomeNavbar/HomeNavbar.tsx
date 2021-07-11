@@ -10,7 +10,9 @@ const HomeNavbar: FC<IUserTypeProps> = ({ type }) => {
   const isRegulator = type === 'regulator'
   const isParticipant = type === 'participant'
 
-  let history = useHistory()
+  // NOTE: History.push is preferred over href because href causes the page to re-render.
+  // Please ignore the warning on the console for now
+  const history = useHistory()
 
   const goToRegulator = () => {
     history.push('/regulator')
@@ -20,11 +22,15 @@ const HomeNavbar: FC<IUserTypeProps> = ({ type }) => {
     history.push('/participant')
   }
 
+  const goLanding = () => {
+    history.push('/')
+  }
+
   return (
     <nav className="navbar is-white">
       <div className="container">
         <div className="navbar-brand">
-          <a className="brand-text" href="/">
+          <a className="brand-text" onClick={goLanding}>
             <img src={Logo} alt={'Logo'} className="home-logo" />
           </a>
           <div className="navbar-burger burger" data-target="navMenu">
