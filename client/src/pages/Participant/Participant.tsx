@@ -1,6 +1,5 @@
 import React, { FC } from 'react'
 import { Switch, Route, useRouteMatch } from 'react-router-dom'
-import ProfileContextProvider from '../../contexts/ProfileContract'
 import HomeNavbar from '../../components/HomeNavbar'
 import SideNavBar from '../../components/SideNavBar'
 import Dashboard from './Dashboard'
@@ -59,8 +58,4 @@ const Participant: FC = () => {
   )
 }
 
-export default () => (
-  <ProfileContextProvider>
-    <Participant />
-  </ProfileContextProvider>
-)
+export default Participant
