@@ -17,7 +17,7 @@ const Participant: FC = () => {
   return (
     <>
       <HomeNavbar type={'participant'} />
-      <div className="container">
+      <div className="container mt-5">
         <div className="columns">
           <div className="column is-3">
             <SideNavBar type={'participant'} />
