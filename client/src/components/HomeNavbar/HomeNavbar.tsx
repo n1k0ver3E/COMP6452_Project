@@ -1,18 +1,24 @@
 import React, { FC } from 'react'
+import { useHistory } from 'react-router-dom'
 import Logo from '../../assets/logo.jpg'
 import './homenavbar.css'
+import { IUserTypeProps } from '../../interfaces/profileContract'
 
-type userType = 'regulator' | 'participant'
-
-interface IProps {
-  type: userType
-}
-
-const HomeNavbar: FC<IProps> = ({ type }) => {
+const HomeNavbar: FC<IUserTypeProps> = ({ type }) => {
   // TODO - For mobile view, add a function to toggle menu bar
 
   const isRegulator = type === 'regulator'
   const isParticipant = type === 'participant'
+
+  let history = useHistory()
+
+  const goToRegulator = () => {
+    history.push('/regulator')
+  }
+
+  const goToParticipant = () => {
+    history.push('/participant')
+  }
 
   return (
     <nav className="navbar is-white">
@@ -31,7 +37,7 @@ const HomeNavbar: FC<IProps> = ({ type }) => {
           <div className="navbar-start">
             <a
               className={isRegulator ? 'is-active navbar-item' : 'navbar-item'}
-              href="/regulator"
+              onClick={goToRegulator}
             >
               Regulator
             </a>
@@ -39,7 +45,7 @@ const HomeNavbar: FC<IProps> = ({ type }) => {
               className={
                 isParticipant ? 'is-active navbar-item' : 'navbar-item'
               }
-              href="/participant"
+              onClick={goToParticipant}
             >
               Participant
             </a>
