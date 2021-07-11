@@ -18,6 +18,7 @@ const RegisterAccount: FC = () => {
   const { accounts } = useWeb3()
 
   const { profileContract } = useContext(ProfileContractContext)
+
   const [data, setData] = useState<IRegisterAccountDetails>(initialState)
   const [isAccountAddressFieldValid, setIsAccountAddressFieldValid] =
     useState<boolean>(true)
@@ -80,13 +81,15 @@ const RegisterAccount: FC = () => {
 
         // TO BE REMOVED
         alert(
-          `Success!! ${JSON.stringify(
-            registerAccount?.events?.RegisterAccount?.returnValues
-          )}`
+          JSON.stringify(registerAccount.events.RegisterAccount.returnValues)
         )
 
-        console.log('registeredAccount', registerAccount)
+        console.log(
+          'registeredAccount',
+          registerAccount.events.RegisterAccount.returnValues
+        )
 
+        // TODO - ADD STATUS CHECK TO SEE IF CONTRACT IS CONNECTED
         // TODO - SHOW REGISTRATION SUCCESS
         // TODO - SAVE INFO TO LOCAL STORAGE
         // TODO - Save TO DATABASE
@@ -99,6 +102,8 @@ const RegisterAccount: FC = () => {
           'Account address invalid. Please try again with a different address.'
       } else if (error.message.includes('duplicate account')) {
         customErrorMsg = 'This account has already been registered.'
+      } else if (error.message.includes('must provide an Ethereum address')) {
+        customErrorMsg = error.message
       } else {
         customErrorMsg = 'Something went wrong. Please try again shortly.'
       }
@@ -136,6 +141,8 @@ const RegisterAccount: FC = () => {
       account: 'Oracle',
     },
   ]
+
+  console.log('profileContract', profileContract)
 
   return (
     <section className="container has-background-light">
