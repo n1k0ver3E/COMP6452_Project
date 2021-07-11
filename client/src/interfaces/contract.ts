@@ -21,5 +21,5 @@ export interface IAccountTypeDropdown {
 export interface IRegisterAccountDetails {
   accountAddress: string
   accountName: string
-  accountType: number
+  accountType: number | null
 }

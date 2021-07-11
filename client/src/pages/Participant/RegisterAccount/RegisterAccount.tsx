@@ -15,13 +15,44 @@ const RegisterAccount: FC = () => {
   const [data, setData] = useState<IRegisterAccountDetails>({
     accountAddress: '',
     accountName: '',
-    accountType: 0,
+    accountType: null,
   })
+  const [isAccountAddressFieldValid, setIsAccountAddressFieldValid] =
+    useState<boolean>(true)
+  const [isAccountNameFieldValid, setIsAccountNameFieldValid] =
+    useState<boolean>(true)
+  const [accountAddressFieldErrorMsg, setAccountAddressFieldErrorMsg] =
+    useState<string>('')
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target
+
+    // Custom validation starts here
+    if (name === 'accountAddress') {
+      if (value === '') {
+        setIsAccountAddressFieldValid(false)
+        setAccountAddressFieldErrorMsg('This field is required.')
+      } else if (!value.startsWith('0x') || value.length !== 42) {
+        setIsAccountAddressFieldValid(false)
+        setAccountAddressFieldErrorMsg(
+          'A valid account address starts with 0x and 42 characters long.'
+        )
+      } else {
+        setIsAccountAddressFieldValid(true)
+      }
+    }
+
+    if (name === 'accountName') {
+      if (value === '') {
+        setIsAccountNameFieldValid(false)
+      } else {
+        setIsAccountNameFieldValid(true)
+      }
+    }
+
+    // Custom validation ends here
 
     setData({ ...data, [name]: value })
   }
@@ -69,6 +100,8 @@ const RegisterAccount: FC = () => {
     },
   ]
 
+  console.log('data', data)
+
   return (
     <section className="container has-background-light">
       <div className="columns is-multiline">
@@ -81,7 +114,9 @@ const RegisterAccount: FC = () => {
                 <div className="field">
                   <div className="control">
                     <input
-                      className="input"
+                      className={
+                        isAccountAddressFieldValid ? 'input' : 'input is-danger'
+                      }
                       type="text"
                       placeholder="Account Address"
                       name="accountAddress"
@@ -89,12 +124,23 @@ const RegisterAccount: FC = () => {
                       onChange={handleChange}
                     />
                   </div>
+                  <p
+                    className={
+                      isAccountAddressFieldValid
+                        ? 'help is-hidden'
+                        : 'help is-danger'
+                    }
+                  >
+                    {accountAddressFieldErrorMsg}
+                  </p>
                 </div>
 
                 <div className="field">
                   <div className="control">
                     <input
-                      className="input"
+                      className={
+                        isAccountNameFieldValid ? 'input' : 'input is-danger'
+                      }
                       type="text"
                       placeholder="Account Name"
                       name="accountName"
@@ -102,9 +148,18 @@ const RegisterAccount: FC = () => {
                       onChange={handleChange}
                     />
                   </div>
+                  <p
+                    className={
+                      isAccountNameFieldValid
+                        ? 'help is-hidden'
+                        : 'help is-danger'
+                    }
+                  >
+                    This field is required
+                  </p>
                 </div>
 
-                <div className="select is-fullwidth ">
+                <div className="select is-fullwidth">
                   <select
                     defaultValue={'DEFAULT'}
                     name="accountType"
@@ -127,6 +182,11 @@ const RegisterAccount: FC = () => {
                 <button
                   className="button is-block is-link is-fullwidth mt-3"
                   onClick={handleRegister}
+                  disabled={
+                    !isAccountAddressFieldValid ||
+                    !isAccountNameFieldValid ||
+                    data.accountType === null
+                  }
                 >
                   Register
                 </button>
