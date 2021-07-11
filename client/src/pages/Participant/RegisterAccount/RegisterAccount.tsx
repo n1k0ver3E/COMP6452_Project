@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react'
+import React, { FC, useState, ChangeEvent } from 'react'
 import RegistrationImage from '../../../assets/registration.png'
 import {
   IAccountTypeDropdown,
@@ -12,6 +12,14 @@ const RegisterAccount: FC = () => {
     accountName: '',
     accountType: 0,
   })
+
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target
+
+    setData({ ...data, [name]: value })
+  }
 
   const accountTypeDropDownOptions: IAccountTypeDropdown[] = [
     {
@@ -55,6 +63,9 @@ const RegisterAccount: FC = () => {
                       className="input"
                       type="text"
                       placeholder="Account Address"
+                      name="accountAddress"
+                      id="accountAddress"
+                      onChange={handleChange}
                     />
                   </div>
                 </div>
@@ -65,12 +76,20 @@ const RegisterAccount: FC = () => {
                       className="input"
                       type="text"
                       placeholder="Account Name"
+                      name="accountName"
+                      id="accountName"
+                      onChange={handleChange}
                     />
                   </div>
                 </div>
 
                 <div className="select is-fullwidth ">
-                  <select defaultValue={'DEFAULT'}>
+                  <select
+                    defaultValue={'DEFAULT'}
+                    name="accountType"
+                    id="accountType"
+                    onChange={handleChange}
+                  >
                     <option value={'DEFAULT'} disabled>
                       Select Account Type
                     </option>
