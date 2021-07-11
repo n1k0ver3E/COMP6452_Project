@@ -1,8 +1,11 @@
-import React, { FC } from 'react'
+import React, { FC, useContext } from 'react'
 import { useHistory } from 'react-router-dom'
+import './sidenavbar.css'
+import { ProfileContractContext } from '../../contexts/ProfileContract'
 import { IUserTypeProps, IMenuList } from '../../interfaces/contract'
 
 const SideNavBar: FC<IUserTypeProps> = ({ type }) => {
+  const { profileContract } = useContext(ProfileContractContext)
   const isRegulator = type === 'regulator'
   const history = useHistory()
   const pathName = window.location.pathname
@@ -18,6 +21,10 @@ const SideNavBar: FC<IUserTypeProps> = ({ type }) => {
     if (pathName.includes('participant')) {
       navigateTo('/participant')
     }
+  }
+
+  const reConnect = () => {
+    window.location.reload()
   }
 
   const regulatorMenu = [
@@ -87,7 +94,28 @@ const SideNavBar: FC<IUserTypeProps> = ({ type }) => {
   return (
     <div>
       <aside className="menu is-hidden-mobile">
-        <p className="menu-label">MENU</p>
+        <p className="menu-label">
+          {profileContract ? (
+            <span className="tag is-success is-light">Connected</span>
+          ) : (
+            <span className="tag is-warning is-light">Not Connected</span>
+          )}
+
+          {!profileContract && (
+            <>
+              <span className="icon-text pointer">
+                <span className="icon">
+                  <i className="fas fa-info-circle" />
+                </span>
+              </span>
+              <span className="icon-text pointer" onClick={reConnect}>
+                <span className="icon">
+                  <i className="fas fa-redo-alt" />
+                </span>
+              </span>
+            </>
+          )}
+        </p>
         <ul className="menu-list">
           <li>
             <a

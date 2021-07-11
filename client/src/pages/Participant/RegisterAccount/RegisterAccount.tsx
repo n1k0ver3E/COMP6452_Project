@@ -142,8 +142,6 @@ const RegisterAccount: FC = () => {
     },
   ]
 
-  console.log('profileContract', profileContract)
-
   return (
     <section className="container has-background-light">
       <div className="columns is-multiline">
