@@ -1,12 +1,17 @@
-import React, { FC, useState, ChangeEvent } from 'react'
+import React, { FC, ChangeEvent, useContext, useState } from 'react'
 import RegistrationImage from '../../../assets/registration.png'
+import { ProfileContractContext } from '../../../contexts/ProfileContract'
 import {
   IAccountTypeDropdown,
   IRegisterAccountDetails,
 } from '../../../interfaces/contract'
 import { AccountType } from '../../../enums/contract'
+import useWeb3 from '../../../hooks/web3'
 
 const RegisterAccount: FC = () => {
+  const { accounts } = useWeb3()
+
+  const { profileContract } = useContext(ProfileContractContext)
   const [data, setData] = useState<IRegisterAccountDetails>({
     accountAddress: '',
     accountName: '',
@@ -19,6 +24,22 @@ const RegisterAccount: FC = () => {
     const { name, value } = e.target
 
     setData({ ...data, [name]: value })
+  }
+
+  const handleRegister = async (e: any) => {
+    e.preventDefault()
+
+    const { accountAddress, accountName, accountType } = data
+
+    try {
+      const registerAccount = await profileContract?.methods
+        .registerAccount(accountAddress, accountName, accountType)
+        .send({ from: accounts[0] })
+
+      console.log('registeredAccount', registerAccount)
+    } catch (error) {
+      console.log(error.message)
+    }
   }
 
   const accountTypeDropDownOptions: IAccountTypeDropdown[] = [
@@ -103,7 +124,10 @@ const RegisterAccount: FC = () => {
                     )}
                   </select>
                 </div>
-                <button className="button is-block is-link is-fullwidth mt-3">
+                <button
+                  className="button is-block is-link is-fullwidth mt-3"
+                  onClick={handleRegister}
+                >
                   Register
                 </button>
                 <br />
