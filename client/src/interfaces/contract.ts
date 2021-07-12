@@ -1,3 +1,5 @@
+import { ChangeEvent } from 'react'
+
 type userType = 'regulator' | 'participant'
 
 export interface IUserTypeProps {
@@ -22,5 +24,17 @@ export interface IAccountTypeDropdown {
 export interface IRegisterAccountDetails {
   accountAddress: string
   accountName: string
+  accountType: number | null
+}
+
+export interface IRegisterFormProps {
+  showErrorNotice: boolean
+  errorMessage: string
+  handleChange: (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void
+  isAccountAddressFieldValid: boolean
+  accountAddressFieldErrorMsg: string
+  isAccountNameFieldValid: boolean
+  isLoading: boolean
+  handleRegister: (e: any) => Promise<void>
   accountType: number | null
 }
