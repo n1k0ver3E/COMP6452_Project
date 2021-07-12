@@ -4,6 +4,7 @@
 pragma solidity ^0.8.0;
 
 import "./Profile.sol";
+import "./Trace.sol";
 
 contract ProductSC {
     enum status {
@@ -100,6 +101,12 @@ contract ProductSC {
     event Retailed(uint256 productId);
     event Purchased(uint256 productId);
   
+    address public traceAddress;
+
+    constructor(address _traceAddress) {
+        traceAddress = _traceAddress;
+    }
+
     function createProduct(string memory name) public returns (uint256) {
         Product memory p;
         p.productName = name;
@@ -218,7 +225,7 @@ contract ProductSC {
 
     // enum SendProductStatus {0=pending,1=approved,2=rejected}
     // to validate the account type must do it off-chain to call profile contract
-    function sendProduct(uint256 productId, address receiver)
+    function sendProduct(uint256 productId, address receiver, address logistic, string memory trackingNumber )
         public
         checkDuplicateSendProductItem(productId)
     {
@@ -240,6 +247,9 @@ contract ProductSC {
             newSendProductItem.receiver,
             uint256(newSendProductItem.status)
         );
+
+        Trace trace = Trace(traceAddress);
+        trace.addProduct(productId, logistic, trackingNumber);
     }
 
     function receiveProduct(uint256 productId, bool receiveStatus) public {

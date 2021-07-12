@@ -12,19 +12,22 @@ contract Trace {
         int latitude;
         int longitude;
         address logisticAccountAddress;
-        bytes trackNumber;
+        bytes trackingNumber;
     }
 
     address public profileAddress;
     mapping (uint => ProductTrack) _tracks;
 
-    function tracks(uint productId) public returns(string memory trackNumber, int latitude, int longtitude)  {
+    function tracks(uint productId)
+    public
+    view
+    returns(string memory trackingNumber, int latitude, int longtitude)  {
         ProductTrack memory t = _tracks[ productId ];
 
-        if( t.trackNumber.length == 0 ) {
+        if( t.trackingNumber.length == 0 ) {
             return ("", 0, 0);
         } else {
-            return ( string(t.trackNumber), t.latitude, t.longitude );
+            return ( string(t.trackingNumber), t.latitude, t.longitude );
         }
     }
 
@@ -32,22 +35,25 @@ contract Trace {
         profileAddress = _profileAddress;
     }
 
-    function addProduct(uint productId, address logisticAccountAddress, string memory trackNumber) public {
+    function addProduct(uint productId, address logisticAccountAddress, string memory trackingNumber)
+    public {
         Profile pf = Profile( profileAddress );
         bool isLogistic = pf.isLogisticOrOracle(logisticAccountAddress);
 
-        require( isLogistic, "logisticAccountAddress must be logistic" );
+        require( isLogistic, "logisticAccountAddress must be a logistic or an oracle" );
 
         ProductTrack memory t = _tracks[ productId ];
         
-        require( t.trackNumber.length == 0, "Product already added" );
+        require( t.trackingNumber.length == 0, "Product already added" );
 
         t.logisticAccountAddress = logisticAccountAddress;
-        t.trackNumber = bytes(trackNumber);
+        t.trackingNumber = bytes(trackingNumber);
         t.latitude = 0;
         t.longitude = 0;
 
         _tracks[ productId  ] = t;
+
+        emit ProductTracking(block.number, logisticAccountAddress, productId);
     }
 
     function logLocation(uint productId, uint timestamp, int latitude, int longitude)
@@ -55,13 +61,15 @@ contract Trace {
     returns(bool success) {
         ProductTrack storage t = _tracks[ productId ];
 
-        if( t.trackNumber.length == 0 ){
+        if( t.trackingNumber.length == 0 ){
+            require(false, "no tracking");
             return false;
         }
 
         require( msg.sender == t.logisticAccountAddress, "Incorrect logistic account" );
 
         if ( t.timestamp >= timestamp ) {
+            require(false, "invalid timestamp");
             return false;
         }
 
