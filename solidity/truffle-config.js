@@ -1,3 +1,5 @@
+const path = require("path");
+
 module.exports = {
   // Uncommenting the defaults below
   // provides for an easier quick-start with Ganache.
