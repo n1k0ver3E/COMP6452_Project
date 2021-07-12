@@ -16,19 +16,14 @@ contract ProductSC {
         RECALLING
     }
 
-    struct Farming {
-        uint256 productId;
-        uint256 recordBlock;
-        uint256 farmingTime;
-        uint256 harvestTime;
+    //For sendProduct function
+    // based on Original design
+    enum SendProductStatus {
+        pending,
+        approved,
+        rejected
     }
-
-    struct Manufacturing {
-        uint256 productId;
-        string processType;
-        uint256 recordBlock;
-    }
-
+    
     struct Product {
         uint256 productId;
         string productName;
@@ -40,14 +35,41 @@ contract ProductSC {
         address retailerId;
         address ConsumerId;
     }
-
-    //For sendProduct function
-    // based on Original design
-    enum SendProductStatus {
-        pending,
-        approved,
-        rejected
+    
+    struct Farming {
+        uint256 productId;
+        uint256 recordBlock;
+        uint256 farmingTime;
+        uint256 harvestTime;
     }
+
+    struct Manufacturing {
+        uint256 productId;
+        string processType;
+        uint256 recordBlock;
+        uint256 timestamp;
+    }
+    
+    // relevant to track.sol, 
+    // may add new attribute after interact with tracker
+    struct Logistics {
+        uint256 productId;
+        uint256 recordBlock;
+        uint256 timeStamp;
+    }
+    
+    struct Retailing {
+        uint256 productId;
+        uint256 recordBlock;
+        uint256 timeStamp;
+    }
+    
+    struct Purchasing {
+        uint256 productId;
+        uint256 recordBlock;
+        uint256 timeStamp;
+    }
+
     struct SendProductItem {
         uint256 productId;
         address sender;
@@ -58,13 +80,26 @@ contract ProductSC {
 
     uint256 public numProducts = 0;
     mapping(uint256 => Product) public products;
+    
+    // status updating info
     mapping(uint256 => Farming) public farming_process;
     mapping(uint256 => Manufacturing) public manu_process;
+    mapping(uint256 => Logistics) public logi_process;
+    mapping(uint256 => Retailing) public retail_process;
+    mapping(uint256 => Purchasing) public purchase_process;
+    
     //For sendProduct function
     // based on Original design
     mapping(uint256 => SendProductItem) public sendProducts;
     mapping(address => Product[]) public receiverProducts;
 
+
+    event Harvested(uint256 productId);
+    event Manufactured(uint256 productId);
+    event Distributed(uint256 productId);
+    event Retailed(uint256 productId);
+    event Purchased(uint256 productId);
+  
     function createProduct(string memory name) public returns (uint256) {
         Product memory p;
         p.productName = name;
@@ -76,38 +111,101 @@ contract ProductSC {
     }
 
     function addProductFarmingInfo(
-        uint256 pid,
-        uint256 farmtime,
-        uint256 harvtime
+        uint256 _pid,
+        uint256 _farmtime,
+        uint256 _harvtime
     ) public {
         require(
-            harvtime > farmtime,
+            _harvtime > _farmtime,
             "Harvest time should be later than farm time."
         );
 
-        Product storage existProduct = products[pid];
+        Product storage existProduct = products[_pid];
         existProduct.FarmerId = msg.sender;
         existProduct.statusType = status.HARVESTING;
 
         Farming memory f;
-        f.productId = pid;
-        f.farmingTime = farmtime;
-        f.harvestTime = harvtime;
+        f.productId = _pid;
+        f.farmingTime = _farmtime;
+        f.harvestTime = _harvtime;
         f.recordBlock = block.number;
-        farming_process[pid] = f;
+        farming_process[_pid] = f;
+        
+        emit Harvested(_pid);
     }
 
-    function manuProductInfo(uint256 pid, string memory processtype) public {
-        Product storage existProduct = products[pid];
+    function manuProductInfo(
+        uint256 _pid, 
+        string memory _processtype
+    ) public {
+        Product storage existProduct = products[_pid];
         existProduct.manufacturerId = msg.sender;
         existProduct.statusType = status.MANUFACTURING;
 
         Manufacturing memory m;
-        m.productId = pid;
-        m.processType = processtype;
+        m.productId = _pid;
+        m.processType = _processtype;
         m.recordBlock = block.number;
-        manu_process[pid] = m;
+        m.timestamp = block.timestamp;
+        manu_process[_pid] = m;
+        
+        
+        
+        emit Manufactured(_pid);
     }
+    
+    function logiProductInfo(
+        address sender, uint256 _pid
+    ) public {
+        Product storage existProduct = products[_pid];
+        existProduct.distributorId = sender;
+        existProduct.statusType = status.SHIPPING;
+        
+        Logistics memory l;
+        l.productId = _pid;
+        l.recordBlock = block.number;
+        l.timeStamp = block.timestamp;
+        logi_process[_pid] = l;
+        
+        emit Distributed(_pid);
+        
+    }
+    
+    function retailProductInfo(
+        address sender, uint256 _pid
+    ) public {
+        Product storage existProduct = products[_pid];
+        existProduct.retailerId = sender;
+        existProduct.statusType = status.RETAILING;
+        
+        Retailing memory r;
+        r.productId = block.number;
+        r.timeStamp = block.timestamp;
+        retail_process[_pid] = r;
+        
+        emit Retailed(_pid);
+    }
+    
+    function purchasingProductInfo(
+        address sender,
+        uint256 _pid,
+        uint256 _price
+    ) public {
+        Product storage existProduct = products[_pid];
+        existProduct.ConsumerId = sender;
+        existProduct.statusType = status.PURCHASING;
+        existProduct.productPrice = _price;
+        
+        Purchasing memory p;
+        p.productId = block.number;
+        p.timeStamp = block.timestamp;
+        purchase_process[_pid] = p;
+        
+        emit Purchased(_pid);
+        
+        
+    }
+        
 
     //For sendProduct function
     // based on Original design
