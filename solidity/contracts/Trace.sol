@@ -4,13 +4,13 @@ pragma solidity >=0.8.0 <0.9.0;
 import "./Profile.sol";
 
 contract Trace {
-    event ProductLocation(uint blockNumber, uint productId, uint timestamp, uint latitude, uint longitude);
+    event ProductLocation(uint blockNumber, uint productId, uint timestamp, int latitude, int longitude);
     event ProductTracking(uint blockNumber, address indexed logisticAccountAddress, uint productId );
 
     struct ProductTrack {
         uint timestamp;
-        uint latitude;
-        uint longitude;
+        int latitude;
+        int longitude;
         address logisticAccountAddress;
         bytes trackNumber;
     }
@@ -18,7 +18,7 @@ contract Trace {
     address public profileAddress;
     mapping (uint => ProductTrack) _tracks;
 
-    function tracks(uint productId) public returns(string memory trackNumber, uint latitude, uint longtitude)  {
+    function tracks(uint productId) public returns(string memory trackNumber, int latitude, int longtitude)  {
         ProductTrack memory t = _tracks[ productId ];
 
         if( t.trackNumber.length == 0 ) {
@@ -50,7 +50,7 @@ contract Trace {
         _tracks[ productId  ] = t;
     }
 
-    function logLocation(uint productId, uint timestamp, uint latitude, uint longitude)
+    function logLocation(uint productId, uint timestamp, int latitude, int longitude)
     public
     returns(bool success) {
         ProductTrack storage t = _tracks[ productId ];
