@@ -1,8 +1,12 @@
-import React, { FC } from 'react'
+import React, { FC, useContext } from 'react'
 import { useHistory } from 'react-router-dom'
-import { IUserTypeProps, IMenuList } from '../../interfaces/profileContract'
+import './sidenavbar.css'
+import { ProfileContractContext } from '../../contexts/ProfileContract'
+import { IUserTypeProps, IMenuList } from '../../interfaces/contract'
+import ConnectionStatus from '../ConnectionStatus'
 
 const SideNavBar: FC<IUserTypeProps> = ({ type }) => {
+  const { profileContract } = useContext(ProfileContractContext)
   const isRegulator = type === 'regulator'
   const history = useHistory()
   const pathName = window.location.pathname
@@ -87,7 +91,9 @@ const SideNavBar: FC<IUserTypeProps> = ({ type }) => {
   return (
     <div>
       <aside className="menu is-hidden-mobile">
-        <p className="menu-label">MENU</p>
+        <div className="menu-label">
+          <ConnectionStatus />
+        </div>
         <ul className="menu-list">
           <li>
             <a

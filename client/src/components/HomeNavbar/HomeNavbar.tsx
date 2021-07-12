@@ -2,7 +2,7 @@ import React, { FC } from 'react'
 import { useHistory } from 'react-router-dom'
 import Logo from '../../assets/logo.jpg'
 import './homenavbar.css'
-import { IUserTypeProps } from '../../interfaces/profileContract'
+import { IUserTypeProps } from '../../interfaces/contract'
 
 const HomeNavbar: FC<IUserTypeProps> = ({ type }) => {
   // TODO - For mobile view, add a function to toggle menu bar
