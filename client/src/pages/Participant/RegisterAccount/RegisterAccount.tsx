@@ -3,11 +3,12 @@ import RegistrationImage from '../../../assets/registration.png'
 import { ProfileContractContext } from '../../../contexts/ProfileContract'
 import { IRegisterAccountDetails } from '../../../interfaces/contract'
 import RegisterForm from '../../../components/RegisterForm'
+import RegistrationSuccess from '../../../components/RegistrationSuccess'
 
 const initialState: IRegisterAccountDetails = {
   accountAddress: '',
   accountName: '',
-  accountType: null,
+  accountType: -1,
 }
 
 const RegisterAccount: FC = () => {
@@ -23,6 +24,7 @@ const RegisterAccount: FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [showErrorNotice, setShowErrorNotice] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>('')
+  const [registrationSuccess, setRegistrationSuccess] = useState<boolean>(false)
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -69,8 +71,9 @@ const RegisterAccount: FC = () => {
         .send({ from: accounts[0] })
 
       setTimeout(() => {
-        setData(initialState)
         setIsLoading(false)
+        setRegistrationSuccess(true)
+        // setData(initialState)
 
         console.log(
           'registeredAccount',
@@ -108,17 +111,25 @@ const RegisterAccount: FC = () => {
         <div className="column is-10 is-offset-2 register">
           <div className="columns">
             <div className="column left mt-6">
-              <RegisterForm
-                showErrorNotice={showErrorNotice}
-                errorMessage={errorMessage}
-                handleChange={handleChange}
-                isAccountAddressFieldValid={isAccountAddressFieldValid}
-                accountAddressFieldErrorMsg={accountAddressFieldErrorMsg}
-                isAccountNameFieldValid={isAccountNameFieldValid}
-                isLoading={isLoading}
-                handleRegister={handleRegister}
-                accountType={data.accountType}
-              />
+              {registrationSuccess ? (
+                <RegistrationSuccess
+                  accountName={data.accountName}
+                  accountType={data.accountType}
+                  accountAddress={data.accountAddress}
+                />
+              ) : (
+                <RegisterForm
+                  showErrorNotice={showErrorNotice}
+                  errorMessage={errorMessage}
+                  handleChange={handleChange}
+                  isAccountAddressFieldValid={isAccountAddressFieldValid}
+                  accountAddressFieldErrorMsg={accountAddressFieldErrorMsg}
+                  isAccountNameFieldValid={isAccountNameFieldValid}
+                  isLoading={isLoading}
+                  handleRegister={handleRegister}
+                  accountType={data.accountType}
+                />
+              )}
             </div>
             <div className="column right has-text-centered">
               <img src={RegistrationImage} alt="registration infographics" />

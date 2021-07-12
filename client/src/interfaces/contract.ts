@@ -24,7 +24,7 @@ export interface IAccountTypeDropdown {
 export interface IRegisterAccountDetails {
   accountAddress: string
   accountName: string
-  accountType: number | null
+  accountType: number
 }
 
 export interface IRegisterFormProps {
@@ -36,5 +36,5 @@ export interface IRegisterFormProps {
   isAccountNameFieldValid: boolean
   isLoading: boolean
   handleRegister: (e: any) => Promise<void>
-  accountType: number | null
+  accountType: number
 }

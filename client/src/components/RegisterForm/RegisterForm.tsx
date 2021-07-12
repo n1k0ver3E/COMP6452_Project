@@ -127,7 +127,7 @@ const RegisterForm: FC<IRegisterFormProps> = ({
           disabled={
             !isAccountAddressFieldValid ||
             !isAccountNameFieldValid ||
-            accountType === null
+            accountType === -1
           }
         >
           Register
