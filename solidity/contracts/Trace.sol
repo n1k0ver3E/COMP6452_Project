@@ -61,15 +61,13 @@ contract Trace {
     returns(bool success) {
         ProductTrack storage t = _tracks[ productId ];
 
-        if( t.trackingNumber.length == 0 ){
-            require(false, "no tracking");
+        if( t.trackingNumber.length == 0 ) {
             return false;
         }
 
         require( msg.sender == t.logisticAccountAddress, "Incorrect logistic account" );
 
         if ( t.timestamp >= timestamp ) {
-            require(false, "invalid timestamp");
             return false;
         }
 
