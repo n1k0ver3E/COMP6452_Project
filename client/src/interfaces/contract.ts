@@ -6,6 +6,7 @@ export interface IUserTypeProps {
 
 export interface IProfileContract {
   profileContract: any
+  accounts: string[]
 }
 
 export interface IMenuList {

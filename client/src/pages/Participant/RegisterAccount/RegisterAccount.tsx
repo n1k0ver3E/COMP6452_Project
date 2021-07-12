@@ -6,7 +6,6 @@ import {
   IRegisterAccountDetails,
 } from '../../../interfaces/contract'
 import { AccountType } from '../../../enums/contract'
-import useWeb3 from '../../../hooks/web3'
 
 const initialState: IRegisterAccountDetails = {
   accountAddress: '',
@@ -15,9 +14,7 @@ const initialState: IRegisterAccountDetails = {
 }
 
 const RegisterAccount: FC = () => {
-  const { accounts } = useWeb3()
-
-  const { profileContract } = useContext(ProfileContractContext)
+  const { profileContract, accounts } = useContext(ProfileContractContext)
 
   const [data, setData] = useState<IRegisterAccountDetails>(initialState)
   const [isAccountAddressFieldValid, setIsAccountAddressFieldValid] =
@@ -29,7 +26,6 @@ const RegisterAccount: FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [showErrorNotice, setShowErrorNotice] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>('')
-  // FOR TESTING ONLY
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -78,11 +74,6 @@ const RegisterAccount: FC = () => {
       setTimeout(() => {
         setData(initialState)
         setIsLoading(false)
-
-        // TO BE REMOVED
-        alert(
-          JSON.stringify(registerAccount.events.RegisterAccount.returnValues)
-        )
 
         console.log(
           'registeredAccount',
