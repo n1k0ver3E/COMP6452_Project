@@ -1,7 +1,7 @@
 {
   "scripts": {
     "compile": "truffle compile",
-    "deploy": "truffle migrate"
+    "develop": "truffle develop"
   },
   "devDependencies": {
     "truffle": "^5.3.14",
