@@ -18,6 +18,17 @@ const register = async (
   }
 }
 
+const isAccountAlreadyRegistered = async (
+  accountAddress: string
+): Promise<boolean> => {
+  const account = await ParticipantRepository.isAccountAlreadyRegistered(
+    accountAddress
+  )
+
+  return account !== null
+}
+
 export default {
   register,
+  isAccountAlreadyRegistered,
 }
