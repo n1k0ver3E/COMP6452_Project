@@ -68,7 +68,7 @@ const RegisterAccount: FC = () => {
     try {
       const registerAccount = await profileContract?.methods
         .registerAccount(accountAddress, accountName, accountType)
-        .send({ from: accounts[0] })
+        .send({ from: accounts[0], value: 0, gasPrice:  21000})
 
       setTimeout(() => {
         setIsLoading(false)
@@ -92,6 +92,8 @@ const RegisterAccount: FC = () => {
           'Account address invalid. Please try again with a different address.'
       } else if (error.message.includes('duplicate account')) {
         customErrorMsg = 'This account has already been registered.'
+      } else if(error.message.includes('transactionErrorNoContract')){
+        customErrorMsg = 'It looks like no contract has been deployed. Please ask the regulator to deploy the contract and try again.'
       } else if (error.message.includes('must provide an Ethereum address')) {
         customErrorMsg = error.message
       } else {
