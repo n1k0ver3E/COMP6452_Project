@@ -6,7 +6,8 @@
   "scripts": {
     "server": "tsnd src/app.ts",
     "build": "tsc",
-    "test": "jest ./tests"
+    "test": "jest ./tests",
+    "oracle": "node scripts/oracle.js"
   },
   "author": "The Foodie Chain Team",
   "license": "ISC",
@@ -28,7 +29,8 @@
     "supertest": "^6.1.3",
     "ts-jest": "^27.0.3",
     "ts-node-dev": "^1.1.8",
-    "typescript": "^4.3.5"
+    "typescript": "^4.3.5",
+    "web3-eth": "^1.4.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.10",
