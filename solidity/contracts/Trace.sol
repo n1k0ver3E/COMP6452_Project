@@ -6,6 +6,7 @@ import "./Profile.sol";
 contract Trace {
     event ProductLocation(uint blockNumber, uint productId, uint timestamp, int latitude, int longitude);
     event ProductTracking(uint blockNumber, address indexed logisticAccountAddress, uint productId );
+    event ProductLocationRequest(uint blockNumber, uint productId);
 
     struct ProductTrack {
         uint timestamp;
@@ -13,6 +14,8 @@ contract Trace {
         int longitude;
         address logisticAccountAddress;
         bytes trackingNumber;
+        uint nextRequestForLocationBlockNumber;
+        bool isRequestingForLocation;
     }
 
     address public profileAddress;
@@ -21,13 +24,13 @@ contract Trace {
     function tracks(uint productId)
     public
     view
-    returns(string memory trackingNumber, int latitude, int longtitude)  {
+    returns(string memory trackingNumber, int latitude, int longitude, bool isRequestingForLocation)  {
         ProductTrack memory t = _tracks[ productId ];
 
         if( t.trackingNumber.length == 0 ) {
-            return ("", 0, 0);
+            return ("", 0, 0, false);
         } else {
-            return ( string(t.trackingNumber), t.latitude, t.longitude );
+            return ( string(t.trackingNumber), t.latitude, t.longitude, t.isRequestingForLocation );
         }
     }
 
@@ -67,16 +70,63 @@ contract Trace {
 
         require( msg.sender == t.logisticAccountAddress, "Incorrect logistic account" );
 
-        if ( t.timestamp >= timestamp ) {
+        if( t.isRequestingForLocation ) {
+            if ( t.timestamp < timestamp ) {
+                saveProductLocation(t, productId, timestamp, latitude, longitude);
+            }
+
+            t.isRequestingForLocation = false;
+
+            // TODO:: Insert callback code here
+
+            return true;
+        } else {
+            if ( t.timestamp >= timestamp ) {
+                return false;
+            }
+
+            saveProductLocation(t, productId, timestamp, latitude, longitude);
+
+            // TODO:: Insert callback code here
+
+            return true;
+        }
+    }
+
+    function requestForLocation(uint productId) public returns (bool) {
+        ProductTrack storage t = _tracks[ productId ];
+
+        if( t.trackingNumber.length == 0 ) {
             return false;
         }
 
+        if( t.isRequestingForLocation ) {
+            return false;
+        }
+
+        // If the next allow value is more then current block number then the request is denied.
+        if( t.nextRequestForLocationBlockNumber > block.number ) {
+            return false;
+        }
+
+        t.isRequestingForLocation = true;
+
+        // Update the next request block number to be roughly next 6 hours.
+        // This simply work as a rate limit
+        t.nextRequestForLocationBlockNumber = block.number + 1650;
+
+        emit ProductLocationRequest(block.number, productId);
+
+        return true;
+    }
+
+    function saveProductLocation( ProductTrack storage t, uint productId, uint timestamp, int latitude, int longitude ) 
+    private
+    {
         t.timestamp = timestamp;
         t.latitude = latitude;
         t.longitude = longitude;
 
         emit ProductLocation(block.number, productId, timestamp, latitude, longitude);
-
-        return true;
     }
 }

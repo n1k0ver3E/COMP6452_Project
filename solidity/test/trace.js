@@ -71,10 +71,17 @@ contract('Trace', (accounts) => {
                 ev.latitude == -1 &&
                 ev.longitude == -2;
         });
+
+        var lastLocation = await trace.tracks.call(productAId.toNumber());
+
+        assert.equal(lastLocation.trackingNumber, "test");
+        assert.equal(lastLocation.latitude.toNumber(), -1);
+        assert.equal(lastLocation.longitude.toNumber(), -2);
+        assert.equal(lastLocation.isRequestingForLocation, false);
     });
 
     it('should accept log from oracle', async () => {
-        var sendResult = await product.sendProduct(productAId.toNumber(), retailer, oracle, "test", { from: farmer });
+        var sendResult = await product.sendProduct(productAId.toNumber(), retailer, oracle, "test2", { from: farmer });
 
         //console.log( sendResult );
 
@@ -90,6 +97,13 @@ contract('Trace', (accounts) => {
                 ev.latitude == 1 &&
                 ev.longitude == 2;
         });
+
+        var lastLocation = await trace.tracks.call(productAId.toNumber());
+
+        assert.equal(lastLocation.trackingNumber, "test2");
+        assert.equal(lastLocation.latitude.toNumber(), 1);
+        assert.equal(lastLocation.longitude.toNumber(), 2);
+        assert.equal(lastLocation.isRequestingForLocation, false);
     });
 
     it('should not accept log from manufacturer', async () => {
@@ -110,10 +124,26 @@ contract('Trace', (accounts) => {
             assert(error, "Expect an error");
             assert(error.message.includes("logisticAccountAddress must be a logistic or an oracle"), "error message check");
         }
-
-
     });
 
+    it('should be able to request for location', async () => {
+        var sendResult = await product.sendProduct(productAId.toNumber(), retailer, oracle, "test4", { from: farmer });
+
+        var requestResult = await trace.requestForLocation.call(productAId.toNumber());
+        assert.equal(requestResult, true);
+
+        await trace.requestForLocation(productAId.toNumber());
+
+        requestResult = await trace.requestForLocation.call(productAId.toNumber());
+
+        assert.equal(requestResult, false);
+    });
+
+    it('should not be able to request for location for unadded product', async () => {
+        requestResult = await trace.requestForLocation.call(999);
+
+        assert.equal(requestResult, false);
+    });
 
     // it('should emit an event when recall', async () => {
     //     let emit = await product.emitEvent({ from: creator });
