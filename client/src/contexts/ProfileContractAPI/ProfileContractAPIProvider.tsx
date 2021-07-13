@@ -1,4 +1,4 @@
-import React, { FC, createContext } from 'react'
+import React, { FC, createContext, useState } from 'react'
 import api from '../../api'
 import {
   IProfileContractAPI,
@@ -7,22 +7,45 @@ import {
 
 const contextDefaultValues: IProfileContractAPI = {
   registerParticipant: () => {},
+  registeredAccounts: [],
+  registrationError: false,
 }
 
 export const ProfileContractAPIContext =
   createContext<IProfileContractAPI>(contextDefaultValues)
 
 const ProfileContractAPIProvider: FC = ({ children }): any => {
+  const initialState = {
+    registeredAccounts: [],
+  }
+
+  const [registrationError, setRegistrationError] = useState<boolean>(false)
+
   const registerParticipant = async (
     participantDetails: IParticipantDetails
   ) => {
-    const resp = await api.post('/v1/participants/register', participantDetails)
+    try {
+      const resp = await api.post(
+        '/v1/participants/register',
+        participantDetails
+      )
 
-    console.log('response', resp.data)
+      // @ts-ignore
+      initialState.registeredAccounts.push(resp.data.participantDetails)
+      setRegistrationError(false)
+    } catch (err) {
+      setRegistrationError(true)
+    }
   }
 
   return (
-    <ProfileContractAPIContext.Provider value={{ registerParticipant }}>
+    <ProfileContractAPIContext.Provider
+      value={{
+        registerParticipant,
+        registeredAccounts: initialState.registeredAccounts,
+        registrationError,
+      }}
+    >
       {children}
     </ProfileContractAPIContext.Provider>
   )

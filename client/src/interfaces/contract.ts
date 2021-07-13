@@ -49,4 +49,6 @@ export interface IParticipantDetails {
 
 export interface IProfileContractAPI {
   registerParticipant: (participantDetails: IParticipantDetails) => void
+  registeredAccounts: IParticipantDetails[]
+  registrationError: boolean
 }
