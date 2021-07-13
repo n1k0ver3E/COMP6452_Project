@@ -1,5 +1,7 @@
 import React, { FC } from 'react'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+import ProfileContextProvider from './contexts/ProfileContract'
+import ProfileContractAPIProvider from './contexts/ProfileContractAPI'
 import Landing from './pages/Landing'
 import Regulator from './pages/Regulator'
 import Participant from './pages/Participant'
@@ -18,4 +20,10 @@ const App: FC = () => {
   )
 }
 
-export default App
+export default () => (
+  <ProfileContextProvider>
+    <ProfileContractAPIProvider>
+      <App />
+    </ProfileContractAPIProvider>
+  </ProfileContextProvider>
+)
