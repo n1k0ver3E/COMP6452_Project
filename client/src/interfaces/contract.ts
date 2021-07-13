@@ -38,3 +38,17 @@ export interface IRegisterFormProps {
   handleRegister: (e: any) => Promise<void>
   accountType: number
 }
+
+export interface IParticipantDetails {
+  accountAddress: string
+  accountId: number
+  accountName: string
+  accountStatus: number
+  accountType: number
+}
+
+export interface IProfileContractAPI {
+  registerParticipant: (participantDetails: IParticipantDetails) => void
+  registeredAccounts: IParticipantDetails[]
+  registrationError: boolean
+}

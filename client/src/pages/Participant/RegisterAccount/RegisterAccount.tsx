@@ -1,7 +1,11 @@
 import React, { FC, ChangeEvent, useContext, useState } from 'react'
 import RegistrationImage from '../../../assets/registration.png'
 import { ProfileContractContext } from '../../../contexts/ProfileContract'
-import { IRegisterAccountDetails } from '../../../interfaces/contract'
+import { ProfileContractAPIContext } from '../../../contexts/ProfileContractAPI'
+import {
+  IParticipantDetails,
+  IRegisterAccountDetails,
+} from '../../../interfaces/contract'
 import RegisterForm from '../../../components/RegisterForm'
 import RegistrationSuccess from '../../../components/RegistrationSuccess'
 
@@ -13,6 +17,9 @@ const initialState: IRegisterAccountDetails = {
 
 const RegisterAccount: FC = () => {
   const { profileContract, accounts } = useContext(ProfileContractContext)
+  const { registerParticipant, registrationError } = useContext(
+    ProfileContractAPIContext
+  )
 
   const [data, setData] = useState<IRegisterAccountDetails>(initialState)
   const [isAccountAddressFieldValid, setIsAccountAddressFieldValid] =
@@ -66,24 +73,38 @@ const RegisterAccount: FC = () => {
     setShowErrorNotice(false)
 
     try {
-      const registerAccount = await profileContract?.methods
+      const registerAccountResp = await profileContract?.methods
         .registerAccount(accountAddress, accountName, accountType)
-        .send({ from: accounts[0] })
+        .send({ from: accounts[0], value: 0, gasPrice: 21000 })
 
-      setTimeout(() => {
-        setIsLoading(false)
-        setRegistrationSuccess(true)
-        // setData(initialState)
+      if (registerAccountResp) {
+        console.log('registered Account', registerAccountResp)
 
-        console.log(
-          'registeredAccount',
-          registerAccount.events.RegisterAccount.returnValues
-        )
+        const {
+          accountAddress,
+          accountId,
+          accountName,
+          accountStatus,
+          accountType,
+        } = registerAccountResp.events.RegisterAccount.returnValues
 
-        // TODO - SHOW REGISTRATION SUCCESS
-        // TODO - SAVE INFO TO LOCAL STORAGE
-        // TODO - Save TO DATABASE
-      }, 2000)
+        const participantsDetails: IParticipantDetails = {
+          accountAddress,
+          accountId: parseInt(accountId),
+          accountName,
+          accountStatus: parseInt(accountStatus),
+          accountType: parseInt(accountType),
+        }
+
+        registerParticipant(participantsDetails)
+
+        if (!registrationError) {
+          setTimeout(() => {
+            setIsLoading(false)
+            setRegistrationSuccess(true)
+          }, 2000)
+        }
+      }
     } catch (error) {
       let customErrorMsg: string
 
@@ -92,6 +113,9 @@ const RegisterAccount: FC = () => {
           'Account address invalid. Please try again with a different address.'
       } else if (error.message.includes('duplicate account')) {
         customErrorMsg = 'This account has already been registered.'
+      } else if (error.message.includes('transactionErrorNoContract')) {
+        customErrorMsg =
+          'It looks like no contract has been deployed. Please ask the regulator to deploy the contract and try again.'
       } else if (error.message.includes('must provide an Ethereum address')) {
         customErrorMsg = error.message
       } else {

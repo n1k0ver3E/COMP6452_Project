@@ -15,7 +15,7 @@ const RegistrationSuccess: FC<IRegistrationSuccessProps> = ({
   accountAddress,
 }) => {
   return (
-    <div className="registration-success">
+    <div className="registration-success mb-3">
       <div className="icon-text check-icon">
         <span className="icon has-text-success">
           <i className="fas fa-check-circle" />
