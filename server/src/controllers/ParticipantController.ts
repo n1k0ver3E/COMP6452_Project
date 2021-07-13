@@ -6,7 +6,7 @@ const register = catchAsync(
   async (req: Request, res: Response, _next: NextFunction) => {
     console.log('request body', req.body)
 
-    return res.status(httpStatus.NOT_IMPLEMENTED).json({
+    return res.status(httpStatus.OK).json({
       success: true,
       message: 'End point under constructions',
     })

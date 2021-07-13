@@ -1,6 +1,7 @@
 import React, { FC, ChangeEvent, useContext, useState } from 'react'
 import RegistrationImage from '../../../assets/registration.png'
 import { ProfileContractContext } from '../../../contexts/ProfileContract'
+import { ProfileContractAPIContext } from '../../../contexts/ProfileContractAPI'
 import { IRegisterAccountDetails } from '../../../interfaces/contract'
 import RegisterForm from '../../../components/RegisterForm'
 import RegistrationSuccess from '../../../components/RegistrationSuccess'
@@ -13,6 +14,7 @@ const initialState: IRegisterAccountDetails = {
 
 const RegisterAccount: FC = () => {
   const { profileContract, accounts } = useContext(ProfileContractContext)
+  const { registerParticipant } = useContext(ProfileContractAPIContext)
 
   const [data, setData] = useState<IRegisterAccountDetails>(initialState)
   const [isAccountAddressFieldValid, setIsAccountAddressFieldValid] =
@@ -66,19 +68,29 @@ const RegisterAccount: FC = () => {
     setShowErrorNotice(false)
 
     try {
-      const registerAccount = await profileContract?.methods
-        .registerAccount(accountAddress, accountName, accountType)
-        .send({ from: accounts[0], value: 0, gasPrice:  21000})
+      // const registerAccount = await profileContract?.methods
+      //   .registerAccount(accountAddress, accountName, accountType)
+      //   .send({ from: accounts[0], value: 0, gasPrice: 21000 })
+
+      const participantDetails = {
+        accountAddress: '0xdfdafdafds',
+        accountId: 2,
+        accountName: 'Promie',
+        accountStatus: 0,
+        accountType: 5,
+      }
+
+      registerParticipant(participantDetails)
 
       setTimeout(() => {
         setIsLoading(false)
         setRegistrationSuccess(true)
         // setData(initialState)
 
-        console.log(
-          'registeredAccount',
-          registerAccount.events.RegisterAccount.returnValues
-        )
+        // console.log(
+        //   'registeredAccount',
+        //   registerAccount.events.RegisterAccount.returnValues
+        // )
 
         // TODO - SHOW REGISTRATION SUCCESS
         // TODO - SAVE INFO TO LOCAL STORAGE
@@ -92,8 +104,9 @@ const RegisterAccount: FC = () => {
           'Account address invalid. Please try again with a different address.'
       } else if (error.message.includes('duplicate account')) {
         customErrorMsg = 'This account has already been registered.'
-      } else if(error.message.includes('transactionErrorNoContract')){
-        customErrorMsg = 'It looks like no contract has been deployed. Please ask the regulator to deploy the contract and try again.'
+      } else if (error.message.includes('transactionErrorNoContract')) {
+        customErrorMsg =
+          'It looks like no contract has been deployed. Please ask the regulator to deploy the contract and try again.'
       } else if (error.message.includes('must provide an Ethereum address')) {
         customErrorMsg = error.message
       } else {

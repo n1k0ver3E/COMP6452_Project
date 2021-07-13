@@ -1,5 +1,9 @@
 import React, { FC, createContext } from 'react'
-import { IProfileContractAPI, IParticipantDetails } from '../../interfaces/contract'
+import api from '../../api'
+import {
+  IProfileContractAPI,
+  IParticipantDetails,
+} from '../../interfaces/contract'
 
 const contextDefaultValues: IProfileContractAPI = {
   registerParticipant: () => {},
@@ -8,13 +12,13 @@ const contextDefaultValues: IProfileContractAPI = {
 export const ProfileContractAPIContext =
   createContext<IProfileContractAPI>(contextDefaultValues)
 
-const ProfileContractAPIProvider: FC = ({children}) :any => {
+const ProfileContractAPIProvider: FC = ({ children }): any => {
+  const registerParticipant = async (
+    participantDetails: IParticipantDetails
+  ) => {
+    const resp = await api.post('/v1/participants/register', participantDetails)
 
-
-  const registerParticipant = (participantDetails: IParticipantDetails) => {
-
-    console.log(participantDetails)
-    console.log('HELLO PARTICIPANT')
+    console.log('response', resp.data)
   }
 
   return (
