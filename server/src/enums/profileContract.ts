@@ -7,3 +7,9 @@ export enum AccountType {
   LOGISTICS = 5,
   ORACLE = 6,
 }
+
+export enum AccountStatus {
+  PENDING = 0,
+  APPROVED = 1,
+  REJECT = 2,
+}
