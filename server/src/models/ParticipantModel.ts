@@ -1,5 +1,6 @@
 import { IParticipant } from '../interfaces/participant'
 import { Model, model, Schema } from 'mongoose'
+import { AccountType } from '../enums/accountType'
 
 const ParticipantSchema: Schema = new Schema(
   {
@@ -21,6 +22,7 @@ const ParticipantSchema: Schema = new Schema(
     },
     accountType: {
       type: Number,
+      enum: Object.values(AccountType),
       required: true,
     },
   },
