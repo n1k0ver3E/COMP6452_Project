@@ -1,6 +1,5 @@
 import React, { FC, useContext } from 'react'
 import { ProfileContractAPIContext } from '../../contexts/ProfileContractAPI'
-import { IAccountTypeDropdown } from '../../interfaces/contract'
 
 const ViewAccountForm: FC = () => {
   const { registeredAccounts } = useContext(ProfileContractAPIContext)
