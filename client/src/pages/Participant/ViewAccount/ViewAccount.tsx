@@ -1,6 +1,7 @@
 import React, { FC } from 'react'
-import RegistrationImage from '../../../assets/registration.png'
+import ProfileTrackingImage from '../../../assets/database.png'
 import ViewAccountForm from '../../../components/ViewAccountForm'
+import './viewaccount.css'
 
 const ViewAccount: FC = () => {
   return (
@@ -12,7 +13,11 @@ const ViewAccount: FC = () => {
               <ViewAccountForm />
             </div>
             <div className="column right has-text-centered">
-              <img src={RegistrationImage} alt="registration infographics" />
+              <img
+                src={ProfileTrackingImage}
+                alt="profile tracking"
+                className="side-image"
+              />
             </div>
           </div>
         </div>
