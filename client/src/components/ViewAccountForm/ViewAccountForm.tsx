@@ -31,18 +31,20 @@ const ViewAccountForm: FC = () => {
           </div>
         ) : null}
 
-        <div className="mt-2 mb-2">
-          <label className="checkbox">
-            <input
-              type="checkbox"
-              defaultChecked={checked}
-              onChange={() => setChecked(!checked)}
-            />{' '}
-            Account address not on the list
-          </label>
-        </div>
+        {registeredAccounts.length ? (
+          <div className="mt-2 mb-2">
+            <label className="checkbox">
+              <input
+                type="checkbox"
+                defaultChecked={checked}
+                onChange={() => setChecked(!checked)}
+              />{' '}
+              Account address not on the list
+            </label>
+          </div>
+        ) : null}
 
-        {checked && (
+        {!registeredAccounts.length || checked ? (
           <div className="field">
             <div className="control">
               <input
@@ -54,7 +56,7 @@ const ViewAccountForm: FC = () => {
               />
             </div>
           </div>
-        )}
+        ) : null}
 
         <button className="button is-block is-link is-fullwidth mt-3">
           View Account
