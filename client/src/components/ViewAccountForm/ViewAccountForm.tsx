@@ -5,7 +5,10 @@ import {
   IViewAccountFormProps,
 } from '../../interfaces/contract'
 
-const ViewAccountForm: FC<IViewAccountFormProps> = ({ handleChange }) => {
+const ViewAccountForm: FC<IViewAccountFormProps> = ({
+  handleChange,
+  handleViewAccount,
+}) => {
   const { registeredAccounts } = useContext(ProfileContractAPIContext)
   const [checked, setChecked] = useState<boolean>(false)
 
@@ -63,7 +66,10 @@ const ViewAccountForm: FC<IViewAccountFormProps> = ({ handleChange }) => {
           </div>
         ) : null}
 
-        <button className="button is-block is-link is-fullwidth mt-3">
+        <button
+          className="button is-block is-link is-fullwidth mt-3"
+          onClick={(e) => handleViewAccount(e)}
+        >
           View Account
         </button>
       </form>
