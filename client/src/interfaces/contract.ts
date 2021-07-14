@@ -1,4 +1,4 @@
-import { ChangeEvent } from 'react'
+import { ChangeEvent, Dispatch, SetStateAction } from 'react'
 
 type userType = 'regulator' | 'participant'
 
@@ -41,6 +41,7 @@ export interface IRegisterFormProps {
 
 export interface IViewAccountFormProps {
   handleChange: (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void
+  handleViewAccount: (e: any) => Promise<void>
 }
 
 export interface IParticipantDetails {
