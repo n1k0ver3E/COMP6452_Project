@@ -1,8 +1,11 @@
 import React, { FC, useContext, useState } from 'react'
 import { ProfileContractAPIContext } from '../../contexts/ProfileContractAPI'
-import { IParticipantDetails } from '../../interfaces/contract'
+import {
+  IParticipantDetails,
+  IViewAccountFormProps,
+} from '../../interfaces/contract'
 
-const ViewAccountForm: FC = () => {
+const ViewAccountForm: FC<IViewAccountFormProps> = ({ handleChange }) => {
   const { registeredAccounts } = useContext(ProfileContractAPIContext)
   const [checked, setChecked] = useState<boolean>(false)
 
@@ -16,6 +19,7 @@ const ViewAccountForm: FC = () => {
               defaultValue={'DEFAULT'}
               name="registeredAddress"
               id="registeredAddress"
+              onChange={handleChange}
             >
               <option value={'DEFAULT'} disabled>
                 Select Account Address
@@ -39,7 +43,7 @@ const ViewAccountForm: FC = () => {
                 defaultChecked={checked}
                 onChange={() => setChecked(!checked)}
               />{' '}
-              Account address not on the list
+              Account address not on list
             </label>
           </div>
         ) : null}
@@ -53,6 +57,7 @@ const ViewAccountForm: FC = () => {
                 placeholder="Account address"
                 name="accountAddress"
                 id="accountAddress"
+                onChange={handleChange}
               />
             </div>
           </div>

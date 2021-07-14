@@ -79,8 +79,6 @@ const RegisterAccount: FC = () => {
         .send({ from: accounts[0], value: 0, gasPrice: 21000 })
 
       if (registerAccountResp) {
-        console.log('registered Account', registerAccountResp)
-
         const {
           accountAddress,
           accountId,
