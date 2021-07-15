@@ -7,11 +7,13 @@
     "server": "tsnd src/app.ts",
     "build": "tsc",
     "test": "jest ./tests",
-    "oracle": "node scripts/oracle.js"
+    "trace-oracle": "npx ts-node src/scripts/trace-reverse-oracle.ts",
+    "oracle": "npx ts-node src/scripts/tracking-oracle.ts"
   },
   "author": "The Foodie Chain Team",
   "license": "ISC",
   "dependencies": {
+    "@truffle/hdwallet-provider": "^1.4.1",
     "@types/express": "^4.17.12",
     "@types/jest": "^26.0.23",
     "@types/mongodb": "^3.6.19",

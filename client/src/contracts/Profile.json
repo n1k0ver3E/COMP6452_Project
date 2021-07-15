@@ -18636,12 +18636,12 @@
         }
       },
       "links": {},
-      "address": "0x73605C9426eD25791b664eD231eC765720B0C40C",
-      "transactionHash": "0x4783f7915b7c89e0e784bd234c7eb39216c42faea65a30b6a2e9063687fc921e"
+      "address": "0xc2a17cEF003075Afc30356374651952cf40D83ec",
+      "transactionHash": "0xd79f2f51db4e705f52f13e92d6e26f1c9fa2c05e18b3bd2d2944a85f8f803f68"
     }
   },
   "schemaVersion": "3.4.1",
-  "updatedAt": "2021-07-13T10:22:02.436Z",
+  "updatedAt": "2021-07-15T11:01:55.957Z",
   "networkType": "ethereum",
   "devdoc": {
     "details": "Implements profile mMnagement. Constraints: 1. Each participant per 1 account address 2. only one regulator address per 1 profile contract Program flow 1. create \"Profile contract\" by adding regulator's address in its constructor. 2. The participants(1=Farmer,2=Manufacturer,3=Retailer,4=Logistic) use the backend(off-chain) to call function registerAccount(on-chain) 3. Event RegisterAccount is raised and the backend (off-chain) can get error and result from function registerAccount(on-chain). The backend can store the data in database off-chain. 4. The initial of account status is  0=Pending. 5. The regulator uses the off-chain app to pass the parameter of each participant account address and account status to function approveAccount(on-chain). 6. To get accountInfo (struct Account), can directly call mapping accountInfoByAddress[accountAddress]",
