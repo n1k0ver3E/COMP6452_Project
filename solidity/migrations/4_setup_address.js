@@ -19,6 +19,7 @@ module.exports = async function(deployer, networks, addresses) {
 
   const profile = await Profile.deployed();
   const product = await ProductSC.deployed();
+  const trace = await Trace.deployed();
 
   await profile.registerAccount(farmer, "Farmer", 1, { from: farmer });
   await profile.approveAccount(farmer, 1, { from: regulator });
@@ -41,4 +42,6 @@ module.exports = async function(deployer, networks, addresses) {
   var productAId = await product.createProduct.call("Product A", { from: farmer });
 
   await product.addProductFarmingInfo(productAId, 1, 2);
+
+  await trace.setProductContractAddress( product.address, {from: creator} );
 };

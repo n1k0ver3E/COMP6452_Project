@@ -18,7 +18,9 @@ contract Trace {
         bool isRequestingForLocation;
     }
 
+    address public owner;
     address public profileAddress;
+    address public productContractAddress;
     mapping (uint => ProductTrack) _tracks;
 
     function tracks(uint productId)
@@ -36,10 +38,28 @@ contract Trace {
 
     constructor(address _profileAddress) {
         profileAddress = _profileAddress;
+        owner = msg.sender;
+    }
+
+    function setProductContractAddress(address _productContractAddress) public onlyOwner {
+        require( productContractAddress == address(0), "Product contract is setted." );
+
+        productContractAddress = _productContractAddress;
+    }
+
+    modifier onlyOwner() {
+        require( msg.sender == owner, "Must be owner" );
+        _;
+    }
+
+    modifier productContractSetted() {
+        require( productContractAddress != address(0), "Prodcut contract is not setted." );
+        _;
     }
 
     function addProduct(uint productId, address logisticAccountAddress, string memory trackingNumber)
-    public {
+    public
+    productContractSetted {
         Profile pf = Profile( profileAddress );
         bool isLogistic = pf.isLogisticOrOracle(logisticAccountAddress);
 
@@ -61,6 +81,7 @@ contract Trace {
 
     function logLocation(uint productId, uint timestamp, int latitude, int longitude)
     public
+    productContractSetted
     returns(bool success) {
         ProductTrack storage t = _tracks[ productId ];
 
@@ -93,7 +114,7 @@ contract Trace {
         }
     }
 
-    function requestForLocation(uint productId) public returns (bool) {
+    function requestForLocation(uint productId) public productContractSetted returns (bool) {
         ProductTrack storage t = _tracks[ productId ];
 
         if( t.trackingNumber.length == 0 ) {
