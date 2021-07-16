@@ -8,9 +8,10 @@ import {
 const ViewAccountForm: FC<IViewAccountFormProps> = ({
   handleChange,
   handleViewAccount,
+  checked,
+  setChecked
 }) => {
   const { registeredAccounts } = useContext(ProfileContractAPIContext)
-  const [checked, setChecked] = useState<boolean>(false)
 
   return (
     <>

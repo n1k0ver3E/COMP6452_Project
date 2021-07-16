@@ -42,6 +42,8 @@ export interface IRegisterFormProps {
 export interface IViewAccountFormProps {
   handleChange: (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void
   handleViewAccount: (e: any) => Promise<void>
+  checked: boolean
+  setChecked: (checked:boolean) => void
 }
 
 export interface IParticipantDetails {

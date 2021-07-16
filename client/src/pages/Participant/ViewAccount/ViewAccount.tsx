@@ -1,5 +1,6 @@
-import React, { FC, ChangeEvent, useState } from 'react'
+import React, { FC, ChangeEvent, useState, useContext } from 'react'
 import ProfileTrackingImage from '../../../assets/database.png'
+import { ProfileContractContext } from '../../../contexts/ProfileContract'
 import ViewAccountForm from '../../../components/ViewAccountForm'
 import './viewaccount.css'
 import { IViewAccountDetails } from '../../../interfaces/contract'
@@ -10,7 +11,9 @@ const initialState: IViewAccountDetails = {
 }
 
 const ViewAccount: FC = () => {
+  const { profileContract, accounts } = useContext(ProfileContractContext)
   const [data, setData] = useState<IViewAccountDetails>(initialState)
+  const [checked, setChecked] = useState<boolean>(false)
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -22,23 +25,28 @@ const ViewAccount: FC = () => {
     setData({ ...data, [name]: value })
   }
 
-  console.log('data', data)
-
   const handleViewAccount = async (e: any) => {
     e.preventDefault()
 
     const { registeredAddress, accountAddress } = data
-    let address
+    let address: string
 
-    // if (registeredAddress) {
-    //   address = registeredAddress
-    // } else if (registeredAddress && accountAddress) {
-    //   address = accountAddress
-    // }else {
-    //
-    // }
+    if (checked) {
+      address = accountAddress
+    } else {
+      address = registeredAddress
+    }
 
-    console.log('address to send', address)
+    console.log('sending address', address)
+    console.log('typeof string', typeof address)
+
+    console.log('type of accounts zero', typeof accounts[0])
+
+    const contractResp = await profileContract?.methods
+      .getAccountInfoByAddress(address)
+      .send({ from: accounts[0], value: 0, gasPrice: 21000 })
+
+    console.log('contract response', contractResp)
   }
 
   return (
@@ -50,6 +58,8 @@ const ViewAccount: FC = () => {
               <ViewAccountForm
                 handleChange={handleChange}
                 handleViewAccount={handleViewAccount}
+                checked={checked}
+                setChecked={setChecked}
               />
             </div>
             <div className="column right has-text-centered">
