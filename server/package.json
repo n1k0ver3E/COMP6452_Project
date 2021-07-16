@@ -5,6 +5,7 @@
   "main": "app.ts",
   "scripts": {
     "server": "tsnd src/app.ts",
+    "start": "tsnd src/app.ts",
     "build": "tsc",
     "test": "jest ./tests",
     "trace-oracle": "npx ts-node src/scripts/trace-reverse-oracle.ts",

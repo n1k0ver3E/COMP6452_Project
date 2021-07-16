@@ -5,6 +5,7 @@ import ProfileContractAPIProvider from './contexts/ProfileContractAPI'
 import Landing from './pages/Landing'
 import Regulator from './pages/Regulator'
 import Participant from './pages/Participant'
+import Track from './pages/Track'
 
 const App: FC = () => {
   return (
@@ -14,6 +15,7 @@ const App: FC = () => {
           <Route exact path={'/'} component={Landing} />
           <Route path={'/regulator'} component={Regulator} />
           <Route path={'/participant'} component={Participant} />
+          <Route path={'/track'} component={Track} />
         </Switch>
       </Router>
     </div>

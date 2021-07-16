@@ -1,3 +1,4 @@
 import ParticipantRepository from './ParticipantRepository'
+import TraceRepository from './TraceRepository'
 
-export { ParticipantRepository }
+export { ParticipantRepository, TraceRepository }

@@ -22,6 +22,7 @@ module.exports = async function(deployer, networks, addresses) {
   await deployer.deploy(ProductSC, Trace.address, {from: creator});
 
   
+  
   const data = {
     regulator: regulator,
     creator: creator,
