@@ -3,17 +3,30 @@ import ProfileTrackingImage from '../../../assets/database.png'
 import { ProfileContractContext } from '../../../contexts/ProfileContract'
 import ViewAccountForm from '../../../components/ViewAccountForm'
 import './viewaccount.css'
-import { IViewAccountDetails } from '../../../interfaces/contract'
+import {
+  IViewAccountDetails,
+  IAccountStatus,
+} from '../../../interfaces/contract'
 
 const initialState: IViewAccountDetails = {
   registeredAddress: '',
   accountAddress: '',
 }
 
+const initialAccountStatus = {
+  accountId: null,
+  accountName: '',
+  accountStatus: null,
+  accountType: null,
+  updated: false,
+}
+
 const ViewAccount: FC = () => {
-  const { profileContract, accounts } = useContext(ProfileContractContext)
+  const { profileContract } = useContext(ProfileContractContext)
   const [data, setData] = useState<IViewAccountDetails>(initialState)
   const [checked, setChecked] = useState<boolean>(false)
+  const [accountStatus, setAccountStatus] =
+    useState<IAccountStatus>(initialAccountStatus)
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -29,7 +42,7 @@ const ViewAccount: FC = () => {
     e.preventDefault()
 
     const { registeredAddress, accountAddress } = data
-    let address: string
+    let address: string = accountAddress
 
     if (checked) {
       address = accountAddress
@@ -37,21 +50,25 @@ const ViewAccount: FC = () => {
       address = registeredAddress
     }
 
-    console.log('sending address', address)
-    console.log('typeof string', typeof address)
-
-    console.log('type of accounts zero', typeof accounts[0])
-
     const contractResp = await profileContract?.methods
       .getAccountInfoByAddress(address)
-      .send({ from: accounts[0], value: 0, gasPrice: 21000 })
+      .call()
 
-    console.log('contract response', contractResp)
-    // To get the retun values
-    profileContract.methods.getAccountInfoByAddress(address).call().then(console.log);
+    console.log(contractResp)
 
+    const { accountId, accountName, accountStatusValue, accountTypeValue } =
+      contractResp
 
+    setAccountStatus({
+      accountId: parseInt(accountId),
+      accountName,
+      accountStatus: parseInt(accountStatusValue),
+      accountType: parseInt(accountTypeValue),
+      updated: true,
+    })
   }
+
+  console.log(accountStatus)
 
   return (
     <section className="container has-background-light">
