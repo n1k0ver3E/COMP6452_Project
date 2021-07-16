@@ -1,11 +1,27 @@
 import React, { FC } from 'react'
 import { IAccountStatus } from '../../interfaces/contract'
+import { AccountType, AccountStatus } from '../../enums/contract'
+import { titleCase } from '../../helpers'
+import './viewaccountstatus.css'
 
 const ViewAccountStatus: FC<IAccountStatus> = ({
   accountName,
   accountStatus,
   accountType,
 }) => {
+  const classNameByColourStatus = (status: number): string => {
+    switch (status) {
+      case AccountStatus.PENDING:
+        return 'fas fa-circle status-pending'
+      case AccountStatus.REJECTED:
+        return 'fas fa-circle status-rejected'
+      case AccountStatus.APPROVED:
+        return 'fas fa-circle status-approved'
+      default:
+        return 'fas fa-circle'
+    }
+  }
+
   return (
     <div>
       {accountName !== '' ? (
@@ -18,8 +34,13 @@ const ViewAccountStatus: FC<IAccountStatus> = ({
 
           <tr>
             <td>{accountName}</td>
-            <td>{accountStatus}</td>
-            <td>{accountType}</td>
+            <td className="is-flex">
+              <span className="icon">
+                <i className={classNameByColourStatus(accountStatus!)} />{' '}
+              </span>
+              {titleCase(AccountStatus[accountStatus!])}
+            </td>
+            <td>{titleCase(AccountType[accountType!])}</td>
           </tr>
         </table>
       ) : (
