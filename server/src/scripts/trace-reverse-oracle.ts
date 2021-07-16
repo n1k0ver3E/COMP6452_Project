@@ -2,6 +2,7 @@ import Mongoose from '../config/db';
 import fs from 'fs';
 import path from 'path';
 import { Schema, model, connect } from 'mongoose';
+import {ProductTrackingModel, ProductLocationModel, ProductLocationRequestModel} from '../models/TraceModel';
 
 const Eth: any = require('web3-eth');
 
@@ -20,51 +21,7 @@ const eth = new Eth(Eth.givenProvider || 'ws://localhost:9545');
 
 const traceContract = new eth.Contract(Product['abi'], contractAddress);
 
-interface ProductTracking {
-    blochNumber: Number;
-    trackerAddress: string;
-    productId: Number;
-    tick?: Number;
-}
 
-interface ProductLocationRequest {
-    productId: Number;
-    blochNumber: Number;
-    isResponded: Boolean;
-}
-
-interface ProductLocation {
-    blochNumber: Number;
-    productId: Number;
-    timestamp: Number;
-    latitude: Number;
-    longitude: Number;
-}
-
-const productTrackingSchema = new Schema<ProductTracking>({
-    blockNumber: { type: Number, required: true },
-    trackerAddress: { type: String, required: true },
-    productId: { type: Number, required: true },
-    tick: { type: Number, required: false },
-});
-
-const productLocationRequestSchema = new Schema<ProductLocationRequest>({
-    productId: { type: Number, required: true },
-    blockNumber: { type: Number, required: true },
-    isResponded: { type: Number, required: true },
-});
-
-const productLocationSchema = new Schema<ProductLocation>({
-    blockNumber: { type: Number, required: true },
-    productId: { type: Number, required: true },
-    timestamp: { type: Number, required: true },
-    latitude: { type: Number, required: true },
-    longitude: { type: Number, required: true },
-});
-
-const ProductTrackingModel = model<ProductTracking>('ProductTracking', productTrackingSchema);
-const ProductLocationRequestModel = model<ProductLocationRequest>('ProductLocationRequest', productLocationRequestSchema);
-const ProductLocationModel = model<ProductLocation>('ProductLocation', productLocationSchema);
 
 let fromBlockProductTracking = 0;
 let fromBlockProductLocationRequest = 0;
