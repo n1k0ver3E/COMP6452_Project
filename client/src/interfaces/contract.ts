@@ -1,4 +1,4 @@
-import { ChangeEvent, Dispatch, SetStateAction } from 'react'
+import { ChangeEvent } from 'react'
 
 type userType = 'regulator' | 'participant'
 
@@ -43,7 +43,7 @@ export interface IViewAccountFormProps {
   handleChange: (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void
   handleViewAccount: (e: any) => Promise<void>
   checked: boolean
-  setChecked: (checked:boolean) => void
+  setChecked: (checked: boolean) => void
 }
 
 export interface IParticipantDetails {
@@ -63,4 +63,12 @@ export interface IProfileContractAPI {
 export interface IViewAccountDetails {
   registeredAddress: string
   accountAddress: string
+}
+
+export interface IAccountStatus {
+  accountId: number | null
+  accountName: string
+  accountStatus: number | null
+  accountType: number | null
+  updated: boolean
 }
