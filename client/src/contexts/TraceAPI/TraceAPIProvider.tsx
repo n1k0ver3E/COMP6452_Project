@@ -21,7 +21,7 @@ const TraceAPIProvider: FC = ({ children }): any => {
 
   const queryLogs = async (productId: number) => {
     try {
-      const resp = await api.get( '/v1/trace/' + productId )
+      const resp = await api.get( '/v1/track/trace/' + productId )
 
       // @ts-ignore
       setLogs( resp.data.logs );
