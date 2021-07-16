@@ -12,6 +12,8 @@ const ViewAccountForm: FC<IViewAccountFormProps> = ({
   setChecked,
   isRegisteredAddressFieldValid,
   isAccountAddressFieldValid,
+  accountAddressFieldErrorMsg,
+  isLoading,
 }) => {
   const { registeredAccounts } = useContext(ProfileContractAPIContext)
 
@@ -58,7 +60,9 @@ const ViewAccountForm: FC<IViewAccountFormProps> = ({
           <div className="field">
             <div className="control">
               <input
-                className="input"
+                className={
+                  isAccountAddressFieldValid ? 'input' : 'input is-danger'
+                }
                 type="text"
                 placeholder="Account address"
                 name="accountAddress"
@@ -66,11 +70,22 @@ const ViewAccountForm: FC<IViewAccountFormProps> = ({
                 onChange={handleChange}
               />
             </div>
+            <p
+              className={
+                isAccountAddressFieldValid ? 'help is-hidden' : 'help is-danger'
+              }
+            >
+              {accountAddressFieldErrorMsg}
+            </p>
           </div>
         ) : null}
 
         <button
-          className="button is-block is-link is-fullwidth mt-3"
+          className={
+            isLoading
+              ? 'button is-block is-link is-fullwidth mt-3 is-loading'
+              : 'button is-block is-link is-fullwidth mt-3'
+          }
           onClick={(e) => handleViewAccount(e)}
           disabled={
             !isRegisteredAddressFieldValid || !isAccountAddressFieldValid

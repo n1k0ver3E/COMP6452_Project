@@ -34,12 +34,17 @@ const ViewAccount: FC = () => {
     useState<boolean>(false)
   const [isAccountAddressFieldValid, setIsAccountAddressFieldValid] =
     useState<boolean>(false)
+  const [accountAddressFieldErrorMsg, setAccountAddressFieldErrorMsg] =
+    useState<string>('')
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   useEffect(() => {
     const watchChecked = () => {
       if (checked) {
         setIsRegisteredAddressFieldValid(false)
       }
+
+      setAccountStatus(initialAccountStatus)
     }
 
     watchChecked()
@@ -63,6 +68,12 @@ const ViewAccount: FC = () => {
     if (name === 'accountAddress') {
       if (value === '') {
         setIsAccountAddressFieldValid(false)
+        setAccountAddressFieldErrorMsg('This field is required')
+      } else if (!value.startsWith('0x') || value.length !== 42) {
+        setIsAccountAddressFieldValid(false)
+        setAccountAddressFieldErrorMsg(
+          'A valid account address starts with 0x and 42 characters long.'
+        )
       } else {
         setIsAccountAddressFieldValid(true)
         setIsRegisteredAddressFieldValid(true)
@@ -88,17 +99,20 @@ const ViewAccount: FC = () => {
     const contractResp = await profileContract?.methods
       .getAccountInfoByAddress(address)
       .call()
-
+    setIsLoading(true)
     const { accountId, accountName, accountStatusValue, accountTypeValue } =
       contractResp
 
-    setAccountStatus({
-      accountId: parseInt(accountId),
-      accountName,
-      accountStatus: parseInt(accountStatusValue),
-      accountType: parseInt(accountTypeValue),
-      updated: true,
-    })
+    setTimeout(() => {
+      setIsLoading(false)
+      setAccountStatus({
+        accountId: parseInt(accountId),
+        accountName,
+        accountStatus: parseInt(accountStatusValue),
+        accountType: parseInt(accountTypeValue),
+        updated: true,
+      })
+    }, 1000)
   }
 
   return (
@@ -114,6 +128,8 @@ const ViewAccount: FC = () => {
                 setChecked={setChecked}
                 isRegisteredAddressFieldValid={isRegisteredAddressFieldValid}
                 isAccountAddressFieldValid={isAccountAddressFieldValid}
+                accountAddressFieldErrorMsg={accountAddressFieldErrorMsg}
+                isLoading={isLoading}
               />
 
               {accountStatus.updated && (

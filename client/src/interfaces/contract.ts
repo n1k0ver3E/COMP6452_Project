@@ -46,6 +46,8 @@ export interface IViewAccountFormProps {
   setChecked: (checked: boolean) => void
   isRegisteredAddressFieldValid: boolean
   isAccountAddressFieldValid: boolean
+  accountAddressFieldErrorMsg: string
+  isLoading: boolean
 }
 
 export interface IParticipantDetails {
