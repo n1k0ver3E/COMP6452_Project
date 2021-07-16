@@ -1,4 +1,4 @@
-import React, { FC, ChangeEvent, useState, useContext } from 'react'
+import React, { FC, ChangeEvent, useState, useContext, useEffect } from 'react'
 import ProfileTrackingImage from '../../../assets/database.png'
 import { ProfileContractContext } from '../../../contexts/ProfileContract'
 import { ProfileContractAPIContext } from '../../../contexts/ProfileContractAPI'
@@ -31,9 +31,19 @@ const ViewAccount: FC = () => {
   const [accountStatus, setAccountStatus] =
     useState<IAccountStatus>(initialAccountStatus)
   const [isRegisteredAddressFieldValid, setIsRegisteredAddressFieldValid] =
-    useState<boolean>(true)
+    useState<boolean>(false)
   const [isAccountAddressFieldValid, setIsAccountAddressFieldValid] =
-    useState<boolean>(true)
+    useState<boolean>(false)
+
+  useEffect(() => {
+    const watchChecked = () => {
+      if (checked) {
+        setIsRegisteredAddressFieldValid(false)
+      }
+    }
+
+    watchChecked()
+  }, [checked])
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -41,14 +51,23 @@ const ViewAccount: FC = () => {
     const { name, value } = e.target
 
     // Custom validation starts here
-    if (name === 'registeredAddress' && !checked) {
-      console.log('value', value)
+    if (name === 'registeredAddress') {
+      if (value === 'DEFAULT' || value === '') {
+        setIsRegisteredAddressFieldValid(false)
+      } else {
+        setIsRegisteredAddressFieldValid(true)
+        setIsAccountAddressFieldValid(true)
+      }
     }
 
     if (name === 'accountAddress') {
-      console.log('value', value)
+      if (value === '') {
+        setIsAccountAddressFieldValid(false)
+      } else {
+        setIsAccountAddressFieldValid(true)
+        setIsRegisteredAddressFieldValid(true)
+      }
     }
-
     // Custom validation ends here
 
     setData({ ...data, [name]: value })
@@ -93,6 +112,8 @@ const ViewAccount: FC = () => {
                 handleViewAccount={handleViewAccount}
                 checked={checked}
                 setChecked={setChecked}
+                isRegisteredAddressFieldValid={isRegisteredAddressFieldValid}
+                isAccountAddressFieldValid={isAccountAddressFieldValid}
               />
 
               {accountStatus.updated && (

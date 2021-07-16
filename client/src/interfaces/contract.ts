@@ -44,6 +44,8 @@ export interface IViewAccountFormProps {
   handleViewAccount: (e: any) => Promise<void>
   checked: boolean
   setChecked: (checked: boolean) => void
+  isRegisteredAddressFieldValid: boolean
+  isAccountAddressFieldValid: boolean
 }
 
 export interface IParticipantDetails {

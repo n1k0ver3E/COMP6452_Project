@@ -9,7 +9,9 @@ const ViewAccountForm: FC<IViewAccountFormProps> = ({
   handleChange,
   handleViewAccount,
   checked,
-  setChecked
+  setChecked,
+  isRegisteredAddressFieldValid,
+  isAccountAddressFieldValid,
 }) => {
   const { registeredAccounts } = useContext(ProfileContractAPIContext)
 
@@ -70,6 +72,9 @@ const ViewAccountForm: FC<IViewAccountFormProps> = ({
         <button
           className="button is-block is-link is-fullwidth mt-3"
           onClick={(e) => handleViewAccount(e)}
+          disabled={
+            !isRegisteredAddressFieldValid || !isAccountAddressFieldValid
+          }
         >
           View Account
         </button>
