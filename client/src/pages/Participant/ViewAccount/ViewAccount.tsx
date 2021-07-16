@@ -1,6 +1,7 @@
 import React, { FC, ChangeEvent, useState, useContext } from 'react'
 import ProfileTrackingImage from '../../../assets/database.png'
 import { ProfileContractContext } from '../../../contexts/ProfileContract'
+import { ProfileContractAPIContext } from '../../../contexts/ProfileContractAPI'
 import ViewAccountForm from '../../../components/ViewAccountForm'
 import ViewAccountStatus from '../../../components/ViewAccountStatus'
 import './viewaccount.css'
@@ -24,17 +25,31 @@ const initialAccountStatus = {
 
 const ViewAccount: FC = () => {
   const { profileContract } = useContext(ProfileContractContext)
+  const { registeredAccounts } = useContext(ProfileContractAPIContext)
   const [data, setData] = useState<IViewAccountDetails>(initialState)
   const [checked, setChecked] = useState<boolean>(false)
   const [accountStatus, setAccountStatus] =
     useState<IAccountStatus>(initialAccountStatus)
+  const [isRegisteredAddressFieldValid, setIsRegisteredAddressFieldValid] =
+    useState<boolean>(true)
+  const [isAccountAddressFieldValid, setIsAccountAddressFieldValid] =
+    useState<boolean>(true)
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target
 
-    console.log(name, value)
+    // Custom validation starts here
+    if (name === 'registeredAddress' && !checked) {
+      console.log('value', value)
+    }
+
+    if (name === 'accountAddress') {
+      console.log('value', value)
+    }
+
+    // Custom validation ends here
 
     setData({ ...data, [name]: value })
   }
@@ -45,7 +60,7 @@ const ViewAccount: FC = () => {
     const { registeredAddress, accountAddress } = data
     let address: string
 
-    if (checked) {
+    if (!registeredAccounts.length || checked) {
       address = accountAddress
     } else {
       address = registeredAddress
@@ -54,8 +69,6 @@ const ViewAccount: FC = () => {
     const contractResp = await profileContract?.methods
       .getAccountInfoByAddress(address)
       .call()
-
-    console.log(contractResp)
 
     const { accountId, accountName, accountStatusValue, accountTypeValue } =
       contractResp

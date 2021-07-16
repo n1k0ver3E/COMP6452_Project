@@ -26,22 +26,26 @@ const ViewAccountStatus: FC<IAccountStatus> = ({
     <div>
       {accountName !== '' ? (
         <table className="table is-striped is-fullwidth">
-          <tr className="th">
-            <th>Name</th>
-            <th>Status</th>
-            <th>Type</th>
-          </tr>
+          <thead>
+            <tr className="th">
+              <th>Name</th>
+              <th>Status</th>
+              <th>Type</th>
+            </tr>
+          </thead>
 
-          <tr>
-            <td>{accountName}</td>
-            <td className="is-flex">
-              <span className="icon">
-                <i className={classNameByColourStatus(accountStatus!)} />{' '}
-              </span>
-              {titleCase(AccountStatus[accountStatus!])}
-            </td>
-            <td>{titleCase(AccountType[accountType!])}</td>
-          </tr>
+          <tbody>
+            <tr>
+              <td>{accountName}</td>
+              <td className="is-flex">
+                <span className="icon">
+                  <i className={classNameByColourStatus(accountStatus!)} />{' '}
+                </span>
+                {titleCase(AccountStatus[accountStatus!])}
+              </td>
+              <td>{titleCase(AccountType[accountType!])}</td>
+            </tr>
+          </tbody>
         </table>
       ) : (
         <div className="notification is-warning">
