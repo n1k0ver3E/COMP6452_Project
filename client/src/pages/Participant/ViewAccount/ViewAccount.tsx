@@ -2,6 +2,7 @@ import React, { FC, ChangeEvent, useState, useContext } from 'react'
 import ProfileTrackingImage from '../../../assets/database.png'
 import { ProfileContractContext } from '../../../contexts/ProfileContract'
 import ViewAccountForm from '../../../components/ViewAccountForm'
+import ViewAccountStatus from '../../../components/ViewAccountStatus'
 import './viewaccount.css'
 import {
   IViewAccountDetails,
@@ -42,7 +43,7 @@ const ViewAccount: FC = () => {
     e.preventDefault()
 
     const { registeredAddress, accountAddress } = data
-    let address: string = accountAddress
+    let address: string
 
     if (checked) {
       address = accountAddress
@@ -68,8 +69,6 @@ const ViewAccount: FC = () => {
     })
   }
 
-  console.log(accountStatus)
-
   return (
     <section className="container has-background-light">
       <div className="columns is-multiline">
@@ -82,7 +81,18 @@ const ViewAccount: FC = () => {
                 checked={checked}
                 setChecked={setChecked}
               />
+
+              {accountStatus.updated && (
+                <div className="mt-5">
+                  <ViewAccountStatus
+                    accountName={accountStatus.accountName}
+                    accountStatus={accountStatus.accountStatus}
+                    accountType={accountStatus.accountType}
+                  />
+                </div>
+              )}
             </div>
+
             <div className="column right has-text-centered">
               <img
                 src={ProfileTrackingImage}

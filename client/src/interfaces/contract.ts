@@ -66,9 +66,9 @@ export interface IViewAccountDetails {
 }
 
 export interface IAccountStatus {
-  accountId: number | null
+  accountId?: number | null
   accountName: string
   accountStatus: number | null
   accountType: number | null
-  updated: boolean
+  updated?: boolean
 }
