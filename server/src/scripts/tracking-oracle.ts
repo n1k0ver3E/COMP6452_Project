@@ -68,7 +68,7 @@ Mongoose().initialiseMongoConnection().then(function(mongo) {
             });
         }).then(() => {
             console.log("timeout")
-            setTimeout(getLogs, 10000);
+            setTimeout(getLogs, 1000);
         });
 
 

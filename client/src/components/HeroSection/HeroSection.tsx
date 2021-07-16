@@ -16,6 +16,10 @@ const HeroSection: FC = () => {
     history.push('/participant')
   }
 
+  const goToTrace = () => {
+    history.push('/track');
+  }
+
   return (
     <section className="hero is-fullheight wrapper">
       <div className="hero-body">
@@ -49,6 +53,12 @@ const HeroSection: FC = () => {
                   onClick={goToParticipant}
                 >
                   Participant
+                </a>
+                <a
+                  className="button is-link is-outlined"
+                  onClick={goToTrace}
+                >
+                  Trace
                 </a>
               </div>
             </div>

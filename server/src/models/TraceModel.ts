@@ -1,4 +1,5 @@
 import { Model, model, Schema } from 'mongoose'
+import { IProductLocation } from "../interfaces/trace";
 
 interface ProductTracking {
     blochNumber: number;
@@ -11,14 +12,6 @@ interface ProductLocationRequest {
     productId: number;
     blochNumber: number;
     isResponded: Boolean;
-}
-
-interface ProductLocation {
-    blochNumber: number;
-    productId: number;
-    timestamp: number;
-    latitude: number;
-    longitude: number;
 }
 
 const productTrackingSchema = new Schema<ProductTracking>({
@@ -34,7 +27,7 @@ const productLocationRequestSchema = new Schema<ProductLocationRequest>({
     isResponded: { type: Number, required: true },
 });
 
-const productLocationSchema = new Schema<ProductLocation>({
+const productLocationSchema = new Schema<IProductLocation>({
     blockNumber: { type: Number, required: true },
     productId: { type: Number, required: true },
     timestamp: { type: Number, required: true },
@@ -44,7 +37,7 @@ const productLocationSchema = new Schema<ProductLocation>({
 
 const ProductTrackingModel = model<ProductTracking>('ProductTracking', productTrackingSchema);
 const ProductLocationRequestModel = model<ProductLocationRequest>('ProductLocationRequest', productLocationRequestSchema);
-const ProductLocationModel = model<ProductLocation>('ProductLocation', productLocationSchema);
+const ProductLocationModel = model<IProductLocation>('ProductLocation', productLocationSchema);
 
 export {
     ProductTrackingModel,
