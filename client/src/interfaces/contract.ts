@@ -1,4 +1,4 @@
-import { ChangeEvent } from 'react'
+import { ChangeEvent, Dispatch, SetStateAction } from 'react'
 
 type userType = 'regulator' | 'participant'
 
@@ -39,6 +39,13 @@ export interface IRegisterFormProps {
   accountType: number
 }
 
+export interface IViewAccountFormProps {
+  handleChange: (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void
+  handleViewAccount: (e: any) => Promise<void>
+  checked: boolean
+  setChecked: (checked:boolean) => void
+}
+
 export interface IParticipantDetails {
   accountAddress: string
   accountId: number
@@ -51,4 +58,9 @@ export interface IProfileContractAPI {
   registerParticipant: (participantDetails: IParticipantDetails) => void
   registeredAccounts: IParticipantDetails[]
   registrationError: boolean
+}
+
+export interface IViewAccountDetails {
+  registeredAddress: string
+  accountAddress: string
 }

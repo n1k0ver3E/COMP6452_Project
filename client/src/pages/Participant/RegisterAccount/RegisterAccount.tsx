@@ -8,6 +8,7 @@ import {
 } from '../../../interfaces/contract'
 import RegisterForm from '../../../components/RegisterForm'
 import RegistrationSuccess from '../../../components/RegistrationSuccess'
+import './registeraccount.css'
 
 const initialState: IRegisterAccountDetails = {
   accountAddress: '',
@@ -78,8 +79,6 @@ const RegisterAccount: FC = () => {
         .send({ from: accounts[0], value: 0, gasPrice: 21000 })
 
       if (registerAccountResp) {
-        console.log('registered Account', registerAccountResp)
-
         const {
           accountAddress,
           accountId,
@@ -156,7 +155,11 @@ const RegisterAccount: FC = () => {
               )}
             </div>
             <div className="column right has-text-centered">
-              <img src={RegistrationImage} alt="registration infographics" />
+              <img
+                src={RegistrationImage}
+                alt="registration infographics"
+                className="side-image"
+              />
             </div>
           </div>
         </div>
