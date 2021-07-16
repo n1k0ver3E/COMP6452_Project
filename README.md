@@ -39,5 +39,15 @@
     $ npm run server
     ```
 
+3. Open a new terminal and run the reverse oracle for trace
 
+    ```
+    $ npm run trace-oracle
+    ```
+
+4. Open another terminal and run the oracle for trace
+
+    ```
+    $ npm run oracle
+    ```
 
