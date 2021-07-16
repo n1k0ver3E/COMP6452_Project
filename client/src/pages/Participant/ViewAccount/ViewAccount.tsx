@@ -47,6 +47,10 @@ const ViewAccount: FC = () => {
       .send({ from: accounts[0], value: 0, gasPrice: 21000 })
 
     console.log('contract response', contractResp)
+    // To get the retun values
+    profileContract.methods.getAccountInfoByAddress(address).call().then(console.log);
+
+
   }
 
   return (
