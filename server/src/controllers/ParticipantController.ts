@@ -42,7 +42,19 @@ const getParticipantsByStatus = catchAsync(
   }
 )
 
+const getAllParticipants = catchAsync(
+  async (req: Request, res: Response, _next: NextFunction) => {
+    const participants = await ParticipantService.getAllParticipants()
+
+    return res.status(httpStatus.OK).json({
+      success: true,
+      participants,
+    })
+  }
+)
+
 export default {
   register,
   getParticipantsByStatus,
+  getAllParticipants,
 }

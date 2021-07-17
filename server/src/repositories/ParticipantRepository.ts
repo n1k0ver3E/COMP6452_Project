@@ -24,4 +24,13 @@ const getParticipantsByStatus = (
   }).select('-__v')
 }
 
-export default { register, isAccountAlreadyRegistered, getParticipantsByStatus }
+const getAllParticipants = () => {
+  return ParticipantModel.find({}).select('-__v')
+}
+
+export default {
+  register,
+  isAccountAlreadyRegistered,
+  getParticipantsByStatus,
+  getAllParticipants,
+}
