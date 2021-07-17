@@ -1,4 +1,5 @@
 import { ChangeEvent } from 'react'
+import { Column } from 'react-table'
 
 type userType = 'regulator' | 'participant'
 
@@ -78,4 +79,9 @@ export interface IAccountStatus {
   accountStatus: number | null
   accountType: number | null
   updated?: boolean
+}
+
+export interface IAccountsTableProps {
+  columns: any
+  data: IParticipantDetails[]
 }
