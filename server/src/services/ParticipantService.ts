@@ -28,7 +28,14 @@ const isAccountAlreadyRegistered = async (
   return account !== null
 }
 
+const getParticipantsByStatus = (
+  accountStatus: number | string
+): Promise<IParticipant[]> => {
+  return ParticipantRepository.getParticipantsByStatus(accountStatus)
+}
+
 export default {
   register,
   isAccountAlreadyRegistered,
+  getParticipantsByStatus,
 }

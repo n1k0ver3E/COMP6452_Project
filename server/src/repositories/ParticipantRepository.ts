@@ -15,4 +15,13 @@ const isAccountAlreadyRegistered = async (
   return entry
 }
 
-export default { register, isAccountAlreadyRegistered }
+const getParticipantsByStatus = (
+  accountStatus: number | string
+): Promise<IParticipant[]> => {
+  // @ts-ignore
+  return ParticipantModel.find({
+    accountStatus: accountStatus,
+  }).exec()
+}
+
+export default { register, isAccountAlreadyRegistered, getParticipantsByStatus }
