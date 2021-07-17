@@ -33,7 +33,7 @@ const ViewAccount: FC = () => {
   const [isRegisteredAddressFieldValid, setIsRegisteredAddressFieldValid] =
     useState<boolean>(false)
   const [isAccountAddressFieldValid, setIsAccountAddressFieldValid] =
-    useState<boolean>(false)
+    useState<boolean>(true)
   const [accountAddressFieldErrorMsg, setAccountAddressFieldErrorMsg] =
     useState<string>('')
   const [isLoading, setIsLoading] = useState<boolean>(false)
