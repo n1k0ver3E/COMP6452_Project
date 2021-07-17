@@ -59,9 +59,29 @@ const getAllParticipants = async () => {
   return normaliseResponse(participants)
 }
 
+const updateAccountStatusByAddress = async (
+  accountAddress: string,
+  updatedStatus: number
+): Promise<ITransformedParticipant> => {
+  const updatedParticipant =
+    await ParticipantRepository.updateAccountStatusByAddress(
+      accountAddress,
+      updatedStatus
+    )
+
+  return {
+    accountAddress: updatedParticipant.accountAddress,
+    accountId: updatedParticipant.accountId,
+    accountName: updatedParticipant.accountName,
+    accountStatus: updatedParticipant.accountStatus,
+    accountType: updatedParticipant.accountType,
+  }
+}
+
 export default {
   register,
   isAccountAlreadyRegistered,
   getParticipantsByStatus,
   getAllParticipants,
+  updateAccountStatusByAddress,
 }

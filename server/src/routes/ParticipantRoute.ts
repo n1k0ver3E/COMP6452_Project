@@ -7,4 +7,8 @@ router.route('/').get(ParticipantController.getAllParticipants)
 router.route('/status').get(ParticipantController.getParticipantsByStatus)
 router.route('/register').post(ParticipantController.register)
 
+router
+  .route('/:address')
+  .patch(ParticipantController.updateAccountStatusByAddress)
+
 export default router

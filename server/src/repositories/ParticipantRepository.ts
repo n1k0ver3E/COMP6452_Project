@@ -21,11 +21,31 @@ const getParticipantsByStatus = (
   // @ts-ignore
   return ParticipantModel.find({
     accountStatus: { $in: accountStatuses },
-  }).select('-__v')
+  }).exec()
 }
 
 const getAllParticipants = () => {
-  return ParticipantModel.find({}).select('-__v')
+  return ParticipantModel.find({}).exec()
+}
+
+const updateAccountStatusByAddress = async (
+  accountAddress: string,
+  updatedStatus: number
+): Promise<IParticipant> => {
+  // @ts-ignore
+  return ParticipantModel.findOneAndUpdate(
+    {
+      accountAddress: accountAddress,
+    },
+    {
+      $set: {
+        accountStatus: updatedStatus,
+      },
+    },
+    {
+      new: true,
+    }
+  )
 }
 
 export default {
@@ -33,4 +53,5 @@ export default {
   isAccountAlreadyRegistered,
   getParticipantsByStatus,
   getAllParticipants,
+  updateAccountStatusByAddress,
 }
