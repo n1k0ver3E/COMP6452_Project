@@ -16,11 +16,11 @@ const isAccountAlreadyRegistered = async (
 }
 
 const getParticipantsByStatus = (
-  accountStatus: number | string
+  accountStatuses: string[] | string
 ): Promise<IParticipant[]> => {
   // @ts-ignore
   return ParticipantModel.find({
-    accountStatus: accountStatus,
+    accountStatus: { $in: accountStatuses },
   }).exec()
 }
 

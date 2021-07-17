@@ -28,10 +28,11 @@ const register = catchAsync(
 
 const getParticipantsByStatus = catchAsync(
   async (req: Request, res: Response, _next: NextFunction) => {
-    const accountStatus: string = req.query.accountStatus as string
+    const accountStatuses: string[] | string =
+      (Object.values(req.query)[0] as string[] | string) || []
 
     const participants = await ParticipantService.getParticipantsByStatus(
-      accountStatus
+      accountStatuses
     )
 
     return res.status(httpStatus.OK).json({
