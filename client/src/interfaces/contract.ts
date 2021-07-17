@@ -62,6 +62,9 @@ export interface IProfileContractAPI {
   registerParticipant: (participantDetails: IParticipantDetails) => void
   registeredAccounts: IParticipantDetails[]
   registrationError: boolean
+  pendingAccounts: IParticipantDetails[]
+  approvedAccounts: IParticipantDetails[]
+  rejectedAccounts: IParticipantDetails[]
 }
 
 export interface IViewAccountDetails {
