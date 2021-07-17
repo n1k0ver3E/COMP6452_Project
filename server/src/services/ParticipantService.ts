@@ -28,10 +28,25 @@ const isAccountAlreadyRegistered = async (
   return account !== null
 }
 
-const getParticipantsByStatus = (
+const getParticipantsByStatus = async (
   accountStatus: string[] | string
-): Promise<IParticipant[]> => {
-  return ParticipantRepository.getParticipantsByStatus(accountStatus)
+): Promise<ITransformedParticipant[]> => {
+  const results = await ParticipantRepository.getParticipantsByStatus(
+    accountStatus
+  )
+
+  const participants = results.map((item: IParticipant) => {
+    return {
+      id: item._id,
+      accountAddress: item.accountAddress,
+      accountId: item.accountId,
+      accountName: item.accountName,
+      accountStatus: item.accountStatus,
+      accountType: item.accountType,
+    }
+  })
+
+  return participants
 }
 
 export default {

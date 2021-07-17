@@ -21,7 +21,7 @@ const getParticipantsByStatus = (
   // @ts-ignore
   return ParticipantModel.find({
     accountStatus: { $in: accountStatuses },
-  }).exec()
+  }).select('-__v')
 }
 
 export default { register, isAccountAlreadyRegistered, getParticipantsByStatus }
