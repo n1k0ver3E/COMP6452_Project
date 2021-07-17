@@ -3,7 +3,7 @@ import { Switch, Route, useRouteMatch } from 'react-router-dom'
 import HomeNavbar from '../../components/HomeNavbar'
 import SideNavBar from '../../components/SideNavBar'
 import Dashboard from './Dashboard'
-import ApproveDocument from './ApproveDocument'
+import ApproveAccount from './ApproveAccount'
 import VerifyDocument from './VerifyDocument'
 
 const Regulator: FC = () => {
@@ -24,7 +24,7 @@ const Regulator: FC = () => {
               <Route
                 exact
                 path={`${path}/approve-document`}
-                component={ApproveDocument}
+                component={ApproveAccount}
               />
               <Route
                 exact
