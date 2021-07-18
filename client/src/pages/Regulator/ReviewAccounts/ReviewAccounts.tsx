@@ -75,7 +75,7 @@ const ReviewAccounts: FC = () => {
 
           setTimeout(() => {
             switchTab(originalAccountStatus)
-          }, 100)
+          }, 150)
           switchTab(parseInt(updatedAccountStatus))
         }
 
@@ -165,19 +165,37 @@ const ReviewAccounts: FC = () => {
       <section className="container">
         {pendingAccountsActiveClass && (
           <div className="column is-12">
-            <AccountsTable columns={COLUMNS} data={pendingAccounts} />
+            {!pendingAccounts.length ? (
+              <div className="notification is-warning">
+                No accounts in pending.
+              </div>
+            ) : (
+              <AccountsTable columns={COLUMNS} data={pendingAccounts} />
+            )}
           </div>
         )}
 
         {rejectedAccountsActiveClass && (
           <div className="column is-12">
-            <AccountsTable columns={COLUMNS} data={rejectedAccounts} />
+            {!rejectedAccounts.length ? (
+              <div className="notification is-warning">
+                No accounts in rejected.
+              </div>
+            ) : (
+              <AccountsTable columns={COLUMNS} data={rejectedAccounts} />
+            )}{' '}
           </div>
         )}
 
         {approvedAccountsActiveClass && (
           <div className="column is-12">
-            <AccountsTable columns={COLUMNS} data={approvedAccounts} />
+            {!approvedAccounts.length ? (
+              <div className="notification is-warning">
+                No accounts in approved.
+              </div>
+            ) : (
+              <AccountsTable columns={COLUMNS} data={approvedAccounts} />
+            )}{' '}
           </div>
         )}
       </section>
