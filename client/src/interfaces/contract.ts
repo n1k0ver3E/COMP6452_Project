@@ -62,6 +62,11 @@ export interface IProfileContractAPI {
   registerParticipant: (participantDetails: IParticipantDetails) => void
   registeredAccounts: IParticipantDetails[]
   registrationError: boolean
+  pendingAccounts: IParticipantDetails[]
+  approvedAccounts: IParticipantDetails[]
+  rejectedAccounts: IParticipantDetails[]
+  updateAccountStatus: (address: string, updatedAccountStatus: number) => void
+  getAllParticipants: () => void
 }
 
 export interface IViewAccountDetails {
@@ -75,4 +80,9 @@ export interface IAccountStatus {
   accountStatus: number | null
   accountType: number | null
   updated?: boolean
+}
+
+export interface IAccountsTableProps {
+  columns: any
+  data: IParticipantDetails[]
 }
