@@ -114,3 +114,5 @@ dist
 .pnp.*
 
 .vscode
+
+secrets.json

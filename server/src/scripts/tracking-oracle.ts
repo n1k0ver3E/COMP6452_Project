@@ -2,7 +2,8 @@ import Mongoose from '../config/db';
 import fs from 'fs';
 import path from 'path';
 import { Schema, model, connect } from 'mongoose';
-import {ProductLocationRequestModel, ProductTrackingModel} from '../models/TraceModel';
+import { ProductLocationRequestModel, ProductTrackingModel } from '../models/TraceModel';
+import secrets from "../../secrets.json";
 var HDWalletProvider = require("@truffle/hdwallet-provider");
 const Eth: any = require('web3-eth');
 
@@ -14,10 +15,13 @@ console.log("Trace contract address is:", contractAddress);
 
 
 // Please setup the private keys. The addresses are 5 and 7.
-const provider = new HDWalletProvider([
-    "b8abd31cde151ed426c119d02f0b3c79851bbfda64e43daaafbb1c8006e8cb52",
-    "09ae8c83fb214d9647e904d2f01508bd5296ec913b1b70a525818a6005d76d8c"
-], "http://localhost:9545", 0, 2);
+const provider = new HDWalletProvider({
+    mnemonic: {
+        phrase: secrets.mnemonic
+    },
+    providerOrUrl: "http://localhost:7545"
+});
+
 
 const eth = new Eth(provider);
 
