@@ -19,13 +19,60 @@ const register = catchAsync(
 
     const participantDetails = await ParticipantService.register(req.body)
 
-    return res.status(httpStatus.OK).json({
+    return res.status(httpStatus.CREATED).json({
       success: true,
       participantDetails,
     })
   }
 )
 
+const getParticipantsByStatus = catchAsync(
+  async (req: Request, res: Response, _next: NextFunction) => {
+    const accountStatuses: string[] | string =
+      (Object.values(req.query)[0] as string[] | string) || []
+
+    const participants = await ParticipantService.getParticipantsByStatus(
+      accountStatuses
+    )
+
+    return res.status(httpStatus.OK).json({
+      success: true,
+      participants,
+    })
+  }
+)
+
+const getAllParticipants = catchAsync(
+  async (req: Request, res: Response, _next: NextFunction) => {
+    const participants = await ParticipantService.getAllParticipants()
+
+    return res.status(httpStatus.OK).json({
+      success: true,
+      participants,
+    })
+  }
+)
+
+const updateAccountStatusByAddress = catchAsync(
+  async (req: Request, res: Response, _next: NextFunction) => {
+    const { address: accountAddress } = req.params
+    const { accountStatus: updatedStatus } = req.body
+
+    const participants = await ParticipantService.updateAccountStatusByAddress(
+      accountAddress,
+      parseInt(updatedStatus)
+    )
+
+    return res.status(httpStatus.OK).json({
+      success: true,
+      participants,
+    })
+  }
+)
+
 export default {
   register,
+  getParticipantsByStatus,
+  getAllParticipants,
+  updateAccountStatusByAddress,
 }

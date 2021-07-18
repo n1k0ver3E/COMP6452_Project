@@ -2,3 +2,4 @@ build/
 .vscode/
 contracts/artifacts/
 addresses.json
+yarn.lock

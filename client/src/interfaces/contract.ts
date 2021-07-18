@@ -39,6 +39,17 @@ export interface IRegisterFormProps {
   accountType: number
 }
 
+export interface IViewAccountFormProps {
+  handleChange: (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void
+  handleViewAccount: (e: any) => Promise<void>
+  checked: boolean
+  setChecked: (checked: boolean) => void
+  isRegisteredAddressFieldValid: boolean
+  isAccountAddressFieldValid: boolean
+  accountAddressFieldErrorMsg: string
+  isLoading: boolean
+}
+
 export interface IParticipantDetails {
   accountAddress: string
   accountId: number
@@ -51,4 +62,27 @@ export interface IProfileContractAPI {
   registerParticipant: (participantDetails: IParticipantDetails) => void
   registeredAccounts: IParticipantDetails[]
   registrationError: boolean
+  pendingAccounts: IParticipantDetails[]
+  approvedAccounts: IParticipantDetails[]
+  rejectedAccounts: IParticipantDetails[]
+  updateAccountStatus: (address: string, updatedAccountStatus: number) => void
+  getAllParticipants: () => void
+}
+
+export interface IViewAccountDetails {
+  registeredAddress: string
+  accountAddress: string
+}
+
+export interface IAccountStatus {
+  accountId?: number | null
+  accountName: string
+  accountStatus: number | null
+  accountType: number | null
+  updated?: boolean
+}
+
+export interface IAccountsTableProps {
+  columns: any
+  data: IParticipantDetails[]
 }
