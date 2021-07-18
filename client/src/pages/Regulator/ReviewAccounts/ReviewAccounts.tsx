@@ -72,18 +72,22 @@ const ReviewAccounts: FC = () => {
         ) => {
           const { value: updatedAccountStatus } = e.target
 
-          // SEND AN API
           try {
             const updateStatus = await profileContract?.methods
               .approveAccount(accountAddress, updatedAccountStatus)
               .send({ from: accounts[0] })
 
-            updateAccountStatus(accountAddress, parseInt(updatedAccountStatus))
+            if (updateStatus) {
+              updateAccountStatus(
+                accountAddress,
+                parseInt(updatedAccountStatus)
+              )
 
-            setTimeout(() => {
-              switchTab(originalAccountStatus)
-            }, 150)
-            switchTab(parseInt(updatedAccountStatus))
+              setTimeout(() => {
+                switchTab(originalAccountStatus)
+              }, 150)
+              switchTab(parseInt(updatedAccountStatus))
+            }
           } catch (error) {
             console.log(error.message)
           }
