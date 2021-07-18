@@ -1,10 +1,8 @@
 import React, { FC, useContext, useState } from 'react'
 import { ProfileContractAPIContext } from '../../../contexts/ProfileContractAPI'
 import AccountsTable from '../../../components/AccountsTable'
-import UserAccountsIcon from '../../../assets/user-accounts.png'
 import { AccountType, AccountStatus } from '../../../enums/contract'
 import { titleCase } from '../../../helpers'
-import './reviewaccounts.css'
 
 const ReviewAccounts: FC = () => {
   const { pendingAccounts, approvedAccounts, rejectedAccounts } = useContext(
