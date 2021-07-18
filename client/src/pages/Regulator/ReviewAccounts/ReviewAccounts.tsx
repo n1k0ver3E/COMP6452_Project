@@ -85,7 +85,7 @@ const ReviewAccounts: FC = () => {
 
               setTimeout(() => {
                 switchTab(originalAccountStatus)
-              }, 150)
+              }, 200)
               switchTab(parseInt(updatedAccountStatus))
             }
           } catch (error) {
