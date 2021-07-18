@@ -5,9 +5,12 @@ import { AccountType, AccountStatus } from '../../../enums/contract'
 import { titleCase } from '../../../helpers'
 
 const ReviewAccounts: FC = () => {
-  const { pendingAccounts, approvedAccounts, rejectedAccounts } = useContext(
-    ProfileContractAPIContext
-  )
+  const {
+    pendingAccounts,
+    approvedAccounts,
+    rejectedAccounts,
+    updateAccountStatus,
+  } = useContext(ProfileContractAPIContext)
   const [pendingAccountsActiveClass, setPendingAccountsActiveClass] =
     useState<string>('is-active')
   const [rejectedAccountsActiveClass, setRejectedAccountsActiveClass] =
@@ -37,10 +40,6 @@ const ReviewAccounts: FC = () => {
     }
   }
 
-  // console.log('pendingAccounts', pendingAccounts)
-  // console.log('approvedAccounts', approvedAccounts)
-  // console.log('rejectedAccounts', rejectedAccounts)
-
   const COLUMNS = [
     {
       Header: 'Account Name',
@@ -63,20 +62,21 @@ const ReviewAccounts: FC = () => {
       Cell: ({
         value,
         row: {
-          original: { accountAddress },
+          original: { accountAddress, accountStatus: originalAccountStatus },
         },
       }: any) => {
-        // console.log('value', value)
-        // console.log('row', row)
-        // console.log('value', column)
-
         const handleChange = (
           e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
         ) => {
-          const { value } = e.target
+          const { value: updatedAccountStatus } = e.target
 
-          console.log('what is value', value)
-          console.log('what is account address', accountAddress)
+          // SEND AN API
+          updateAccountStatus(accountAddress, parseInt(updatedAccountStatus))
+
+          setTimeout(() => {
+            switchTab(originalAccountStatus)
+          }, 100)
+          switchTab(parseInt(updatedAccountStatus))
         }
 
         return (

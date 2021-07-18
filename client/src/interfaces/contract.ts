@@ -1,5 +1,4 @@
 import { ChangeEvent } from 'react'
-import { Column } from 'react-table'
 
 type userType = 'regulator' | 'participant'
 
@@ -66,6 +65,7 @@ export interface IProfileContractAPI {
   pendingAccounts: IParticipantDetails[]
   approvedAccounts: IParticipantDetails[]
   rejectedAccounts: IParticipantDetails[]
+  updateAccountStatus: (address: string, updatedAccountStatus: number) => void
 }
 
 export interface IViewAccountDetails {

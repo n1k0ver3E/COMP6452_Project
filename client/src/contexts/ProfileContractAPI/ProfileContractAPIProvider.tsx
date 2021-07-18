@@ -13,6 +13,7 @@ const contextDefaultValues: IProfileContractAPI = {
   pendingAccounts: [],
   approvedAccounts: [],
   rejectedAccounts: [],
+  updateAccountStatus: () => {},
 }
 
 export const ProfileContractAPIContext =
@@ -35,9 +36,7 @@ const ProfileContractAPIProvider: FC = ({ children }): any => {
   >([])
 
   useEffect(() => {
-    getParticipantsByStatus(AccountStatus.PENDING)
-    getParticipantsByStatus(AccountStatus.APPROVED)
-    getParticipantsByStatus(AccountStatus.REJECTED)
+    getAllParticipants()
   }, [])
 
   const registerParticipant = async (
@@ -55,6 +54,12 @@ const ProfileContractAPIProvider: FC = ({ children }): any => {
     } catch (err) {
       setRegistrationError(true)
     }
+  }
+
+  const getAllParticipants = async () => {
+    await getParticipantsByStatus(AccountStatus.PENDING)
+    await getParticipantsByStatus(AccountStatus.APPROVED)
+    await getParticipantsByStatus(AccountStatus.REJECTED)
   }
 
   const getParticipantsByStatus = async (accountStatus: number) => {
@@ -81,6 +86,38 @@ const ProfileContractAPIProvider: FC = ({ children }): any => {
     }
   }
 
+  const updateAccountStatus = async (
+    address: string,
+    updatedAccountStatus: number
+  ) => {
+    try {
+      console.log('address', address)
+      console.log('updatedAcountStatus', updatedAccountStatus)
+
+      const resp = await api.patch(`/v1/participants/${address}`, {
+        accountStatus: updatedAccountStatus,
+      })
+
+      switch (updatedAccountStatus) {
+        case AccountStatus.PENDING:
+          setPendingAccounts(resp.data.participants)
+          break
+        case AccountStatus.APPROVED:
+          setApprovedAccounts(resp.data.participants)
+          break
+        case AccountStatus.REJECTED:
+          setRejectedAccounts(resp.data.participants)
+          break
+        default:
+          break
+      }
+
+      getAllParticipants()
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
   return (
     <ProfileContractAPIContext.Provider
       value={{
@@ -90,6 +127,7 @@ const ProfileContractAPIProvider: FC = ({ children }): any => {
         pendingAccounts,
         approvedAccounts,
         rejectedAccounts,
+        updateAccountStatus,
       }}
     >
       {children}
