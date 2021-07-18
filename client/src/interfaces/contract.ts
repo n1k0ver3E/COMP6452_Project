@@ -66,6 +66,7 @@ export interface IProfileContractAPI {
   approvedAccounts: IParticipantDetails[]
   rejectedAccounts: IParticipantDetails[]
   updateAccountStatus: (address: string, updatedAccountStatus: number) => void
+  getAllParticipants: () => void
 }
 
 export interface IViewAccountDetails {

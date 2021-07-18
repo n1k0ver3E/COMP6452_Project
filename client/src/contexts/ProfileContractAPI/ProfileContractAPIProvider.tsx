@@ -14,6 +14,7 @@ const contextDefaultValues: IProfileContractAPI = {
   approvedAccounts: [],
   rejectedAccounts: [],
   updateAccountStatus: () => {},
+  getAllParticipants: () => {},
 }
 
 export const ProfileContractAPIContext =
@@ -128,6 +129,7 @@ const ProfileContractAPIProvider: FC = ({ children }): any => {
         approvedAccounts,
         rejectedAccounts,
         updateAccountStatus,
+        getAllParticipants,
       }}
     >
       {children}

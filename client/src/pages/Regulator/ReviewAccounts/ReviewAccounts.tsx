@@ -1,10 +1,12 @@
-import React, { ChangeEvent, FC, useContext, useState } from 'react'
+import React, { ChangeEvent, FC, useContext, useEffect, useState } from 'react'
+import { ProfileContractContext } from '../../../contexts/ProfileContract'
 import { ProfileContractAPIContext } from '../../../contexts/ProfileContractAPI'
 import AccountsTable from '../../../components/AccountsTable'
 import { AccountType, AccountStatus } from '../../../enums/contract'
 import { titleCase } from '../../../helpers'
 
 const ReviewAccounts: FC = () => {
+  const { profileContract, accounts } = useContext(ProfileContractContext)
   const {
     pendingAccounts,
     approvedAccounts,
@@ -65,18 +67,26 @@ const ReviewAccounts: FC = () => {
           original: { accountAddress, accountStatus: originalAccountStatus },
         },
       }: any) => {
-        const handleChange = (
+        const handleChange = async (
           e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
         ) => {
           const { value: updatedAccountStatus } = e.target
 
           // SEND AN API
-          updateAccountStatus(accountAddress, parseInt(updatedAccountStatus))
+          try {
+            const updateStatus = await profileContract?.methods
+              .approveAccount(accountAddress, updatedAccountStatus)
+              .send({ from: accounts[0] })
 
-          setTimeout(() => {
-            switchTab(originalAccountStatus)
-          }, 150)
-          switchTab(parseInt(updatedAccountStatus))
+            updateAccountStatus(accountAddress, parseInt(updatedAccountStatus))
+
+            setTimeout(() => {
+              switchTab(originalAccountStatus)
+            }, 150)
+            switchTab(parseInt(updatedAccountStatus))
+          } catch (error) {
+            console.log(error.message)
+          }
         }
 
         return (
