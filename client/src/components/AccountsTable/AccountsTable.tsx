@@ -1,5 +1,5 @@
 import React, { FC, useMemo } from 'react'
-import { useTable, useGlobalFilter } from 'react-table'
+import { useTable, useGlobalFilter, usePagination } from 'react-table'
 import { IAccountsTableProps } from '../../interfaces/contract'
 import GlobalFilter from '../GlobalFilter'
 import './accountstable.css'
@@ -12,7 +12,12 @@ const AccountsTable: FC<IAccountsTableProps> = ({ columns, data }) => {
     getTableProps,
     getTableBodyProps,
     headerGroups,
-    rows,
+    page,
+    nextPage,
+    previousPage,
+    canNextPage,
+    canPreviousPage,
+    pageOptions,
     prepareRow,
     state,
     setGlobalFilter,
@@ -21,10 +26,11 @@ const AccountsTable: FC<IAccountsTableProps> = ({ columns, data }) => {
       columns: cols,
       data: d,
     },
-    useGlobalFilter
+    useGlobalFilter,
+    usePagination
   )
 
-  const { globalFilter } = state
+  const { globalFilter, pageIndex } = state
 
   return (
     <>
@@ -40,7 +46,7 @@ const AccountsTable: FC<IAccountsTableProps> = ({ columns, data }) => {
           ))}
         </thead>
         <tbody {...getTableBodyProps()}>
-          {rows.map((row) => {
+          {page.map((row) => {
             prepareRow(row)
             return (
               <tr {...row.getRowProps()}>
@@ -52,6 +58,21 @@ const AccountsTable: FC<IAccountsTableProps> = ({ columns, data }) => {
           })}
         </tbody>
       </table>
+
+      <div>
+        <span>
+          Page{' '}
+          <strong>
+            {pageIndex + 1} of {pageOptions.length}
+          </strong>{' '}
+        </span>
+        <button onClick={() => previousPage()} disabled={!canPreviousPage}>
+          Previous
+        </button>
+        <button onClick={() => nextPage()} disabled={!canNextPage}>
+          Next
+        </button>
+      </div>
     </>
   )
 }
