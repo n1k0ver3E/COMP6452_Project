@@ -1,4 +1,4 @@
-import React, { FC, useContext, useState } from 'react'
+import React, { ChangeEvent, FC, useContext, useState } from 'react'
 import { ProfileContractAPIContext } from '../../../contexts/ProfileContractAPI'
 import AccountsTable from '../../../components/AccountsTable'
 import { AccountType, AccountStatus } from '../../../enums/contract'
@@ -37,9 +37,9 @@ const ReviewAccounts: FC = () => {
     }
   }
 
-  console.log('pendingAccounts', pendingAccounts)
-  console.log('approvedAccounts', approvedAccounts)
-  console.log('rejectedAccounts', rejectedAccounts)
+  // console.log('pendingAccounts', pendingAccounts)
+  // console.log('approvedAccounts', approvedAccounts)
+  // console.log('rejectedAccounts', rejectedAccounts)
 
   const COLUMNS = [
     {
@@ -60,13 +60,33 @@ const ReviewAccounts: FC = () => {
     {
       Header: 'Account Status',
       accessor: 'accountStatus',
-      Cell: ({ value, row, column }: any) => {
-        console.log('value', value)
-        console.log('row', row)
-        console.log('value', column)
+      Cell: ({
+        value,
+        row: {
+          original: { accountAddress },
+        },
+      }: any) => {
+        // console.log('value', value)
+        // console.log('row', row)
+        // console.log('value', column)
+
+        const handleChange = (
+          e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+        ) => {
+          const { value } = e.target
+
+          console.log('what is value', value)
+          console.log('what is account address', accountAddress)
+        }
+
         return (
           <div className="select">
-            <select defaultValue={value} name="accountType" id="accountType">
+            <select
+              defaultValue={value}
+              name="accountType"
+              id="accountType"
+              onChange={handleChange}
+            >
               {value === AccountStatus.PENDING && (
                 <>
                   <option value={value}>
