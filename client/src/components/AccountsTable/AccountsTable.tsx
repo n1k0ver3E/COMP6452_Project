@@ -59,19 +59,35 @@ const AccountsTable: FC<IAccountsTableProps> = ({ columns, data }) => {
         </tbody>
       </table>
 
-      <div>
-        <span>
-          Page{' '}
-          <strong>
-            {pageIndex + 1} of {pageOptions.length}
-          </strong>{' '}
-        </span>
-        <button onClick={() => previousPage()} disabled={!canPreviousPage}>
-          Previous
-        </button>
-        <button onClick={() => nextPage()} disabled={!canNextPage}>
-          Next
-        </button>
+      <div className="mt-5 is-middle">
+        <div>
+          <button
+            className="button"
+            onClick={() => previousPage()}
+            disabled={!canPreviousPage}
+          >
+            Previous
+          </button>
+        </div>
+
+        <div className="spacing">
+          <span>
+            Page{' '}
+            <strong>
+              {pageIndex + 1} of {pageOptions.length}
+            </strong>{' '}
+          </span>
+        </div>
+
+        <div>
+          <button
+            className="button"
+            onClick={() => nextPage()}
+            disabled={!canNextPage}
+          >
+            Next
+          </button>
+        </div>
       </div>
     </>
   )
