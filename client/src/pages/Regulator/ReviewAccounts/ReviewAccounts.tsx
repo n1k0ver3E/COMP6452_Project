@@ -1,4 +1,4 @@
-import React, { FC, useContext } from 'react'
+import React, { FC, useContext, useState } from 'react'
 import { ProfileContractAPIContext } from '../../../contexts/ProfileContractAPI'
 import AccountsTable from '../../../components/AccountsTable'
 import UserAccountsIcon from '../../../assets/user-accounts.png'
@@ -10,6 +10,34 @@ const ReviewAccounts: FC = () => {
   const { pendingAccounts, approvedAccounts, rejectedAccounts } = useContext(
     ProfileContractAPIContext
   )
+  const [pendingAccountsActiveClass, setPendingAccountsActiveClass] =
+    useState<string>('is-active')
+  const [rejectedAccountsActiveClass, setRejectedAccountsActiveClass] =
+    useState<string>('')
+  const [approvedAccountsActiveClass, setApprovedAccountsActiveClass] =
+    useState<string>('')
+
+  const switchTab = (accountStatus: number) => {
+    switch (accountStatus) {
+      case AccountStatus.PENDING:
+        setPendingAccountsActiveClass('is-active')
+        setRejectedAccountsActiveClass('')
+        setApprovedAccountsActiveClass('')
+        break
+      case AccountStatus.REJECTED:
+        setRejectedAccountsActiveClass('is-active')
+        setPendingAccountsActiveClass('')
+        setApprovedAccountsActiveClass('')
+        break
+      case AccountStatus.APPROVED:
+        setApprovedAccountsActiveClass('is-active')
+        setPendingAccountsActiveClass('')
+        setRejectedAccountsActiveClass('')
+        break
+      default:
+        break
+    }
+  }
 
   console.log('pendingAccounts', pendingAccounts)
   console.log('approvedAccounts', approvedAccounts)
@@ -78,36 +106,64 @@ const ReviewAccounts: FC = () => {
   ]
 
   return (
-    <section className="container">
-      <div className="column is-12">
-        <div className="title is-4">Accounts to Review</div>
-        <AccountsTable columns={COLUMNS} data={pendingAccounts} />
+    <>
+      <div className="tabs is-centered is-boxed">
+        <ul>
+          <li
+            className={pendingAccountsActiveClass}
+            onClick={() => switchTab(AccountStatus.PENDING)}
+          >
+            <a>
+              <span className="icon is-small">
+                <i className="fas fa-clock" aria-hidden="true" />
+              </span>
+              <span>Pending Accounts ({pendingAccounts.length})</span>
+            </a>
+          </li>
+          <li
+            className={rejectedAccountsActiveClass}
+            onClick={() => switchTab(AccountStatus.REJECTED)}
+          >
+            <a>
+              <span className="icon is-small">
+                <i className="fas fa-times-circle" aria-hidden="true" />
+              </span>
+              <span>Rejected Accounts ({rejectedAccounts.length})</span>
+            </a>
+          </li>
+          <li
+            className={approvedAccountsActiveClass}
+            onClick={() => switchTab(AccountStatus.APPROVED)}
+          >
+            <a>
+              <span className="icon is-small">
+                <i className="fas fa-check-circle" aria-hidden="true" />
+              </span>
+              <span>Approved Accounts ({approvedAccounts.length})</span>
+            </a>
+          </li>
+        </ul>
       </div>
-
-      <div className="column is-12 mt-5">
-        <div className="columns">
-          <div className="column is-10">
-            <div>
-              <div className="title is-4">Rejected Accounts</div>
-              <AccountsTable columns={COLUMNS} data={rejectedAccounts} />
-            </div>
-
-            <div className="mt-6">
-              <div className="title is-4">Approved Accounts</div>
-              <AccountsTable columns={COLUMNS} data={approvedAccounts} />
-            </div>
+      <section className="container">
+        {pendingAccountsActiveClass && (
+          <div className="column is-12">
+            <AccountsTable columns={COLUMNS} data={pendingAccounts} />
           </div>
+        )}
 
-          <div className="column is-2 icon-wrapper">
-            <img
-              src={UserAccountsIcon}
-              alt={'user accounts icon'}
-              className="user-accounts"
-            />
+        {rejectedAccountsActiveClass && (
+          <div className="column is-12">
+            <AccountsTable columns={COLUMNS} data={rejectedAccounts} />
           </div>
-        </div>
-      </div>
-    </section>
+        )}
+
+        {approvedAccountsActiveClass && (
+          <div className="column is-12">
+            <AccountsTable columns={COLUMNS} data={approvedAccounts} />
+          </div>
+        )}
+      </section>
+    </>
   )
 }
 
