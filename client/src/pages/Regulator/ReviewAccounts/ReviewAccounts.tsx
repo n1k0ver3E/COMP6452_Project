@@ -15,19 +15,19 @@ const ReviewAccounts: FC = () => {
 
   const COLUMNS = [
     {
-      Header: 'Name',
+      Header: 'Account Name',
       accessor: 'accountName',
     },
     {
-      Header: 'Address',
+      Header: 'Account Address',
       accessor: 'accountAddress',
     },
     {
-      Header: 'Type',
+      Header: 'Account Type',
       accessor: 'accountType',
     },
     {
-      Header: 'Status',
+      Header: 'Account Status',
       accessor: 'accountStatus',
     },
   ]
