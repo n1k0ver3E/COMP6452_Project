@@ -34,8 +34,45 @@ const ReviewAccounts: FC = () => {
     {
       Header: 'Account Status',
       accessor: 'accountStatus',
-      Cell: ({ value }: any) => {
-        return titleCase(AccountStatus[value])
+      Cell: ({ value, row, column }: any) => {
+        console.log('value', value)
+        console.log('row', row)
+        console.log('value', column)
+        return (
+          <div className="select">
+            <select defaultValue={value} name="accountType" id="accountType">
+              {value === AccountStatus.PENDING && (
+                <>
+                  <option value={value}>
+                    {titleCase(AccountStatus[value])}
+                  </option>
+                  <option value={AccountStatus.REJECTED}>Reject</option>
+                  <option value={AccountStatus.APPROVED}>Approve</option>
+                </>
+              )}
+
+              {value === AccountStatus.REJECTED && (
+                <>
+                  <option value={value}>
+                    {titleCase(AccountStatus[value])}
+                  </option>
+                  <option value={AccountStatus.PENDING}>Pending</option>
+                  <option value={AccountStatus.APPROVED}>Approve</option>
+                </>
+              )}
+
+              {value === AccountStatus.APPROVED && (
+                <>
+                  <option value={value}>
+                    {titleCase(AccountStatus[value])}
+                  </option>
+                  <option value={AccountStatus.PENDING}>Pending</option>
+                  <option value={AccountStatus.REJECTED}>Reject</option>
+                </>
+              )}
+            </select>
+          </div>
+        )
       },
     },
   ]
