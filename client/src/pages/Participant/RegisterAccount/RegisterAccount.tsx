@@ -1,4 +1,4 @@
-import React, { FC, ChangeEvent, useContext, useState } from 'react'
+import React, { FC, ChangeEvent, useContext, useState, useEffect } from 'react'
 import RegistrationImage from '../../../assets/registration.png'
 import { ProfileContractContext } from '../../../contexts/ProfileContract'
 import { ProfileContractAPIContext } from '../../../contexts/ProfileContractAPI'
@@ -18,9 +18,12 @@ const initialState: IRegisterAccountDetails = {
 
 const RegisterAccount: FC = () => {
   const { profileContract, accounts } = useContext(ProfileContractContext)
-  const { registerParticipant, registrationError } = useContext(
-    ProfileContractAPIContext
-  )
+  const { registerParticipant, registrationError, getAllParticipants } =
+    useContext(ProfileContractAPIContext)
+
+  useEffect(() => {
+    getAllParticipants()
+  }, [])
 
   const [data, setData] = useState<IRegisterAccountDetails>(initialState)
   const [isAccountAddressFieldValid, setIsAccountAddressFieldValid] =
