@@ -43,13 +43,6 @@ const ProfileContractAPIProvider: FC = ({ children }): any => {
     participantDetails: IParticipantDetails
   ) => {
     try {
-      // await api.post(
-      //   '/v1/participants/register',
-      //   participantDetails
-      // )
-      //
-      // await getAllParticipants()
-
       Promise.all([
         await api.post('/v1/participants/register', participantDetails),
         await getAllParticipants(),
