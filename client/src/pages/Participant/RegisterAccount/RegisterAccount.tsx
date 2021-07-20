@@ -66,6 +66,10 @@ const RegisterAccount: FC = () => {
     setData({ ...data, [name]: value })
   }
 
+  const backToRegister = () => {
+    setRegistrationSuccess(false)
+  }
+
   const handleRegister = async (e: any) => {
     e.preventDefault()
 
@@ -144,6 +148,7 @@ const RegisterAccount: FC = () => {
                   accountName={data.accountName}
                   accountType={data.accountType}
                   accountAddress={data.accountAddress}
+                  backToRegister={backToRegister}
                 />
               ) : (
                 <RegisterForm
