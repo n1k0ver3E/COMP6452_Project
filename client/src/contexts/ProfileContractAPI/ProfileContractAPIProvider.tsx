@@ -21,11 +21,10 @@ export const ProfileContractAPIContext =
   createContext<IProfileContractAPI>(contextDefaultValues)
 
 const ProfileContractAPIProvider: FC = ({ children }): any => {
-  const initialState = {
-    registeredAccounts: [],
-  }
-
   const [registrationError, setRegistrationError] = useState<boolean>(false)
+  const [registeredAccounts, setRegisteredAccounts] = useState<
+    IParticipantDetails[]
+  >([])
   const [pendingAccounts, setPendingAccounts] = useState<IParticipantDetails[]>(
     []
   )
@@ -44,13 +43,11 @@ const ProfileContractAPIProvider: FC = ({ children }): any => {
     participantDetails: IParticipantDetails
   ) => {
     try {
-      const resp = await api.post(
-        '/v1/participants/register',
-        participantDetails
-      )
+      Promise.all([
+        await api.post('/v1/participants/register', participantDetails),
+        await getAllParticipants(),
+      ])
 
-      // @ts-ignore
-      initialState.registeredAccounts.push(resp.data.participantDetails)
       setRegistrationError(false)
     } catch (err) {
       setRegistrationError(true)
@@ -72,12 +69,27 @@ const ProfileContractAPIProvider: FC = ({ children }): any => {
       switch (accountStatus) {
         case AccountStatus.PENDING:
           setPendingAccounts(resp.data.participants)
+          setRegisteredAccounts([
+            ...pendingAccounts,
+            ...rejectedAccounts,
+            ...approvedAccounts,
+          ])
           break
         case AccountStatus.APPROVED:
           setApprovedAccounts(resp.data.participants)
+          setRegisteredAccounts([
+            ...pendingAccounts,
+            ...rejectedAccounts,
+            ...approvedAccounts,
+          ])
           break
         case AccountStatus.REJECTED:
           setRejectedAccounts(resp.data.participants)
+          setRegisteredAccounts([
+            ...pendingAccounts,
+            ...rejectedAccounts,
+            ...approvedAccounts,
+          ])
           break
         default:
           break
@@ -123,7 +135,7 @@ const ProfileContractAPIProvider: FC = ({ children }): any => {
     <ProfileContractAPIContext.Provider
       value={{
         registerParticipant,
-        registeredAccounts: initialState.registeredAccounts,
+        registeredAccounts,
         registrationError,
         pendingAccounts,
         approvedAccounts,

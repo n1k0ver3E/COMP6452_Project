@@ -1,4 +1,4 @@
-import { titleCase } from './stringMutations'
+import { titleCase, shortenedAddress } from './stringMutations'
 
 describe('stringMutations', () => {
   describe('#titleCase', () => {
@@ -21,6 +21,22 @@ describe('stringMutations', () => {
       const result = ''
 
       expect(titleCase(input)).toBe(result)
+    })
+  })
+
+  describe('#shortenedAddress', () => {
+    it('returns the shortened address if the input has the correct address', () => {
+      const input = '0x769ec63ba1ac243450f29a0df44e790be632715f'
+      const result = '0x769ec63b...0be632715f'
+
+      expect(shortenedAddress(input)).toBe(result)
+    })
+
+    it('does not return the shortened address if the input is empty', () => {
+      const input = ''
+      const result = undefined
+
+      expect(shortenedAddress(input)).toBe(result)
     })
   })
 })
