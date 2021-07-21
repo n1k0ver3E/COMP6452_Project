@@ -1,7 +1,7 @@
 import React, { FC, useContext, useEffect } from 'react'
 import DashboardHeroHeader from '../../../components/DashboardHeroHeader'
+import DashboardHeroFooter from '../../../components/DashboardHeroFooter'
 import { ProfileContractAPIContext } from '../../../contexts/ProfileContractAPI'
-import Banner from '../../../assets/banner.jpg'
 
 const Dashboard: FC = () => {
   const { getAllParticipants, registeredAccounts } = useContext(
@@ -38,11 +38,7 @@ const Dashboard: FC = () => {
         </div>
       </section>
 
-      <section className="hero welcome is-small mt-5">
-        <div className="container">
-          <img src={Banner} alt="random" className="hero-image" />
-        </div>
-      </section>
+      <DashboardHeroFooter />
     </div>
   )
 }
