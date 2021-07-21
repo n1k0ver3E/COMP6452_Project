@@ -1,4 +1,5 @@
 import React, { FC, useContext, useEffect } from 'react'
+import DashboardHeroHeader from '../../../components/DashboardHeroHeader'
 import { ProfileContractAPIContext } from '../../../contexts/ProfileContractAPI'
 import Banner from '../../../assets/banner.jpg'
 
@@ -13,15 +14,7 @@ const Dashboard: FC = () => {
 
   return (
     <div>
-      <section className="hero is-link welcome is-small">
-        <div className="hero-body">
-          <div className="container">
-            <h1 className="title">Hello, Participant.</h1>
-            <h2 className="subtitle">I hope you are having a great day!</h2>
-          </div>
-        </div>
-      </section>
-
+      <DashboardHeroHeader userType={'Participant'} />
       <section className="info-tiles mt-5">
         <div className="tile is-ancestor has-text-centered">
           <div className="tile is-parent">
