@@ -13,3 +13,9 @@ export enum AccountStatus {
   APPROVED,
   REJECTED,
 }
+
+export enum DocumentType {
+  PROFILE = 1,
+  PRODUCT = 2,
+  TRACEABILITY = 3,
+}
