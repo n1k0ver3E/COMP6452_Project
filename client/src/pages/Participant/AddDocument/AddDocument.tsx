@@ -1,7 +1,12 @@
-import React, { FC, useState } from 'react'
+import React, { FC, useState, useEffect, useContext } from 'react'
 import { DocumentType } from '../../../enums/contract'
+import { ProfileContractAPIContext } from '../../../contexts/ProfileContractAPI'
 
 const AddDocument: FC = () => {
+  const { registeredAccounts, getAllParticipants } = useContext(
+    ProfileContractAPIContext
+  )
+
   const [profileDocumentsActiveClass, setProfileDocumentsActiveClass] =
     useState<string>('is-active')
   const [productDocumentsActiveClass, setProductDocumentsActiveClass] =
@@ -10,6 +15,10 @@ const AddDocument: FC = () => {
     traceabilityDocumentsActiveClass,
     setTraceabilityDocumentsActiveClass,
   ] = useState<string>('')
+
+  useEffect(() => {
+    getAllParticipants()
+  }, [])
 
   const switchTab = (documentType: number) => {
     switch (documentType) {
