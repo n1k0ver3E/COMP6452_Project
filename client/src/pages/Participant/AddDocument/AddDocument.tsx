@@ -21,10 +21,20 @@ const AddDocument: FC = () => {
     traceabilityDocumentsActiveClass,
     setTraceabilityDocumentsActiveClass,
   ] = useState<string>('')
+  const [modalOpenedClass, setModalOpenedClass] = useState<string>('modal')
+  const [modalTitle, setModalTitle] = useState<string>('')
 
   useEffect(() => {
     getAllParticipants()
   }, [])
+
+  const activateModal = () => {
+    setModalOpenedClass('modal is-active')
+  }
+
+  const closeModal = () => {
+    setModalOpenedClass('modal')
+  }
 
   const switchTab = (documentType: number) => {
     switch (documentType) {
@@ -72,21 +82,17 @@ const AddDocument: FC = () => {
       Header: 'Profile Document',
       accessor: 'accountId',
       Cell: ({ value }: any) => {
+        console.log('what is value', value)
+
+        setModalTitle('Upload Profile Document')
+
         return (
-          <div className="file has-name is-boxed is-small is-primary p-1">
-            <label className="file-label">
-              <input className="file-input" type="file" name="resume" />
-              <span className="file-cta">
-                <span className="file-icon">
-                  <i className="fas fa-upload" />
-                </span>
-                <span className="file-label">Choose a file…</span>
-              </span>
-              {/*<span className="file-name">*/}
-              {/*  Screen Shot 2017-07-29 at 15.54.25.png*/}
-              {/*</span>*/}
-            </label>
-          </div>
+          <button
+            className="button is-warning p-2"
+            onClick={() => activateModal()}
+          >
+            Upload Document
+          </button>
         )
       },
     },
@@ -147,6 +153,27 @@ const AddDocument: FC = () => {
           </div>
         )}
       </section>
+
+      <div className={modalOpenedClass}>
+        <div className="modal-background" />
+        <div className="modal-card">
+          <header className="modal-card-head">
+            <p className="modal-card-title">{modalTitle}</p>
+            <button
+              className="delete"
+              aria-label="close"
+              onClick={closeModal}
+            />
+          </header>
+          <section className="modal-card-body" />
+          <footer className="modal-card-foot">
+            <button className="button is-link">Upload</button>
+            <button className="button" onClick={closeModal}>
+              Cancel
+            </button>
+          </footer>
+        </div>
+      </div>
     </>
   )
 }
