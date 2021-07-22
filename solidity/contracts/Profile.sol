@@ -171,6 +171,10 @@ contract Profile {
         }
     }
 
+    function getRegulatorAddress() public view returns (address) {
+        return regulatorAddress;
+    }
+
     // private functions
     // Does account address exist?
     function isExisAccount(address _accountAddress)
