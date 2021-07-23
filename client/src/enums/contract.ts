@@ -19,3 +19,13 @@ export enum DocumentType {
   PRODUCT = 2,
   TRACEABILITY = 3,
 }
+
+export enum ProductCategory {
+  FARMING,
+  HARVESTING,
+  MANUFACTURING,
+  SHIPPING,
+  RETAILING,
+  PURCHASING,
+  RECALLING,
+}
