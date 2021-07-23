@@ -1,4 +1,5 @@
 import React, { FC } from 'react'
+import './retail.css'
 
 const Retail: FC = () => {
   return (
@@ -13,8 +14,26 @@ const Retail: FC = () => {
             className="product-image"
           />
         </div>
-        <div className="column is-half product-form has-background-light">
-          SECOND COLUMN
+        <div className="column is-half retail-form has-background-white-bis">
+          <div className="product-title">
+            <h1 className="title is-4">Retail Process</h1>
+          </div>
+          <form className="mt-5">
+            <div className="field">
+              <label className="label">Product ID</label>
+              <div className="select is-normal is-fullwidth">
+                <select>
+                  <option>Select dropdown</option>
+                  <option>Sample Product 1</option>
+                  <option>Sample Product 2</option>
+                </select>
+              </div>
+            </div>
+            <button className="button is-block is-link is-fullwidth mt-3">
+              Submit
+            </button>
+            <br />
+          </form>
         </div>
       </div>
     </section>

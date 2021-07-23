@@ -75,7 +75,7 @@ const Manufacturer: FC = () => {
             </div>
 
             <button className="button is-block is-link is-fullwidth mt-3">
-              Add
+              Submit
             </button>
             <br />
           </form>
