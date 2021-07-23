@@ -1,3 +1,4 @@
 import ParticipantModel from './ParticipantModel'
+import DocumentModel from './DocumentModel'
 
-export { ParticipantModel }
+export { DocumentModel, ParticipantModel }

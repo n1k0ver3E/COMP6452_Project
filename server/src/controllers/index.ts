@@ -1,3 +1,4 @@
+import DocumentController from './DocumentController'
 import ParticipantController from './ParticipantController'
 
-export { ParticipantController }
+export { DocumentController, ParticipantController }
