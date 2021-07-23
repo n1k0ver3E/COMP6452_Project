@@ -5,9 +5,10 @@ import { catchAsync } from '../utils'
 
 const uploadDocument = catchAsync(
   async (req: Request, res: Response, _next: NextFunction) => {
-    const document = await DocumentService.documentUpload(req.body)
 
-    return res.status(httpStatus.CREATED).json({
+    const document = await DocumentService.documentUpload(req.file, req.body)
+
+    return res.status(httpStatus.OK).json({
       success: true,
       document,
     })

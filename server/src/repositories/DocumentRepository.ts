@@ -1,7 +1,7 @@
 import { DocumentModel } from '../models'
-import { IDocument } from '../interfaces/document'
+import { IDocumentResp } from '../interfaces/document'
 
-const documentUpload = (body: IDocument) => {
+const documentUpload = (body: IDocumentResp) => {
   return DocumentModel.create(body)
 }
 
