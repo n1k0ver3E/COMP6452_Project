@@ -1,9 +1,8 @@
-import React, { ChangeEvent, FC, useEffect } from 'react'
+import React, { FC, useEffect } from 'react'
 import 'bulma-calendar/dist/css/bulma-calendar.min.css'
 // @ts-ignore
 import bulmaCalendar from 'bulma-calendar/dist/js/bulma-calendar.min.js'
 import './farmer.css'
-import { IAccountTypeDropdown } from '../../interfaces/contract'
 
 const Farmer: FC = () => {
   useEffect(() => {
@@ -34,7 +33,7 @@ const Farmer: FC = () => {
             className="product-image"
           />
         </div>
-        <div className="column is-half product-form has-background-white-bis">
+        <div className="column is-half farmer-form has-background-white-bis">
           <div className="product-title">
             <h1 className="title is-4">Add Product</h1>
           </div>
