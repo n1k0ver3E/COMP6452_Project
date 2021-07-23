@@ -23,7 +23,15 @@ const documentUpload = async (
       hashContent: file[0].hash,
     }
 
-    return DocumentRepository.documentUpload(newBody)
+    const document = await DocumentRepository.documentUpload(newBody)
+
+    return {
+      id: document.id,
+      documentName: document.documentName,
+      docTypeValue: document.docTypeValue,
+      referenceId: document.referenceId,
+      hashContent: document.hashContent,
+    }
   } catch (err) {
     console.log(err)
   }
