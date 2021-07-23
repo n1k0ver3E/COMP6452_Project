@@ -7,12 +7,14 @@ interface IRegistrationSuccessProps {
   accountName: string
   accountType: number
   accountAddress: string
+  backToRegister: () => void
 }
 
 const RegistrationSuccess: FC<IRegistrationSuccessProps> = ({
   accountName,
   accountType,
   accountAddress,
+  backToRegister,
 }) => {
   return (
     <div className="registration-success mb-3">
@@ -38,6 +40,12 @@ const RegistrationSuccess: FC<IRegistrationSuccessProps> = ({
           </div>
           <div className="mt-5 has-text-weight-bold">{accountAddress}</div>
         </div>
+      </div>
+
+      <div className="mt-3">
+        <button className="button is-link" onClick={() => backToRegister()}>
+          Back to register{' '}
+        </button>
       </div>
     </div>
   )

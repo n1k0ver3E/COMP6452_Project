@@ -1,9 +1,11 @@
-import React, { FC, useContext, useState } from 'react'
+import React, { FC, useContext, useEffect } from 'react'
 import { ProfileContractAPIContext } from '../../contexts/ProfileContractAPI'
 import {
   IParticipantDetails,
   IViewAccountFormProps,
 } from '../../interfaces/contract'
+import { shortenedAddress, titleCase } from '../../helpers/stringMutations'
+import { AccountType } from '../../enums/contract'
 
 const ViewAccountForm: FC<IViewAccountFormProps> = ({
   handleChange,
@@ -15,7 +17,13 @@ const ViewAccountForm: FC<IViewAccountFormProps> = ({
   accountAddressFieldErrorMsg,
   isLoading,
 }) => {
-  const { registeredAccounts } = useContext(ProfileContractAPIContext)
+  const { registeredAccounts, getAllParticipants } = useContext(
+    ProfileContractAPIContext
+  )
+
+  useEffect(() => {
+    getAllParticipants()
+  }, [])
 
   return (
     <>
@@ -35,7 +43,10 @@ const ViewAccountForm: FC<IViewAccountFormProps> = ({
               {registeredAccounts?.map(
                 (account: IParticipantDetails, idx: number) => (
                   <option key={idx} value={account.accountAddress}>
-                    {account.accountAddress}
+                    {`${account.accountName} (${titleCase(
+                      AccountType[account.accountType]
+                    )}) [${shortenedAddress(account.accountAddress)}`}
+                    ]
                   </option>
                 )
               )}
