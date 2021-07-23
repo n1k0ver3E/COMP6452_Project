@@ -10,30 +10,23 @@ const documentUpload = async (
   fileContent: File | undefined | Express.Multer.File,
   body: IDocument
 ) => {
-  let hashContent: string
-
   // @ts-ignore
   const data = new Buffer(fs.readFileSync(fileContent.path))
 
-  ipfs.add(data, async (err: any, file: any) => {
-    if (err) {
-      console.log(err)
-    }
-
-    const { hash } = file[0]
-    hashContent = hash
+  try {
+    const file = await ipfs.add(data)
 
     const newBody: IDocumentResp = {
       documentName: body.documentName,
       docTypeValue: body.docTypeValue,
       referenceId: body.referenceId,
-      hashContent: hashContent,
+      hashContent: file[0].hash,
     }
 
-    await DocumentRepository.documentUpload(newBody)
-
-    return newBody
-  })
+    return DocumentRepository.documentUpload(newBody)
+  } catch (err) {
+    console.log(err)
+  }
 }
 
 export default {
