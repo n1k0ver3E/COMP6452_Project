@@ -1,5 +1,4 @@
 import React, { FC } from 'react'
-import './retail.css'
 
 const Retail: FC = () => {
   return (

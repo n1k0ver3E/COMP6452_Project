@@ -4,9 +4,13 @@
   border-radius: 20px;
 }
 
+.product-title {
+  text-align: center;
+}
+
 .product-form {
   height: 500px;
-  background-color: red;
   border-radius: 10px;
   margin-top: 10px;
+  padding: 30px 70px !important;
 }

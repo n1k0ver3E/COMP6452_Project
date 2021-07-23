@@ -1,8 +1,9 @@
-import React, { FC, useEffect } from 'react'
+import React, { ChangeEvent, FC, useEffect } from 'react'
 import 'bulma-calendar/dist/css/bulma-calendar.min.css'
 // @ts-ignore
 import bulmaCalendar from 'bulma-calendar/dist/js/bulma-calendar.min.js'
 import './farmer.css'
+import { IAccountTypeDropdown } from '../../interfaces/contract'
 
 const Farmer: FC = () => {
   useEffect(() => {
@@ -33,8 +34,64 @@ const Farmer: FC = () => {
             className="product-image"
           />
         </div>
-        <div className="column is-half product-form has-background-light">
-          <input id="dob" type="date" />
+        <div className="column is-half product-form has-background-white-bis">
+          <div className="product-title">
+            <h1 className="title is-4">Add Product</h1>
+          </div>
+          <form className="mt-5">
+            <div className="field">
+              <label className="label">Product Name</label>
+              <div className="control">
+                <input
+                  className="input"
+                  type="text"
+                  name="productName"
+                  id="productName"
+                />
+              </div>
+            </div>
+
+            <div className="field">
+              <label className="label">Product Location</label>
+              <div className="control">
+                <input
+                  className="input"
+                  type="text"
+                  name="productLocation"
+                  id="productLocation"
+                />
+              </div>
+            </div>
+
+            <div className="field">
+              <label className="label">Planting Date</label>
+              <div className="control">
+                <input
+                  className="input"
+                  type="date"
+                  name="plantingDate"
+                  id="plantingDate"
+                />
+              </div>
+            </div>
+
+            <div className="field">
+              <label className="label">Harvest Date</label>
+              <div className="control">
+                <input
+                  className="input"
+                  type="date"
+                  name="harvestDate"
+                  id="harvestDate"
+                />
+              </div>
+            </div>
+
+            <button className="button is-block is-link is-fullwidth mt-3">
+              Add
+            </button>
+            <br />
+          </form>
         </div>
       </div>
     </section>

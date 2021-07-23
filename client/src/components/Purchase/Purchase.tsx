@@ -1,5 +1,4 @@
 import React, { FC } from 'react'
-import './purchase.css'
 
 const Purchase: FC = () => {
   return (
