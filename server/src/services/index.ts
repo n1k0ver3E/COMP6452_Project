@@ -1,3 +1,4 @@
+import DocumentService from './DocumentService'
 import ParticipantService from './ParticipantService'
 
-export { ParticipantService }
+export { DocumentService, ParticipantService }
