@@ -1,7 +1,26 @@
-import React, { FC } from 'react'
+import React, { FC, useEffect } from 'react'
+import 'bulma-calendar/dist/css/bulma-calendar.min.css'
+// @ts-ignore
+import bulmaCalendar from 'bulma-calendar/dist/js/bulma-calendar.min.js'
 import './farmer.css'
 
 const Farmer: FC = () => {
+  useEffect(() => {
+    const calendars = bulmaCalendar.attach('[type="date"]', {})
+    calendars.forEach((calendar: any) => {
+      calendar.on('date:selected', (date: any) => {
+        console.log(date)
+      })
+    })
+
+    const element = document.querySelector('#dob')
+    if (element) {
+      // @ts-ignore
+      element.bulmaCalendar.on('select', (datepicker: any) => {
+        console.log(datepicker.data.value())
+      })
+    }
+  }, [])
   return (
     <section className="container">
       <div className="columns">
@@ -15,7 +34,7 @@ const Farmer: FC = () => {
           />
         </div>
         <div className="column is-half product-form has-background-light">
-          SECOND COLUMN
+          <input id="dob" type="date" />
         </div>
       </div>
     </section>
