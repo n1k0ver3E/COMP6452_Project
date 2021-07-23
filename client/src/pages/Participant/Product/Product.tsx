@@ -1,5 +1,6 @@
 import React, { FC, useState } from 'react'
 import { ProductCategory } from '../../../enums/contract'
+import Farmer from '../../../components/Farmer'
 
 const Product: FC = () => {
   const [farmerActiveClass, setFarmerActiveClass] =
@@ -90,6 +91,8 @@ const Product: FC = () => {
           </li>
         </ul>
       </div>
+
+      {farmerActiveClass && <Farmer />}
     </>
   )
 }
