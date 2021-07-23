@@ -17,7 +17,8 @@ module.exports = async function(deployer, networks, addresses) {
   const consumer = addresses[6];
   const oracle = addresses[7];
   
-  await deployer.deploy(Profile, regulator, "Regulator", {from: creator});
+  ///await deployer.deploy(Profile, regulator, "Regulator", {from: creator});
+  await Profile.deployed();
   await deployer.deploy(Trace, Profile.address, {from: creator})
   await deployer.deploy(ProductSC, Trace.address, {from: creator});
 
