@@ -1,6 +1,6 @@
 import React, { FC, createContext, useState, useEffect } from 'react'
 import { IProfileContract } from '../../interfaces/contract'
-import json from '../../contracts/Profile.json'
+import json from '../../contracts/ProfileContract.json'
 import useWeb3 from '../../hooks/web3'
 
 const contextDefaultValues: IProfileContract = {

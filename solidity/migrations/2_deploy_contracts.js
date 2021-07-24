@@ -1,6 +1,7 @@
 // const ConvertLib = artifacts.require("ConvertLib");
 // const MetaCoin = artifacts.require("MetaCoin");
-const Profile = artifacts.require("Profile");
+//const Profile = artifacts.require("Profile");
+const Profile = artifacts.require("ProfileContract");
 const Document = artifacts.require("Document");
 
 module.exports = function (deployer, network, accounts) {

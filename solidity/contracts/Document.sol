@@ -3,7 +3,7 @@
 pragma solidity ^0.8.0;
 
 // import profile contract
-import "./Profile.sol";
+import "./ProfileContract.sol";
 
 /**
  * @title Document Management
@@ -25,7 +25,7 @@ contract Document {
         Traceability
     }
 
-    Profile profile;
+    ProfileContract profile;
 
     address public documentOwner;
     address public regulatorAddress;
@@ -45,7 +45,7 @@ contract Document {
 
     // @notice To create document contract and have an association relationship with Profile contract
     constructor(address _profileAddress) {
-        profile = Profile(_profileAddress);
+        profile = ProfileContract(_profileAddress);
         lastDocIndex = 0;
         regulatorAddress = profile.getRegulatorAddress();
         documentOwner = msg.sender;
