@@ -90,6 +90,7 @@ export interface IAccountsTableProps {
 export interface IDocumentContract {
   documentContract: any
   documents: string[]
+  accounts: string[]
 }
 
 export interface IDocumentContractAPI {

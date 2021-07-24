@@ -2,7 +2,7 @@ import React, { FC, useContext } from 'react'
 import { DocumentContractContext } from '../../../contexts/DocumentContract'
 
 const AddDocument: FC = () => {
-  const { documentContract, documents } = useContext(DocumentContractContext)
+  const { documentContract, accounts } = useContext(DocumentContractContext)
 
   return (
     <div>
