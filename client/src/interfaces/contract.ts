@@ -114,3 +114,8 @@ export type IRetailProcessDetails = Pick<
   IManufacturerProcessDetails,
   'productId'
 >
+
+export interface IPurchaseProcessDetails {
+  productId: number | string
+  price: number | string
+}
