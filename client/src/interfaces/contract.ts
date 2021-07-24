@@ -109,3 +109,8 @@ export interface IManufacturerProcessDetails {
   processingType: string
   timeStamp: string
 }
+
+export type IRetailProcessDetails = Pick<
+  IManufacturerProcessDetails,
+  'productId'
+>

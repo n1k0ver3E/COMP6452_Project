@@ -14,7 +14,7 @@ const initialState: IManufacturerProcessInitial = {
 }
 
 const Manufacturer: FC = () => {
-  const [data, setData] = useState(initialState)
+  const [data, setData] = useState<IManufacturerProcessInitial>(initialState)
   const [timeStamp, setTimestamp] = useState<string>('')
   const [isProcessingTypeFieldValid, setIsProcessingTypeFieldValid] =
     useState<boolean>(false)
@@ -77,9 +77,6 @@ const Manufacturer: FC = () => {
     setPayload(payload)
     setShowPayload(true)
   }
-
-  console.log('data', data)
-  console.log('timestamp', timeStamp)
 
   return (
     <section className="container">
