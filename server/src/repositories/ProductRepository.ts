@@ -9,7 +9,30 @@ const createProduct = (productDetails: IProduct): Promise<IProduct> => {
   return ProductModel.create(productDetails)
 }
 
+const manuProductInfo = (productId:number, productDetails: any): Promise<IProduct> => {
+  return ProductModel.update(
+    {productId: productId}, 
+    productDetails)
+}
+
+const retailProductInfo = (productId:number, productDetails: any): Promise<IProduct> => {
+  return ProductModel.update(
+    {productId: productId}, 
+    productDetails)
+}
+
+const purchasingProductInfo = (productId:number, productDetails: any): Promise<IProduct> => {
+  return ProductModel.update(
+    {productId: productId}, 
+    productDetails)
+}
+
+
+
 export default {
   addProductFarmingInfo,
   createProduct,
+  retailProductInfo,
+  purchasingProductInfo,
+  manuProductInfo
 }
