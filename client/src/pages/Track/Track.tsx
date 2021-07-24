@@ -2,13 +2,14 @@ import React, { FC, useState, ChangeEvent, useContext } from 'react'
 import MainNavbar from '../../components/MainNavBar'
 import { TraceContractAPIContext } from '../../contexts/TraceContractAPI'
 import { TraceContractContext } from '../../contexts/TraceContract'
+//import getWeb3 from '../../utils/getWeb3'
 import useWeb3 from '../../hooks/web3'
 //import api from '../../api'
 
 //import { IProductLocation } from '../../interfaces/trace'
 
 const Track: FC = () => {
-  const { isLoading, isWeb3, web3, accounts } = useWeb3()
+  const { web3 } = useWeb3()
   const [inputProductId, setInputProductId] = useState<string>('0')
   //const {  accounts } = useContext(ProfileContractContext)
   const { logs, queryLogs } = useContext(TraceContractAPIContext)
@@ -22,16 +23,17 @@ const Track: FC = () => {
     //setShowErrorNotice(false)
 
     try {
+      const accounts = await web3?.eth.getAccounts()
+
       const resp = await traceContract?.methods
         .requestForLocation(parseInt(inputProductId))
-        .send({from: window.ethereum.selectedAddress})
+        .send({ from: accounts == null ? null : accounts[0] })
 
       if (resp) {
-        alert("REQUESTED");
-        console.log(resp);
+        alert('REQUESTED')
+        console.log(resp)
       }
-    } catch (error) {
-    }
+    } catch (error) {}
   }
 
   return (
