@@ -14,6 +14,14 @@ const Farmer: FC = () => {
   const [data, setData] = useState<IFarmerProductDetails>(initialState)
   const [plantingDate, setPlantingDate] = useState<string>('')
   const [harvestDate, setHarvestDate] = useState<string>('')
+  const [isProductNameFieldValid, setIsProductNameFieldValid] =
+    useState<boolean>(false)
+  const [isProductLocationFieldValid, setIsProductLocationFieldValid] =
+    useState<boolean>(false)
+  const [isPlantingDateFieldValid, setIsPlaningDateFieldValid] =
+    useState<boolean>(false)
+  const [isHarvestDateFieldValid, setIsHarvestDateFieldValid] =
+    useState<boolean>(false)
 
   useEffect(() => {
     const calendars = bulmaCalendar.attach('[type="date"]', {})
@@ -28,11 +36,13 @@ const Farmer: FC = () => {
       // @ts-ignore
       plantingDate.bulmaCalendar.on('select', (datepicker: any) => {
         setPlantingDate(datepicker.data.value())
+        setIsPlaningDateFieldValid(true)
       })
 
       // @ts-ignore
       plantingDate.bulmaCalendar.on('clear', (_datepicker: any) => {
         setPlantingDate('')
+        setIsPlaningDateFieldValid(false)
       })
     }
 
@@ -41,17 +51,35 @@ const Farmer: FC = () => {
       // @ts-ignore
       harvestDate.bulmaCalendar.on('select', (datepicker: any) => {
         setHarvestDate(datepicker.data.value())
+        setIsHarvestDateFieldValid(true)
       })
 
       // @ts-ignore
       harvestDate.bulmaCalendar.on('clear', (_datepicker: any) => {
         setHarvestDate('')
+        setIsHarvestDateFieldValid(false)
       })
     }
   }, [])
 
   const handleChange = (e: any) => {
     const { name, value } = e.target
+
+    if (name === 'productName') {
+      if (value === '') {
+        setIsProductNameFieldValid(false)
+      } else {
+        setIsProductNameFieldValid(true)
+      }
+    }
+
+    if (name === 'productLocation') {
+      if (value === '') {
+        setIsProductLocationFieldValid(false)
+      } else {
+        setIsProductLocationFieldValid(true)
+      }
+    }
 
     setData({ ...data, [name]: value })
   }
@@ -81,7 +109,9 @@ const Farmer: FC = () => {
               <label className="label">Product Name</label>
               <div className="control">
                 <input
-                  className="input"
+                  className={
+                    isProductNameFieldValid ? 'input' : 'input is-danger'
+                  }
                   type="text"
                   name="productName"
                   id="productName"
@@ -94,7 +124,9 @@ const Farmer: FC = () => {
               <label className="label">Product Location</label>
               <div className="control">
                 <input
-                  className="input"
+                  className={
+                    isProductLocationFieldValid ? 'input' : 'input is-danger'
+                  }
                   type="text"
                   name="productLocation"
                   id="productLocation"
@@ -129,7 +161,15 @@ const Farmer: FC = () => {
               </div>
             </div>
 
-            <button className="button is-block is-link is-fullwidth mt-3">
+            <button
+              className="button is-block is-link is-fullwidth mt-3"
+              disabled={
+                !isProductNameFieldValid ||
+                !isProductLocationFieldValid ||
+                !isPlantingDateFieldValid ||
+                !isHarvestDateFieldValid
+              }
+            >
               Add
             </button>
             <br />
