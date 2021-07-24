@@ -15227,9 +15227,16 @@
     "name": "solc",
     "version": "0.8.6+commit.11564f7e.Emscripten.clang"
   },
-  "networks": {},
+  "networks": {
+    "5777": {
+      "events": {},
+      "links": {},
+      "address": "0x88Cb0a58C9c06774b1e3332079D026CEFdCbab5e",
+      "transactionHash": "0xd25e84ae1934d5f9753cc138505c7a760eddd78bbb49636111b434c19ed15e8a"
+    }
+  },
   "schemaVersion": "3.4.1",
-  "updatedAt": "2021-07-23T19:21:48.857Z",
+  "updatedAt": "2021-07-24T05:23:04.013Z",
   "networkType": "ethereum",
   "devdoc": {
     "details": "Implements document mMnagement. Constraints: 1. One account address in Profile contract per one document contract",

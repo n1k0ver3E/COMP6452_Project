@@ -86,3 +86,33 @@ export interface IAccountsTableProps {
   columns: any
   data: IParticipantDetails[]
 }
+
+
+export interface IDocumentContract {
+  documentContract: any
+  documents: string[]
+}
+
+export interface IDocumentContractAPI {
+  // registerParticipant: (participantDetails: IParticipantDetails) => void
+  // registeredAccounts: IParticipantDetails[]
+  // registrationError: boolean
+  pendingDocuments: IDocumentDetails[]
+  approvedDocuments: IDocumentDetails[]
+  rejectedDocuments: IDocumentDetails[]
+  updateDocumentStatus: (address: string, updatedDocumentStatus: number) => void
+  getAllDocuments: () => void
+}
+
+export interface IDocumentDetails {
+  documentName: string
+  docTypeValue: number
+  referenceId: number
+  hashContent: string
+}
+
+
+export interface IDocumentsTableProps {
+  columns: any
+  data: IDocumentDetails[]
+}

@@ -1,6 +1,6 @@
 import { IDocument } from '../interfaces/document'
 import { Model, model, Schema } from 'mongoose'
-import { DocumentType } from '../enums/documentContract'
+import { DocumentType, DocumentStatus } from '../enums/documentContract'
 
 const DocumentSchema: Schema = new Schema(
   {
@@ -19,6 +19,11 @@ const DocumentSchema: Schema = new Schema(
     },
     hashContent: {
       type: String,
+      required: true,
+    },
+    documentStatus: {
+      type: Number,
+      enum: Object.values(DocumentStatus),
       required: true,
     },
   },

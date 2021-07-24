@@ -9,4 +9,10 @@ router
   .route('/')
   .post(upload.single('avatar'), DocumentController.uploadDocument)
 
+router.route('/status').get(DocumentController.getDocumentsByStatus);
+
+// router
+//   .route('/:address')
+//   .patch(DocumentController.uploadDocument)
+
 export default router

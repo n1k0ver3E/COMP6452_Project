@@ -1,7 +1,6 @@
 import fs from 'fs'
 import { DocumentRepository } from '../repositories'
-import { IDocument } from '../interfaces/document'
-import { IDocumentResp } from '../interfaces/document'
+import { IDocumentResp, IDocument } from '../interfaces/document'
 const ipfsAPI = require('ipfs-api')
 const NodeRSA = require('node-rsa')
 
@@ -47,6 +46,29 @@ const documentUpload = async (
   }
 }
 
+const getAllDocuments = async () : Promise<IDocument[]> => {
+  try {
+    const documents = await DocumentRepository.getAllDocuments();
+    
+    return documents;
+  } catch (err) {
+    console.log(err)
+    return [];
+  }
+}
+
+const getDocumentsByStatus = async (
+  documentStatus: string[] | string
+): Promise<IDocument[]> => {
+  const documents = await DocumentRepository.getDocumentsByStatus(
+    documentStatus
+  )
+
+  return documents
+}
+
 export default {
   documentUpload,
+  getAllDocuments,
+  getDocumentsByStatus
 }

@@ -20,6 +20,12 @@ export enum DocumentType {
   TRACEABILITY = 3,
 }
 
+export enum DocumentStatus {
+  Pending,
+  Approved,
+  Rejected
+}
+
 export enum ProductCategory {
   FARMING,
   HARVESTING,
