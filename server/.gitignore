@@ -114,6 +114,7 @@ dist
 .pnp.*
 
 .vscode
+uploads/
 
 secrets.json
 yarn.lock
