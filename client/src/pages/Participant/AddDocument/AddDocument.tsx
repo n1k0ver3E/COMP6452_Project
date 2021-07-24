@@ -15,6 +15,8 @@ const AddDocument: FC = () => {
   const [address, setAddress] = useState<{ accountAddress: string }>({
     accountAddress: '',
   })
+  const [documentName, setDocumentName] = useState<string>('')
+  const [file, setFile] = useState('')
   const { documentContract, accounts } = useContext(DocumentContractContext)
   const { registeredAccounts, getAllParticipants } = useContext(
     ProfileContractAPIContext
@@ -38,8 +40,17 @@ const AddDocument: FC = () => {
     }
   }
 
-  console.log('accountId', accountId)
-  console.log('address', address)
+  const handleCaptureFile = (e: any) => {
+    e.stopPropagation()
+    e.preventDefault()
+
+    const file = e.target.files[0]
+
+    setFile(file)
+    setDocumentName(file.name)
+  }
+
+  console.log('file', file)
 
   return (
     <div>
@@ -78,18 +89,26 @@ const AddDocument: FC = () => {
 
                   <div className="file has-name is-primary mt-3 is-fullwidth">
                     <label className="file-label">
-                      <input className="file-input" type="file" name="resume" />
+                      <input
+                        className="file-input"
+                        type="file"
+                        name="resume"
+                        onChange={handleCaptureFile}
+                      />
                       <span className="file-cta">
                         <span className="file-icon">
                           <i className="fas fa-upload" />
                         </span>
                         <span className="file-label">Select file…</span>
                       </span>
-                      <span className="file-name">file_name</span>
+                      <span className="file-name">{documentName}</span>
                     </label>
                   </div>
 
-                  <button className="button is-block is-link is-fullwidth mt-3">
+                  <button
+                    className="button is-block is-link is-fullwidth mt-3"
+                    disabled={accountId.accountId === -1 || documentName === ''}
+                  >
                     Upload
                   </button>
                   <br />
