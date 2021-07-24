@@ -1,6 +1,6 @@
 import { IDocument } from '../interfaces/document'
 import { Model, model, Schema } from 'mongoose'
-import { DocumentType, DocumentStatus } from '../enums/documentContract'
+import { DocumentStatus } from '../enums/documentContract'
 
 const DocumentSchema: Schema = new Schema(
   {
