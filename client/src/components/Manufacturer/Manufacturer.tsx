@@ -5,19 +5,33 @@ import bulmaCalendar from 'bulma-calendar/dist/js/bulma-calendar.min.js'
 import './manufacturer.css'
 import {
   IManufacturerProcessDetails,
-  IManufacturerProcessInitial,
+  ISendProductDetails,
 } from '../../interfaces/contract'
 
-const initialState: IManufacturerProcessInitial = {
+const initialState: IManufacturerProcessDetails = {
   productId: -1,
   processingType: '',
 }
 
+const sendProductInitialState: ISendProductDetails = {
+  receiverAddress: '',
+  logisticsAddress: '',
+  trackNumber: '',
+}
+
 const Manufacturer: FC = () => {
-  const [data, setData] = useState<IManufacturerProcessInitial>(initialState)
+  const [data, setData] = useState<IManufacturerProcessDetails>(initialState)
+  const [sendProductData, setSendProductData] = useState<ISendProductDetails>(
+    sendProductInitialState
+  )
   const [isProcessingTypeFieldValid, setIsProcessingTypeFieldValid] =
     useState<boolean>(false)
-  useState<boolean>(false)
+  const [isReceiverAddressFieldValid, setIsReceiverAddressFieldValid] =
+    useState<boolean>(false)
+  const [isLogisticsAddressFieldValid, setIsLogisticsAddressFieldValid] =
+    useState<boolean>(false)
+  const [isTrackNumberFieldValid, setIsTrackNumberFieldValid] =
+    useState<boolean>(false)
   // TESTING ONLY
   const [showPayload, setShowPayload] = useState<boolean>(false)
   const [payload, setPayload] = useState('')
@@ -38,12 +52,53 @@ const Manufacturer: FC = () => {
     setData({ ...data, [name]: value })
   }
 
+  const handleChangeSendProduct = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target
+
+    if (name === 'receiverAddress') {
+      if (value === '') {
+        setIsReceiverAddressFieldValid(false)
+      } else {
+        setIsReceiverAddressFieldValid(true)
+      }
+    }
+
+    if (name === 'logisticsAddress') {
+      if (value === '') {
+        setIsLogisticsAddressFieldValid(false)
+      } else {
+        setIsLogisticsAddressFieldValid(true)
+      }
+    }
+
+    if (name === 'trackNumber') {
+      if (value === '') {
+        setIsTrackNumberFieldValid(false)
+      } else {
+        setIsTrackNumberFieldValid(true)
+      }
+    }
+
+    setSendProductData({ ...sendProductData, [name]: value })
+  }
+
   const handleSubmission = (e: any) => {
     e.preventDefault()
 
     // TESTING ONLY TO BE REMOVED AND REPLACED WITH REAL API CALLS
     // @ts-ignore
     setPayload(data)
+    setShowPayload(true)
+  }
+
+  const handleSubmissionSendProduct = (e: any) => {
+    e.preventDefault()
+
+    // TESTING ONLY TO BE REMOVED AND REPLACED WITH REAL API CALLS
+    // @ts-ignore
+    setPayload(sendProductData)
     setShowPayload(true)
   }
 
@@ -118,7 +173,7 @@ const Manufacturer: FC = () => {
                     type="text"
                     name="receiverAddress"
                     id="receiverAddress"
-                    onChange={handleChange}
+                    onChange={handleChangeSendProduct}
                   />
                 </div>
               </div>
@@ -131,7 +186,7 @@ const Manufacturer: FC = () => {
                     type="text"
                     name="logisticsAddress"
                     id="logisticsAddress"
-                    onChange={handleChange}
+                    onChange={handleChangeSendProduct}
                   />
                 </div>
               </div>
@@ -144,15 +199,19 @@ const Manufacturer: FC = () => {
                     type="text"
                     name="trackNumber"
                     id="trackNumber"
-                    onChange={handleChange}
+                    onChange={handleChangeSendProduct}
                   />
                 </div>
               </div>
 
               <button
                 className="button is-block is-link is-fullwidth mt-3"
-                disabled={!isProcessingTypeFieldValid || data.productId === -1}
-                onClick={(e) => handleSubmission(e)}
+                disabled={
+                  !isReceiverAddressFieldValid ||
+                  !isLogisticsAddressFieldValid ||
+                  !isTrackNumberFieldValid
+                }
+                onClick={(e) => handleSubmissionSendProduct(e)}
               >
                 Send
               </button>
