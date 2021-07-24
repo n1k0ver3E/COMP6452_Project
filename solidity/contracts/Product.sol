@@ -116,6 +116,10 @@ contract ProductSC {
         products[p.productId] = p;
         return numProducts;
     }
+    
+    // TODO: Valiadation
+    // 1. msg.sender account type = farmer
+    // 2. The product status is not RECALLING
 
     function addProductFarmingInfo(
         uint256 _pid,
@@ -140,6 +144,10 @@ contract ProductSC {
         
         emit Harvested(_pid);
     }
+    
+     // TODO: Valiadation
+    // 1. msg.sender account type = manu
+    // 2. The product status is not RECALLING
 
     function manuProductInfo(
         uint256 _pid, 
@@ -156,11 +164,11 @@ contract ProductSC {
         m.timestamp = block.timestamp;
         manu_process[_pid] = m;
         
-        
-        
         emit Manufactured(_pid);
     }
     
+    
+    // no need now
     function logiProductInfo(
         address sender, uint256 _pid
     ) public {
@@ -178,6 +186,11 @@ contract ProductSC {
         
     }
     
+    
+     // TODO: Valiadation
+    // 1. msg.sender account type = retailer
+    // 2. The product status is not RECALLING
+    
     function retailProductInfo(
         address sender, uint256 _pid
     ) public {
@@ -190,9 +203,15 @@ contract ProductSC {
         r.timeStamp = block.timestamp;
         retail_process[_pid] = r;
         
+        // TODO: update status here
+        //sendProducts[productId].status = SendProductStatus.approved;
+        
         emit Retailed(_pid);
     }
     
+    // TODO: Valiadation
+    // 1. msg.sender account type = consumer
+    // 2. The product status is not RECALLING
     function purchasingProductInfo(
         address sender,
         uint256 _pid,
@@ -210,7 +229,6 @@ contract ProductSC {
         
         emit Purchased(_pid);
         
-        
     }
         
 
@@ -225,6 +243,10 @@ contract ProductSC {
 
     // enum SendProductStatus {0=pending,1=approved,2=rejected}
     // to validate the account type must do it off-chain to call profile contract
+     // TODO: Valiadation
+    // 1. msg.sender account type = manufacturer
+    // 2. receiver = retailerId
+    // 3. logistic = logistic or oracle
     function sendProduct(uint256 productId, address receiver, address logistic, string memory trackingNumber )
         public
         checkDuplicateSendProductItem(productId)
@@ -251,13 +273,27 @@ contract ProductSC {
         Trace trace = Trace(traceAddress);
         trace.addProduct(productId, logistic, trackingNumber);
     }
-
+    
+    // Move to retailProductInfo
     function receiveProduct(uint256 productId, bool receiveStatus) public {
         if (receiveStatus == true) {
             sendProducts[productId].status = SendProductStatus.approved;
         } else {
             sendProducts[productId].status = SendProductStatus.rejected;
         }
+    }
+    //event
+    // productId
+    //Validation
+    // 1. the sender can be in 
+    /*
+            address FarmerId;
+        address manufacturerId;
+        address distributorId;
+        address retailerId;
+        address ConsumerId;*/
+       // 2. The product status is not RECALLING
+    function recallProduct(uint256 productId ) public {
     }
 
     // private functions
@@ -272,6 +308,9 @@ contract ProductSC {
         }
         return false;
     }
+    
+    
+    
 
     modifier checkDuplicateSendProductItem(uint256 _productId) {
         require(
