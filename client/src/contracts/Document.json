@@ -15229,7 +15229,7 @@
   },
   "networks": {},
   "schemaVersion": "3.4.1",
-  "updatedAt": "2021-07-23T14:36:29.100Z",
+  "updatedAt": "2021-07-23T19:21:48.857Z",
   "networkType": "ethereum",
   "devdoc": {
     "details": "Implements document mMnagement. Constraints: 1. One account address in Profile contract per one document contract",
