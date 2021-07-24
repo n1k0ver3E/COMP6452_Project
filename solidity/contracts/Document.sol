@@ -8,8 +8,7 @@ import "./Profile.sol";
 /**
  * @title Document Management
  * @dev Implements document mMnagement.
- * Constraints:
- * 1. One account address in Profile contract per one document contract
+ * To strore additional documents for account registration in Profile contract
  */
 contract Document {
     //DocumentStatus: 0=Pending, 1=Approved, 2=Rejected
@@ -18,37 +17,28 @@ contract Document {
         Approved,
         Rejected
     }
-    //DocumentType: 1=Profile=,2=Product,3=Traceability
-    enum DocumentType {
-        Profile,
-        Product,
-        Traceability
-    }
 
     Profile profile;
 
-    address public documentOwner;
     address public regulatorAddress;
     uint256 public lastDocIndex;
 
     struct DocumentItem {
         uint256 documentId;
         string documentName;
-        DocumentType documentType;
-        uint256 referenceId; // can be accountId (reference to account in Profile Contract) or productId (reference to Product Contract or Trace Contract)
+        uint256 accountId;
+        address accountAddress;
         DocumentStatus documentStatus;
-        bytes32 hashContent; // To DO: check with Promie that could he send bytes32 ?
-        // 0x7465737400000000000000000000000000000000000000000000000000000000
+        string hashContent; // TODO: recheck that it can store hash data
     }
     // Get account Info. by referenceId
-    mapping(uint256 => DocumentItem[]) public documentsByRefId;
+    mapping(uint256 => DocumentItem[]) public documentsByAccId;
 
     // @notice To create document contract and have an association relationship with Profile contract
     constructor(address _profileAddress) {
         profile = Profile(_profileAddress);
         lastDocIndex = 0;
         regulatorAddress = profile.getRegulatorAddress();
-        documentOwner = msg.sender;
     }
 
     // Create events for using in JavaScript API
@@ -56,28 +46,25 @@ contract Document {
     event AddDocument(
         uint256 indexed documentId,
         string documentName,
-        uint256 documentType,
-        uint256 indexed referenceId, // can be accountId (reference to account in Profile Contract) or productId (reference to Product Contract or Trace Contract)
+        uint256 indexed accountId,
+        address accountAddress,
         uint256 documentStatus,
-        bytes32 hashContent // To DO: check with Promie that could he send bytes32 ?
+        string hashContent // To DO: check with Promie that could he send bytes32 ?
     );
     // Event 2: VerifyDocument by Regulator
     event VerifyDocument(
-        uint256 indexed referenceId,
+        uint256 indexed accountId,
+        address accountAddress,
         uint256 indexed documentId,
         uint256 documentStatus
     );
 
-    /// @notice Function 1: Add document by Farmer,Manufacturer,Reatiler,Logistic
-    /// @param _documentName Input a doc. name.
-    /// @param _docTypeValue 1=Profile=,2=Product,3=Traceability
-    /// @param _referenceId can be accountId (reference to account in Profile Contract) or productId (reference to Product Contract or Trace Contract)
+    /// @notice Function 1: Add document for registration
     function addDocument(
+        uint256 _accountId,
         string memory _documentName,
-        uint256 _docTypeValue,
-        uint256 _referenceId,
-        bytes32 _hashContent
-    ) public onlyDocumentOwner {
+        string memory _hashContent
+    ) public onlyDocumentOwner(_accountId) {
         require(
             bytes(_documentName).length != 0,
             "Document name cannot be empty"
@@ -87,59 +74,57 @@ contract Document {
         DocumentItem memory documentItem = DocumentItem(
             newId,
             _documentName,
-            DocumentType(_docTypeValue),
-            _referenceId,
+            _accountId,
+            msg.sender,
             DocumentStatus.Pending,
             _hashContent
         );
 
         // Add doc item to mapping documentsByRefId
-        documentsByRefId[_referenceId].push(documentItem);
+        documentsByAccId[_accountId].push(documentItem);
         // upd next index
         lastDocIndex = lastDocIndex + 1;
 
         emit AddDocument(
             documentItem.documentId,
             documentItem.documentName,
-            uint256(documentItem.documentType),
-            documentItem.referenceId,
+            documentItem.accountId,
+            documentItem.accountAddress,
             uint256(documentItem.documentStatus),
             documentItem.hashContent
         );
     }
 
     /// @notice Function 2: approveAccount. Only regulator account can use this function.
-    /// @param _referenceId can be accountId (reference to account in Profile Contract) or productId (reference to Product Contract or Trace Contract)
-    /// @param _documentId Input a doc. id.
-    /// @param _documentStatusValue 0=Pending, 1=Approved, 2=Rejected
     function verifydocument(
-        uint256 _referenceId,
+        uint256 _accountId,
         uint256 _documentId,
         uint256 _documentStatusValue
     ) public onlyRegulator {
         require(
             _documentId > 0 &&
-                _documentId <= documentsByRefId[_referenceId].length,
-            ""
+                _documentId <= documentsByAccId[_accountId].length,
+            "Cannot find the document."
         );
         // Get document item by referenceId and doc. item index
 
-        documentsByRefId[_referenceId][_documentId - 1]
+        documentsByAccId[_accountId][_documentId - 1]
         .documentStatus = DocumentStatus(_documentStatusValue);
 
         emit VerifyDocument(
-            documentsByRefId[_referenceId][_documentId - 1].referenceId,
-            documentsByRefId[_referenceId][_documentId - 1].documentId,
+            documentsByAccId[_accountId][_documentId - 1].accountId,
+            msg.sender,
+            documentsByAccId[_accountId][_documentId - 1].documentId,
             uint256(
-                documentsByRefId[_referenceId][_documentId - 1].documentStatus
+                documentsByAccId[_accountId][_documentId - 1].documentStatus
             )
         );
     }
 
     // modifier
-    modifier onlyDocumentOwner {
+    modifier onlyDocumentOwner(uint256 _accountId) {
         require(
-            msg.sender == documentOwner,
+            profile.isAccountOwner(msg.sender, _accountId) == true,
             "This function can only be executed by the owner."
         );
         _;

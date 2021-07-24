@@ -87,7 +87,6 @@ export interface IAccountsTableProps {
   data: IParticipantDetails[]
 }
 
-
 export interface IDocumentContract {
   documentContract: any
   documents: string[]
@@ -115,4 +114,37 @@ export interface IDocumentDetails {
 export interface IDocumentsTableProps {
   columns: any
   data: IDocumentDetails[]
+}
+
+export type IFarmerProductInitial = Pick<
+  IFarmerProductDetails,
+  'productName' | 'productLocation'
+>
+
+export interface IFarmerProductDetails {
+  productName: string
+  productLocation: string
+  plantingDate: Date | string
+  harvestDate: Date | string
+}
+
+export type IManufacturerProcessInitial = Pick<
+  IManufacturerProcessDetails,
+  'productId' | 'processingType'
+>
+
+export interface IManufacturerProcessDetails {
+  productId: number | string
+  processingType: string
+  timeStamp: string
+}
+
+export type IRetailProcessDetails = Pick<
+  IManufacturerProcessDetails,
+  'productId'
+>
+
+export interface IPurchaseProcessDetails {
+  productId: number | string
+  price: number | string
 }
