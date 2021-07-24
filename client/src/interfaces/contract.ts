@@ -98,3 +98,14 @@ export interface IFarmerProductDetails {
   plantingDate: Date | string
   harvestDate: Date | string
 }
+
+export type IManufacturerProcessInitial = Pick<
+  IManufacturerProcessDetails,
+  'productId' | 'processingType'
+>
+
+export interface IManufacturerProcessDetails {
+  productId: number | string
+  processingType: string
+  timeStamp: string
+}

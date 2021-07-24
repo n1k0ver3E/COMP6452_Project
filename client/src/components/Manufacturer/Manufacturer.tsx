@@ -1,10 +1,29 @@
-import React, { FC, useEffect } from 'react'
+import React, { ChangeEvent, FC, useEffect, useState } from 'react'
 import 'bulma-calendar/dist/css/bulma-calendar.min.css'
 // @ts-ignore
 import bulmaCalendar from 'bulma-calendar/dist/js/bulma-calendar.min.js'
 import './manufacturer.css'
+import {
+  IManufacturerProcessDetails,
+  IManufacturerProcessInitial,
+} from '../../interfaces/contract'
+
+const initialState: IManufacturerProcessInitial = {
+  productId: -1,
+  processingType: '',
+}
 
 const Manufacturer: FC = () => {
+  const [data, setData] = useState(initialState)
+  const [timeStamp, setTimestamp] = useState<string>('')
+  const [isProcessingTypeFieldValid, setIsProcessingTypeFieldValid] =
+    useState<boolean>(false)
+  const [isTimestampFieldValid, setIsTimestampFieldValid] =
+    useState<boolean>(false)
+  // TESTING ONLY
+  const [showPayload, setShowPayload] = useState<boolean>(false)
+  const [payload, setPayload] = useState('')
+
   useEffect(() => {
     const calendars = bulmaCalendar.attach('[type="date"]', {})
     calendars.forEach((calendar: any) => {
@@ -13,14 +32,54 @@ const Manufacturer: FC = () => {
       })
     })
 
-    const element = document.querySelector('#dob')
-    if (element) {
+    const timestamp = document.querySelector('#timestamp')
+    if (timestamp) {
       // @ts-ignore
-      element.bulmaCalendar.on('select', (datepicker: any) => {
-        console.log(datepicker.data.value())
+      timestamp.bulmaCalendar.on('select', (datepicker: any) => {
+        setTimestamp(datepicker.data.value())
+        setIsTimestampFieldValid(true)
+      })
+
+      // @ts-ignore
+      timestamp.bulmaCalendar.on('clear', (_datepicker) => {
+        setTimestamp('')
+        setIsTimestampFieldValid(false)
       })
     }
   }, [])
+
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target
+
+    if (name === 'processingType') {
+      if (value === '') {
+        setIsProcessingTypeFieldValid(false)
+      } else {
+        setIsProcessingTypeFieldValid(true)
+      }
+    }
+
+    setData({ ...data, [name]: value })
+  }
+
+  const handleSubmission = (e: any) => {
+    e.preventDefault()
+
+    const payload: IManufacturerProcessDetails = {
+      ...data,
+      timeStamp,
+    }
+
+    // TESTING ONLY TO BE REMOVED AND REPLACED WITH REAL API CALLS
+    // @ts-ignore
+    setPayload(payload)
+    setShowPayload(true)
+  }
+
+  console.log('data', data)
+  console.log('timestamp', timeStamp)
 
   return (
     <section className="container">
@@ -40,12 +99,19 @@ const Manufacturer: FC = () => {
           </div>
           <form className="mt-5">
             <div className="field">
-              <label className="label">Product ID</label>
+              <label className="label">Product</label>
               <div className="select is-normal is-fullwidth">
-                <select>
-                  <option>Select dropdown</option>
-                  <option>Sample Product 1</option>
-                  <option>Sample Product 2</option>
+                <select
+                  defaultValue={'DEFAULT'}
+                  name="productId"
+                  id="productId"
+                  onChange={handleChange}
+                >
+                  <option value={'DEFAULT'} disabled>
+                    Select Product
+                  </option>
+                  <option value="1">Sample Product 1</option>
+                  <option value="2">Sample Product 2</option>
                 </select>
               </div>
             </div>
@@ -58,6 +124,7 @@ const Manufacturer: FC = () => {
                   type="text"
                   name="processingType"
                   id="processingType"
+                  onChange={handleChange}
                 />
               </div>
             </div>
@@ -70,17 +137,34 @@ const Manufacturer: FC = () => {
                   type="date"
                   name="timestamp"
                   id="timestamp"
+                  onChange={handleChange}
                 />
               </div>
             </div>
 
-            <button className="button is-block is-link is-fullwidth mt-3">
+            <button
+              className="button is-block is-link is-fullwidth mt-3"
+              disabled={
+                !isProcessingTypeFieldValid ||
+                !isTimestampFieldValid ||
+                data.productId === -1
+              }
+              onClick={(e) => handleSubmission(e)}
+            >
               Add
             </button>
             <br />
           </form>
         </div>
       </div>
+
+      {/*TESTING ONLY TO BE REMOVED AND REPLACED WITH REAL API CALLS*/}
+      {showPayload && (
+        <div>
+          <h1>SENDING PAYLOAD TO API</h1>
+          <h1>{JSON.stringify(payload)}</h1>
+        </div>
+      )}
     </section>
   )
 }
