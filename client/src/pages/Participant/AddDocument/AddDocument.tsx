@@ -16,6 +16,8 @@ const AddDocument: FC = () => {
     accountAddress: '',
   })
   const [documentName, setDocumentName] = useState<string>('')
+  const [error, setError] = useState<boolean>(false)
+  const [errorMessage, setErrorMessage] = useState<string>('')
   const [file, setFile] = useState('')
   const { documentContract, accounts } = useContext(DocumentContractContext)
   const { registeredAccounts, getAllParticipants } = useContext(
@@ -50,16 +52,38 @@ const AddDocument: FC = () => {
     setDocumentName(file.name)
   }
 
-  console.log('file', file)
+  const handleFileUpload = (e: any) => {
+    e.preventDefault()
+
+    if (address.accountAddress !== accounts[0]) {
+      setError(true)
+      setErrorMessage('This function can only be executed by the owner.')
+      return
+    }
+
+    const payload = {
+      accountId: accountId.accountId,
+      documentName: documentName,
+    }
+
+    console.log('sending file', file)
+    console.log('payload', payload)
+  }
 
   return (
     <div>
       <section className="container has-background-light">
         <div className="columns is-multiline">
-          <div className="column is-10 is-offset-2 register">
+          <div className="column is-10 is-offset-2">
             <div className="columns">
-              <div className="column left mt-6">
+              <div className="column left mt-6 is-half">
                 <h1 className="title is-4">Upload Document</h1>
+                {error && (
+                  <div className="notification is-danger is-light">
+                    {errorMessage}
+                  </div>
+                )}
+
                 <form className="mt-5">
                   <div className="select is-fullwidth">
                     <select
@@ -108,13 +132,14 @@ const AddDocument: FC = () => {
                   <button
                     className="button is-block is-link is-fullwidth mt-3"
                     disabled={accountId.accountId === -1 || documentName === ''}
+                    onClick={(e) => handleFileUpload(e)}
                   >
                     Upload
                   </button>
                   <br />
                 </form>
               </div>
-              <div className="column right has-text-centered">
+              <div className="column right has-text-centered is-half">
                 <img
                   src={DocumentImage}
                   alt="registration infographics"
