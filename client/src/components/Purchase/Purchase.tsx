@@ -1,7 +1,44 @@
-import React, { FC } from 'react'
+import React, { ChangeEvent, FC, useState } from 'react'
 import './purchase.css'
+import { IPurchaseProcessDetails } from '../../interfaces/contract'
+
+const initialState: IPurchaseProcessDetails = {
+  productId: -1,
+  price: 0,
+}
 
 const Purchase: FC = () => {
+  const [data, setData] = useState<IPurchaseProcessDetails>(initialState)
+  const [isPriceFieldValid, setIsPriceFieldValid] = useState<boolean>(false)
+  // TESTING ONLY
+  const [showPayload, setShowPayload] = useState<boolean>(false)
+  const [payload, setPayload] = useState('')
+
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target
+
+    if (name === 'price') {
+      if (value === '') {
+        setIsPriceFieldValid(false)
+      } else {
+        setIsPriceFieldValid(true)
+      }
+    }
+
+    setData({ ...data, [name]: value })
+  }
+
+  const handleSubmission = (e: any) => {
+    e.preventDefault()
+
+    // TESTING ONLY TO BE REMOVED AND REPLACED WITH REAL API CALLS
+    // @ts-ignore
+    setPayload(data)
+    setShowPayload(true)
+  }
+
   return (
     <section className="container">
       <div className="columns">
@@ -20,12 +57,17 @@ const Purchase: FC = () => {
           </div>
           <form className="mt-5">
             <div className="field">
-              <label className="label">Product ID</label>
+              <label className="label">Product</label>
               <div className="select is-normal is-fullwidth">
-                <select>
-                  <option>Select dropdown</option>
-                  <option>Sample Product 1</option>
-                  <option>Sample Product 2</option>
+                <select
+                  defaultValue={'DEFAULT'}
+                  name="productId"
+                  id="productId"
+                  onChange={handleChange}
+                >
+                  <option value={'DEFAULT'}>Select Product</option>
+                  <option value="1">Sample Product 1</option>
+                  <option value="2">Sample Product 2</option>
                 </select>
               </div>
             </div>
@@ -35,20 +77,34 @@ const Purchase: FC = () => {
               <div className="control">
                 <input
                   className="input"
-                  type="text"
-                  name="processingType"
-                  id="processingType"
+                  type="number"
+                  name="price"
+                  id="price"
+                  onChange={handleChange}
                 />
               </div>
             </div>
 
-            <button className="button is-block is-link is-fullwidth mt-3">
+            <button
+              className="button is-block is-link is-fullwidth mt-3"
+              disabled={
+                !isPriceFieldValid || data.productId === -1 || data.price === 0
+              }
+              onClick={(e) => handleSubmission(e)}
+            >
               Submit
             </button>
             <br />
           </form>
         </div>
       </div>
+      {/*TESTING ONLY TO BE REMOVED AND REPLACED WITH REAL API CALLS*/}
+      {showPayload && (
+        <div>
+          <h1>SENDING PAYLOAD TO API</h1>
+          <h1>{JSON.stringify(payload)}</h1>
+        </div>
+      )}
     </section>
   )
 }
