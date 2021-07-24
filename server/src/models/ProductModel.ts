@@ -6,7 +6,6 @@ const ProductSchema: Schema = new Schema(
   {
     productId: {
       type: Number,
-      unique: true,
     },
     productName: {
       type: String,
@@ -22,9 +21,6 @@ const ProductSchema: Schema = new Schema(
     },
     processingType: {
       type: String,
-    },
-    timestamp: {
-      type: Date,
     },
     price: {
       type: Number,

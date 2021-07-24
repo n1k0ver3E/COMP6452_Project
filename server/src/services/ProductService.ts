@@ -2,7 +2,13 @@ import { ProductRepository } from '../repositories'
 import { IProduct } from '../interfaces/product'
 
 const createProduct = async (productDetails: IProduct) => {
-  return ProductRepository.createProduct(productDetails)
+  const product = await ProductRepository.createProduct(productDetails)
+
+  return {
+    id: product._id,
+    productName: product.productName,
+    status: product.status,
+  }
 }
 
 export default {
