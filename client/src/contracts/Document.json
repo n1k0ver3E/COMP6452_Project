@@ -15304,16 +15304,12 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0x88Cb0a58C9c06774b1e3332079D026CEFdCbab5e",
-      "transactionHash": "0xd25e84ae1934d5f9753cc138505c7a760eddd78bbb49636111b434c19ed15e8a"
+      "address": "0x17Ae3A10f950863149eEecE1D41ed02f287E2515",
+      "transactionHash": "0x09d9dae06fda0f919aa9983c1129e8d581624475be4c0c511f4c0c9f39c387fb"
     }
   },
   "schemaVersion": "3.4.1",
-<<<<<<< HEAD
-  "updatedAt": "2021-07-24T05:24:08.126Z",
-=======
-  "updatedAt": "2021-07-24T05:23:04.013Z",
->>>>>>> 3ee09a24f2a871213f076244de00a1d1b60c347d
+  "updatedAt": "2021-07-24T06:08:16.487Z",
   "networkType": "ethereum",
   "devdoc": {
     "details": "Implements document mMnagement. To strore additional documents for account registration in Profile contract",
