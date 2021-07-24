@@ -49,7 +49,7 @@ const AddDocument: FC = () => {
                     </select>
                   </div>
 
-                  <div className="file is-centered is-boxed has-name mb-5 mt-5">
+                  <div className="file has-name is-primary mt-3 is-fullwidth">
                     <label className="file-label">
                       <input className="file-input" type="file" name="resume" />
                       <span className="file-cta">
@@ -58,9 +58,7 @@ const AddDocument: FC = () => {
                         </span>
                         <span className="file-label">Select file…</span>
                       </span>
-                      <span className="file-name">
-                        Screen Shot 2017-07-29 at 15.54.25.png
-                      </span>
+                      <span className="file-name">file_name</span>
                     </label>
                   </div>
 
