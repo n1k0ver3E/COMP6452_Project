@@ -4,24 +4,24 @@ import {
   IProductLocation,
 } from '../../interfaces/trace'
 
-interface ITraceAPI {
+interface ITraceContractAPI {
   logs: IProductLocation[],
   queryLogs: (productId: number) => void,
 }
 
-const contextDefaultValues: ITraceAPI = {
+const contextDefaultValues: ITraceContractAPI = {
   logs: [],
   queryLogs: () => {},
 }
 
-export const TraceAPIContext = createContext<ITraceAPI>(contextDefaultValues)
+export const TraceContractAPIContext = createContext<ITraceContractAPI>(contextDefaultValues)
 
-const TraceAPIProvider: FC = ({ children }): any => {
+const TraceContextAPIProvider: FC = ({ children }): any => {
   const [logs, setLogs] = useState<IProductLocation[]>([])
 
   const queryLogs = async (productId: number) => {
     try {
-      const resp = await api.get( '/v1/track/trace/' + productId )
+      const resp = await api.post( '/v1/track/trace/' + productId )
 
       // @ts-ignore
       setLogs( resp.data.logs );
@@ -31,15 +31,15 @@ const TraceAPIProvider: FC = ({ children }): any => {
   }
 
   return (
-    <TraceAPIContext.Provider
+    <TraceContractAPIContext.Provider
       value={{
         queryLogs,
         logs,
       }}
     >
       {children}
-    </TraceAPIContext.Provider>
+    </TraceContractAPIContext.Provider>
   )
 }
 
-export default TraceAPIProvider
+export default TraceContextAPIProvider

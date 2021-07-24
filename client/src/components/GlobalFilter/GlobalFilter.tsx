@@ -1,16 +1,17 @@
 import React, { FC } from 'react'
 
 interface IGlobalFilterProps {
+  objectName?: any
   filter: any
   setFilter: any
 }
 
-const GlobalFilter: FC<IGlobalFilterProps> = ({ filter, setFilter }) => {
+const GlobalFilter: FC<IGlobalFilterProps> = ({ objectName, filter, setFilter }) => {
   return (
     <div className="container mb-5">
       <div className="field">
         <label className="label">
-          Search By Account Name Or Account Address
+          Search By {objectName||"Account"} Name Or {objectName||"Account"} Address
         </label>
         <div className="control has-icons-left has-icons-right">
           <input

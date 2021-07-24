@@ -116,6 +116,10 @@ export interface IDocumentsTableProps {
   data: IDocumentDetails[]
 }
 
+export interface ITraceContract {
+  traceContract: any
+}
+
 export type IFarmerProductInitial = Pick<
   IFarmerProductDetails,
   'productName' | 'productLocation'

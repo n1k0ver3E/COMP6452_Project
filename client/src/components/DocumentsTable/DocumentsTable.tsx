@@ -34,7 +34,7 @@ const DocumentsTable: FC<IDocumentsTableProps> = ({ columns, data }) => {
 
   return (
     <>
-      <GlobalFilter filter={globalFilter} setFilter={setGlobalFilter} />
+      <GlobalFilter objectName="Document" filter={globalFilter} setFilter={setGlobalFilter} />
       <table {...getTableProps()}>
         <thead>
           {headerGroups.map((headerGroup) => (
