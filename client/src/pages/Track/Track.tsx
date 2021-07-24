@@ -1,34 +1,38 @@
 import React, { FC, useState, ChangeEvent, useContext } from 'react'
 import MainNavbar from '../../components/MainNavBar'
-// import TraceAPIContext from '../../contexts/TraceAPI'
-import api from '../../api'
+import { TraceContractAPIContext } from '../../contexts/TraceContractAPI'
+import { TraceContractContext } from '../../contexts/TraceContract'
+import useWeb3 from '../../hooks/web3'
+//import api from '../../api'
 
-import { IProductLocation } from '../../interfaces/trace'
+//import { IProductLocation } from '../../interfaces/trace'
 
 const Track: FC = () => {
+  const { isLoading, isWeb3, web3, accounts } = useWeb3()
   const [inputProductId, setInputProductId] = useState<string>('0')
-  const [productId, setProductId] = useState<number>()
-  const [logs, setLogs] = useState<IProductLocation[]>([])
-  //const { queryLogs } = useContext( TraceAPIContext )
+  //const {  accounts } = useContext(ProfileContractContext)
+  const { logs, queryLogs } = useContext(TraceContractAPIContext)
+  const { traceContract } = useContext(TraceContractContext)
 
-  const queryLogs = async (productId: number) => {
+  const handleRequestLocation = async (e: any) => {
+    e.preventDefault()
+
+    //const { accountAddress, accountName, accountType } = data
+    //setIsLoading(true)
+    //setShowErrorNotice(false)
+
     try {
-      const resp = await api.post('/v1/track/trace/' + productId)
+      const resp = await traceContract?.methods
+        .requestForLocation(parseInt(inputProductId))
+        .send({from: accounts[0]})
 
-      // @ts-ignore
-      setLogs(resp.data.logs)
-    } catch (err) {
-      setLogs([])
+      if (resp) {
+        alert("REQUESTED");
+      }
+      
+    } catch (error) {
     }
   }
-
-  // function queryLoop() {
-  //   queryLogs(productId == null ? 0 : productId)
-
-  //   setTimeout( queryLoop, 5000);
-  // }
-
-  // queryLoop();
 
   return (
     <>
@@ -53,8 +57,15 @@ const Track: FC = () => {
                 >
                   GET
                 </button>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault()
+                    handleRequestLocation(e)
+                  }}
+                >
+                  REQUEST LOCATION
+                </button>
               </div>
-              {productId}
             </div>
             <div>
               <table className="table">
@@ -68,9 +79,12 @@ const Track: FC = () => {
                 {logs.map((item, index) => {
                   return (
                     <tr key={index}>
-                      <td>{index+1}</td>
+                      <td>{index + 1}</td>
                       <td>{item.blockNumber}</td>
-                      <td>{ new Date(item.timestamp).toLocaleDateString()} { new Date(item.timestamp).toLocaleTimeString()}</td>
+                      <td>
+                        {new Date(item.timestamp).toLocaleDateString()}{' '}
+                        {new Date(item.timestamp).toLocaleTimeString()}
+                      </td>
                       <td>{item.latitude}</td>
                       <td>{item.longitude}</td>
                     </tr>
