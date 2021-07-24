@@ -3,6 +3,7 @@ import { DocumentRepository } from '../repositories'
 import { IDocument } from '../interfaces/document'
 import { IDocumentResp } from '../interfaces/document'
 const ipfsAPI = require('ipfs-api')
+const NodeRSA = require('node-rsa')
 
 const ipfs = ipfsAPI('ipfs.infura.io', '5001', { protocol: 'https' })
 
@@ -12,9 +13,18 @@ const documentUpload = async (
 ) => {
   // @ts-ignore
   const data = new Buffer(fs.readFileSync(fileContent.path))
+  const publicKey = fs.readFileSync("../../keys/public.pem");
+
+  const key = new NodeRSA( publicKey );
+
+  // write encrypted file
+  const encrypted = key.encrypt(data);
+  // @ts-ignore
+  fs.writeFileSync(fileContent.path + ".encrypted", encrypted, 'utf8');
+  // fs.rmSync( fileContent.path );
 
   try {
-    const file = await ipfs.add(data)
+    const file = await ipfs.add(encrypted)
 
     const newBody: IDocumentResp = {
       documentName: body.documentName,
