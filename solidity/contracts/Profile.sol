@@ -146,6 +146,23 @@ contract Profile {
         accountStatusValue = uint256(acc.accountStatus);
     }
 
+    function isAccountOwner(address _accountAddress, uint256 _accountId)
+        public
+        view
+        returns (bool)
+    {
+        Account memory acc = accountInfoByAddress[_accountAddress];
+        if (bytes(acc.accountName).length != 0) {
+            if (acc.accountId == _accountId) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
     function isLogisticOrOracle(address _accountAddress)
         public
         view
