@@ -1,11 +1,22 @@
-import React, { ChangeEvent, FC, useContext } from 'react'
+import React, { FC, useContext, useEffect } from 'react'
 import { DocumentContractContext } from '../../../contexts/DocumentContract'
+import { ProfileContractAPIContext } from '../../../contexts/ProfileContractAPI'
 import DocumentImage from '../../../assets/documents.png'
 import './adddocument.css'
-import { IAccountTypeDropdown } from '../../../interfaces/contract'
+import { IParticipantDetails } from '../../../interfaces/contract'
+import { titleCase } from '../../../helpers'
+import { AccountType } from '../../../enums/contract'
+import { shortenedAddress } from '../../../helpers/stringMutations'
 
 const AddDocument: FC = () => {
   const { documentContract, accounts } = useContext(DocumentContractContext)
+  const { registeredAccounts, getAllParticipants } = useContext(
+    ProfileContractAPIContext
+  )
+
+  useEffect(() => {
+    getAllParticipants()
+  }, [])
 
   return (
     <div>
@@ -16,19 +27,29 @@ const AddDocument: FC = () => {
               <div className="column left mt-6">
                 <h1 className="title is-4">Upload Document</h1>
                 <form className="mt-5">
-                  <div className="field mb-4">
-                    <div className="control">
-                      <input
-                        className="input"
-                        type="text"
-                        placeholder="Account Id"
-                        name="accountId"
-                        id="accountId"
-                      />
-                    </div>
+                  <div className="select is-fullwidth">
+                    <select
+                      defaultValue={'DEFAULT'}
+                      name="registeredAddress"
+                      id="registeredAddress"
+                    >
+                      <option value={'DEFAULT'} disabled>
+                        Select Account Address
+                      </option>
+                      {registeredAccounts?.map(
+                        (account: IParticipantDetails, idx: number) => (
+                          <option key={idx} value={account.accountId}>
+                            {`${account.accountName} (${titleCase(
+                              AccountType[account.accountType]
+                            )}) [${shortenedAddress(account.accountAddress)}`}
+                            ]
+                          </option>
+                        )
+                      )}
+                    </select>
                   </div>
 
-                  <div className="file is-boxed is-primary has-name mb-5 mt-5">
+                  <div className="file is-centered is-boxed has-name mb-5 mt-5">
                     <label className="file-label">
                       <input className="file-input" type="file" name="resume" />
                       <span className="file-cta">
