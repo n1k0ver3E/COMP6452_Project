@@ -58,13 +58,13 @@ const VerifyDocument: FC = () => {
       Header: 'Document Hash',
       accessor: 'hashContent',
     },
-    {
-      Header: 'Document Type',
-      accessor: 'docTypeValue',
-      Cell: ({ value }: any) => {
-        return titleCase(DocumentType[value])
-      },
-    },
+    // {
+    //   Header: 'Document Type',
+    //   accessor: 'docTypeValue',
+    //   Cell: ({ value }: any) => {
+    //     return titleCase(DocumentType[value])
+    //   },
+    // },
     {
       Header: 'Document Status',
       accessor: 'documentStatus',
