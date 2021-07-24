@@ -15,11 +15,6 @@ const VerifyDocument: FC = () => {
     updateDocumentStatus,
   } = useContext(DocumentContractAPIContext)
 
-
-  // const [approvedDocuments, setApprovedDocuments]  = useState<IDocumentDetails[]>([]);
-  // const [pendingDocuments, setPendingDocuments]  = useState<IDocumentDetails[]>([]);
-  // const [rejectedDocuments, setRejectedDocuments]  = useState<IDocumentDetails[]>([]);
-
   const [pendingDocumentsActiveClass, setPendingDocumentsActiveClass] =
     useState<string>('is-active')
   const [rejectedDocumentsActiveClass, setRejectedDocumentsActiveClass] =
@@ -57,6 +52,16 @@ const VerifyDocument: FC = () => {
     {
       Header: 'Document Hash',
       accessor: 'hashContent',
+      Cell: ({
+        value,
+        row: {
+          original: {documentName, accountAddress, documentStatus: originalAccountStatus },
+        },
+      }: any) => {
+        return (
+          <a href={"https://ipfs.infura.io/ipfs/"+value} rel="noreferrer" target="_blank" download={documentName}>{value}</a>
+        )
+      },
     },
     // {
     //   Header: 'Document Type',
