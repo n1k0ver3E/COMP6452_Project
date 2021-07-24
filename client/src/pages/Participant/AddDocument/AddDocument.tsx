@@ -1,4 +1,4 @@
-import React, { FC, useContext, useEffect } from 'react'
+import React, { ChangeEvent, FC, useContext, useEffect, useState } from 'react'
 import { DocumentContractContext } from '../../../contexts/DocumentContract'
 import { ProfileContractAPIContext } from '../../../contexts/ProfileContractAPI'
 import DocumentImage from '../../../assets/documents.png'
@@ -9,6 +9,12 @@ import { AccountType } from '../../../enums/contract'
 import { shortenedAddress } from '../../../helpers/stringMutations'
 
 const AddDocument: FC = () => {
+  const [accountId, setAccountId] = useState<{ accountId: number }>({
+    accountId: -1,
+  })
+  const [address, setAddress] = useState<{ accountAddress: string }>({
+    accountAddress: '',
+  })
   const { documentContract, accounts } = useContext(DocumentContractContext)
   const { registeredAccounts, getAllParticipants } = useContext(
     ProfileContractAPIContext
@@ -17,6 +23,23 @@ const AddDocument: FC = () => {
   useEffect(() => {
     getAllParticipants()
   }, [])
+
+  const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = e.target
+
+    if (name === 'accountId') {
+      const splitVal = value.split(':')
+
+      const id = splitVal[0]
+      const sendAddress = splitVal[1]
+
+      setAccountId({ ...accountId, ['accountId']: parseInt(id) })
+      setAddress({ ...address, ['accountAddress']: sendAddress })
+    }
+  }
+
+  console.log('accountId', accountId)
+  console.log('address', address)
 
   return (
     <div>
@@ -30,15 +53,19 @@ const AddDocument: FC = () => {
                   <div className="select is-fullwidth">
                     <select
                       defaultValue={'DEFAULT'}
-                      name="registeredAddress"
-                      id="registeredAddress"
+                      name="accountId"
+                      id="accountId"
+                      onChange={handleChange}
                     >
                       <option value={'DEFAULT'} disabled>
                         Select Account Address
                       </option>
                       {registeredAccounts?.map(
                         (account: IParticipantDetails, idx: number) => (
-                          <option key={idx} value={account.accountId}>
+                          <option
+                            key={idx}
+                            value={`${account.accountId}:${account.accountAddress}`}
+                          >
                             {`${account.accountName} (${titleCase(
                               AccountType[account.accountType]
                             )}) [${shortenedAddress(account.accountAddress)}`}
