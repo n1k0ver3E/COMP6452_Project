@@ -86,3 +86,8 @@ export interface IAccountsTableProps {
   columns: any
   data: IParticipantDetails[]
 }
+
+export interface IFarmerProductDetails {
+  productName: string
+  productLocation: string
+}

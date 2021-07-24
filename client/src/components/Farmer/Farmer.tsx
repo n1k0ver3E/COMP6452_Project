@@ -1,10 +1,20 @@
-import React, { FC, useEffect } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import 'bulma-calendar/dist/css/bulma-calendar.min.css'
 // @ts-ignore
 import bulmaCalendar from 'bulma-calendar/dist/js/bulma-calendar.min.js'
 import './farmer.css'
+import { IFarmerProductDetails } from '../../interfaces/contract'
+
+const initialState: IFarmerProductDetails = {
+  productName: '',
+  productLocation: '',
+}
 
 const Farmer: FC = () => {
+  const [data, setData] = useState<IFarmerProductDetails>(initialState)
+  const [plantingDate, setPlantingDate] = useState<string>('')
+  const [harvestDate, setHarvestDate] = useState<string>('')
+
   useEffect(() => {
     const calendars = bulmaCalendar.attach('[type="date"]', {})
     calendars.forEach((calendar: any) => {
@@ -13,14 +23,43 @@ const Farmer: FC = () => {
       })
     })
 
-    const element = document.querySelector('#dob')
-    if (element) {
+    const plantingDate = document.querySelector('#plantingDate')
+    if (plantingDate) {
       // @ts-ignore
-      element.bulmaCalendar.on('select', (datepicker: any) => {
-        console.log(datepicker.data.value())
+      plantingDate.bulmaCalendar.on('select', (datepicker: any) => {
+        setPlantingDate(datepicker.data.value())
+      })
+
+      // @ts-ignore
+      plantingDate.bulmaCalendar.on('clear', (_datepicker: any) => {
+        setPlantingDate('')
+      })
+    }
+
+    const harvestDate = document.querySelector('#harvestDate')
+    if (harvestDate) {
+      // @ts-ignore
+      harvestDate.bulmaCalendar.on('select', (datepicker: any) => {
+        setHarvestDate(datepicker.data.value())
+      })
+
+      // @ts-ignore
+      harvestDate.bulmaCalendar.on('clear', (_datepicker: any) => {
+        setHarvestDate('')
       })
     }
   }, [])
+
+  const handleChange = (e: any) => {
+    const { name, value } = e.target
+
+    setData({ ...data, [name]: value })
+  }
+
+  console.log('data', data)
+  console.log('plantingDate', plantingDate)
+  console.log('harvestDate', harvestDate)
+
   return (
     <section className="container">
       <div className="columns">
@@ -46,6 +85,7 @@ const Farmer: FC = () => {
                   type="text"
                   name="productName"
                   id="productName"
+                  onChange={handleChange}
                 />
               </div>
             </div>
@@ -58,6 +98,7 @@ const Farmer: FC = () => {
                   type="text"
                   name="productLocation"
                   id="productLocation"
+                  onChange={handleChange}
                 />
               </div>
             </div>
@@ -70,6 +111,7 @@ const Farmer: FC = () => {
                   type="date"
                   name="plantingDate"
                   id="plantingDate"
+                  onChange={handleChange}
                 />
               </div>
             </div>
@@ -82,6 +124,7 @@ const Farmer: FC = () => {
                   type="date"
                   name="harvestDate"
                   id="harvestDate"
+                  onChange={handleChange}
                 />
               </div>
             </div>
