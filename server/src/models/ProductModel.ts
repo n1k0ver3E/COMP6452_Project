@@ -6,24 +6,31 @@ const ProductSchema: Schema = new Schema(
   {
     productId: {
       type: Number,
+      default: '',
     },
     productName: {
       type: String,
+      default: '',
     },
     productLocation: {
       type: String,
+      default: '',
     },
     plantingDate: {
       type: Date,
+      default: '',
     },
     harvestDate: {
       type: Date,
+      default: '',
     },
     processingType: {
       type: String,
+      default: '',
     },
     price: {
       type: Number,
+      default: '',
     },
     status: {
       type: Number,
