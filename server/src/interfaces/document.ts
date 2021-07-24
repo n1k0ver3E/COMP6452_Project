@@ -2,13 +2,13 @@ import { Document } from 'mongoose'
 
 export type IDocumentResp = Pick<
   IDocument,
-  'id' | 'documentName' | 'docTypeValue' | 'referenceId' | 'hashContent'
+  'id' | 'documentName' | 'accountId' | 'hashContent'
 >
 
 export interface IDocument extends Document {
   id?: string
   documentName: string
-  docTypeValue: number
-  referenceId: number
+  accountId: number
   hashContent: string
+  documentStatus: number
 }

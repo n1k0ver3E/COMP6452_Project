@@ -3,7 +3,7 @@ import { DocumentRepository } from '../repositories'
 import { IDocumentResp, IDocument } from '../interfaces/document'
 const ipfsAPI = require('ipfs-api')
 const NodeRSA = require('node-rsa')
-const path = require("path");
+const path = require('path')
 
 const ipfs = ipfsAPI('ipfs.infura.io', '5001', { protocol: 'https' })
 
@@ -13,14 +13,16 @@ const documentUpload = async (
 ) => {
   // @ts-ignore
   const data = new Buffer(fs.readFileSync(fileContent.path))
-  const publicKey = fs.readFileSync( path.join(__dirname, "../../keys/public.pem"));
+  const publicKey = fs.readFileSync(
+    path.join(__dirname, '../../keys/public.pem')
+  )
 
-  const key = new NodeRSA( publicKey );
+  const key = new NodeRSA(publicKey)
 
   // write encrypted file
-  const encrypted = key.encrypt(data);
+  const encrypted = key.encrypt(data)
   // @ts-ignore
-  fs.writeFileSync(fileContent.path + ".encrypted", encrypted, 'utf8');
+  fs.writeFileSync(fileContent.path + '.encrypted', encrypted, 'utf8')
   // fs.rmSync( fileContent.path );
 
   try {
@@ -28,8 +30,7 @@ const documentUpload = async (
 
     const newBody: IDocumentResp = {
       documentName: body.documentName,
-      docTypeValue: body.docTypeValue,
-      referenceId: body.referenceId,
+      accountId: body.accountId,
       hashContent: file[0].hash,
     }
 
@@ -38,23 +39,23 @@ const documentUpload = async (
     return {
       id: document.id,
       documentName: document.documentName,
-      docTypeValue: document.docTypeValue,
-      referenceId: document.referenceId,
+      accountId: document.accountId,
       hashContent: document.hashContent,
+      documentStatus: document.documentStatus,
     }
   } catch (err) {
     console.log(err)
   }
 }
 
-const getAllDocuments = async () : Promise<IDocument[]> => {
+const getAllDocuments = async (): Promise<IDocument[]> => {
   try {
-    const documents = await DocumentRepository.getAllDocuments();
-    
-    return documents;
+    const documents = await DocumentRepository.getAllDocuments()
+
+    return documents
   } catch (err) {
     console.log(err)
-    return [];
+    return []
   }
 }
 
@@ -71,5 +72,5 @@ const getDocumentsByStatus = async (
 export default {
   documentUpload,
   getAllDocuments,
-  getDocumentsByStatus
+  getDocumentsByStatus,
 }
