@@ -15,38 +15,12 @@ const initialState: IManufacturerProcessInitial = {
 
 const Manufacturer: FC = () => {
   const [data, setData] = useState<IManufacturerProcessInitial>(initialState)
-  const [timeStamp, setTimestamp] = useState<string>('')
   const [isProcessingTypeFieldValid, setIsProcessingTypeFieldValid] =
     useState<boolean>(false)
-  const [isTimestampFieldValid, setIsTimestampFieldValid] =
-    useState<boolean>(false)
+  useState<boolean>(false)
   // TESTING ONLY
   const [showPayload, setShowPayload] = useState<boolean>(false)
   const [payload, setPayload] = useState('')
-
-  useEffect(() => {
-    const calendars = bulmaCalendar.attach('[type="date"]', {})
-    calendars.forEach((calendar: any) => {
-      calendar.on('date:selected', (date: any) => {
-        console.log(date)
-      })
-    })
-
-    const timestamp = document.querySelector('#timestamp')
-    if (timestamp) {
-      // @ts-ignore
-      timestamp.bulmaCalendar.on('select', (datepicker: any) => {
-        setTimestamp(datepicker.data.value())
-        setIsTimestampFieldValid(true)
-      })
-
-      // @ts-ignore
-      timestamp.bulmaCalendar.on('clear', (_datepicker) => {
-        setTimestamp('')
-        setIsTimestampFieldValid(false)
-      })
-    }
-  }, [])
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -67,14 +41,9 @@ const Manufacturer: FC = () => {
   const handleSubmission = (e: any) => {
     e.preventDefault()
 
-    const payload: IManufacturerProcessDetails = {
-      ...data,
-      timeStamp,
-    }
-
     // TESTING ONLY TO BE REMOVED AND REPLACED WITH REAL API CALLS
     // @ts-ignore
-    setPayload(payload)
+    setPayload(data)
     setShowPayload(true)
   }
 
@@ -126,26 +95,9 @@ const Manufacturer: FC = () => {
               </div>
             </div>
 
-            <div className="field">
-              <label className="label">Timestamp</label>
-              <div className="control">
-                <input
-                  className="input"
-                  type="date"
-                  name="timestamp"
-                  id="timestamp"
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-
             <button
               className="button is-block is-link is-fullwidth mt-3"
-              disabled={
-                !isProcessingTypeFieldValid ||
-                !isTimestampFieldValid ||
-                data.productId === -1
-              }
+              disabled={!isProcessingTypeFieldValid || data.productId === -1}
               onClick={(e) => handleSubmission(e)}
             >
               Add
