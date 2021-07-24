@@ -8,12 +8,7 @@ const DocumentSchema: Schema = new Schema(
       type: String,
       required: true,
     },
-    docTypeValue: {
-      type: Number,
-      enum: Object.values(DocumentType),
-      required: true,
-    },
-    referenceId: {
+    accountId: {
       type: Number,
       required: true,
     },
@@ -24,7 +19,7 @@ const DocumentSchema: Schema = new Schema(
     documentStatus: {
       type: Number,
       enum: Object.values(DocumentStatus),
-      required: true,
+      default: DocumentStatus.PENDING,
     },
   },
   { timestamps: true }
