@@ -6,7 +6,6 @@ import Dashboard from './Dashboard'
 import RegisterAccount from './RegisterAccount'
 import ViewAccount from './ViewAccount'
 import AddDocument from './AddDocument'
-import ViewDocument from './ViewDocument'
 import Product from './Product'
 import Tracking from './Tracking'
 import Recall from './Recall'
@@ -41,12 +40,6 @@ const Participant: FC = () => {
                 path={`${path}/add-document`}
                 component={AddDocument}
               />
-              <Route
-                exact
-                path={`${path}/view-document`}
-                component={ViewDocument}
-              />
-
               <Route exact path={`${path}/product`} component={Product} />
               <Route exact path={`${path}/tracking`} component={Tracking} />
               <Route exact path={`${path}/recall`} component={Recall} />
