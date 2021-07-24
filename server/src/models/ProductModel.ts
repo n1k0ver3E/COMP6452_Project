@@ -30,7 +30,9 @@ const ProductSchema: Schema = new Schema(
       type: Number,
     },
     status: {
-      type: Object.values(ProductStatus),
+      type: Number,
+      enum: Object.values(ProductStatus),
+      default: ProductStatus.FARMING,
     },
   },
   { timestamps: true }
