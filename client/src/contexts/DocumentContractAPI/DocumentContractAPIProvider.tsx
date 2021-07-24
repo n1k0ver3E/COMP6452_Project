@@ -7,9 +7,6 @@ import {
 import { DocumentStatus } from '../../enums/contract'
 
 const contextDefaultValues: IDocumentContractAPI = {
-  // registerParticipant: () => {},
-  // registeredAccounts: [],
-  // registrationError: false,
   pendingDocuments: [],
   approvedDocuments: [],
   rejectedDocuments: [],
@@ -21,10 +18,6 @@ export const DocumentContractAPIContext =
   createContext<IDocumentContractAPI>(contextDefaultValues)
 
 const DocumentContractAPIProvider: FC = ({ children }): any => {
-  // const [registrationError, setRegistrationError] = useState<boolean>(false)
-  // const [registeredAccounts, setRegisteredAccounts] = useState<
-  //   IDocumentDetails[]
-  // >([])
   const [pendingDocuments, setPendingDocuments] = useState<IDocumentDetails[]>(
     []
   )
@@ -38,21 +31,6 @@ const DocumentContractAPIProvider: FC = ({ children }): any => {
   useEffect(() => {
     getAllDocuments()
   }, [])
-
-  // const registerParticipant = async (
-  //   participantDetails: IParticipantDetails
-  // ) => {
-  //   try {
-  //     Promise.all([
-  //       await api.post('/v1/participants/register', participantDetails),
-  //       await getAllParticipants(),
-  //     ])
-
-  //     setRegistrationError(false)
-  //   } catch (err) {
-  //     setRegistrationError(true)
-  //   }
-  // }
 
   const getAllDocuments = async () => {
     await getDocumentsByStatus(DocumentStatus.Pending)
@@ -69,27 +47,12 @@ const DocumentContractAPIProvider: FC = ({ children }): any => {
       switch (documentStatus) {
         case DocumentStatus.Pending:
           setPendingDocuments(resp.data.documents)
-          // setRegisteredDocuments([
-          //   ...pendingAccounts,
-          //   ...rejectedAccounts,
-          //   ...approvedAccounts,
-          // ])
           break
         case DocumentStatus.Approved:
           setApprovedDocuments(resp.data.documents)
-          // setRegisteredDocuments([
-          //   ...pendingAccounts,
-          //   ...rejectedAccounts,
-          //   ...approvedAccounts,
-          // ])
           break
         case DocumentStatus.Rejected:
           setRejectedDocuments(resp.data.documents)
-          // setRegisteredDocuments([
-          //   ...pendingAccounts,
-          //   ...rejectedAccounts,
-          //   ...approvedAccounts,
-          // ])
           break
         default:
           break
@@ -134,9 +97,6 @@ const DocumentContractAPIProvider: FC = ({ children }): any => {
   return (
     <DocumentContractAPIContext.Provider
       value={{
-        // registerParticipant,
-        // registeredAccounts,
-        // registrationError,
         pendingDocuments,
         approvedDocuments,
         rejectedDocuments,
