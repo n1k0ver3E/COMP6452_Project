@@ -86,3 +86,65 @@ export interface IAccountsTableProps {
   columns: any
   data: IParticipantDetails[]
 }
+
+export interface IDocumentContract {
+  documentContract: any
+  documents: string[]
+}
+
+export interface IDocumentContractAPI {
+  // registerParticipant: (participantDetails: IParticipantDetails) => void
+  // registeredAccounts: IParticipantDetails[]
+  // registrationError: boolean
+  pendingDocuments: IDocumentDetails[]
+  approvedDocuments: IDocumentDetails[]
+  rejectedDocuments: IDocumentDetails[]
+  updateDocumentStatus: (address: string, updatedDocumentStatus: number) => void
+  getAllDocuments: () => void
+}
+
+export interface IDocumentDetails {
+  documentName: string
+  docTypeValue: number
+  referenceId: number
+  hashContent: string
+}
+
+
+export interface IDocumentsTableProps {
+  columns: any
+  data: IDocumentDetails[]
+}
+
+export type IFarmerProductInitial = Pick<
+  IFarmerProductDetails,
+  'productName' | 'productLocation'
+>
+
+export interface IFarmerProductDetails {
+  productName: string
+  productLocation: string
+  plantingDate: Date | string
+  harvestDate: Date | string
+}
+
+export type IManufacturerProcessInitial = Pick<
+  IManufacturerProcessDetails,
+  'productId' | 'processingType'
+>
+
+export interface IManufacturerProcessDetails {
+  productId: number | string
+  processingType: string
+  timeStamp: string
+}
+
+export type IRetailProcessDetails = Pick<
+  IManufacturerProcessDetails,
+  'productId'
+>
+
+export interface IPurchaseProcessDetails {
+  productId: number | string
+  price: number | string
+}

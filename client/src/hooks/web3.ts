@@ -6,7 +6,8 @@ type state = {
   isLoading: boolean
   isWeb3: boolean
   web3: Web3 | null
-  accounts: string[]
+  accounts: string[],
+  documents: string[],
 }
 
 const Hooks = (): state => {
@@ -15,6 +16,7 @@ const Hooks = (): state => {
     isWeb3: false,
     web3: null,
     accounts: [],
+    documents: [],
   })
 
   useEffect(() => {
@@ -38,7 +40,7 @@ const Hooks = (): state => {
     })()
   }, [])
 
-  const { isLoading, isWeb3, web3, accounts } = state
-  return { isLoading, isWeb3, web3, accounts }
+  const { isLoading, isWeb3, web3, accounts, documents } = state
+  return { isLoading, isWeb3, web3, accounts, documents }
 }
 export default Hooks

@@ -3,7 +3,7 @@
 const Profile = artifacts.require("Profile");
 const Document = artifacts.require("Document");
 
-module.exports = function (deployer, network, accounts) {
+module.exports = async function (deployer, network, accounts) {
   // deployer.deploy(ConvertLib);
   // deployer.link(ConvertLib, MetaCoin);
   // deployer.deploy(MetaCoin);
@@ -13,9 +13,9 @@ module.exports = function (deployer, network, accounts) {
   //deployer.deploy(Profile, <address>, <regulator_name>);
   // const profile = deployer.deploy(Profile, accounts[0], "regulator");
   // deployer.deploy(Document, profile.address);
-  deployer.deploy(Profile, accounts[0], "regulator").then((profile) => {
-    deployer.deploy(Document, profile.address);
-  });
+  await deployer.deploy(Profile, accounts[0], "regulator");
+  await deployer.deploy(Document, Profile.address);
+  
 
   //deployer.deploy(Product)
 };
