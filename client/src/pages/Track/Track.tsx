@@ -24,7 +24,7 @@ const Track: FC = () => {
     try {
       const resp = await traceContract?.methods
         .requestForLocation(parseInt(inputProductId))
-        .send({from: accounts[0]})
+        .send({from: window.ethereum.selectedAddress})
 
       if (resp) {
         alert("REQUESTED");
