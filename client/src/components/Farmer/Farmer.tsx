@@ -22,6 +22,9 @@ const Farmer: FC = () => {
     useState<boolean>(false)
   const [isHarvestDateFieldValid, setIsHarvestDateFieldValid] =
     useState<boolean>(false)
+  // TESTING ONLY
+  const [showPayload, setShowPayload] = useState<boolean>(false)
+  const [payload, setPayload] = useState('')
 
   useEffect(() => {
     const calendars = bulmaCalendar.attach('[type="date"]', {})
@@ -84,9 +87,20 @@ const Farmer: FC = () => {
     setData({ ...data, [name]: value })
   }
 
-  console.log('data', data)
-  console.log('plantingDate', plantingDate)
-  console.log('harvestDate', harvestDate)
+  const handleAddProduct = (e: any) => {
+    e.preventDefault()
+
+    const payload = {
+      ...data,
+      plantingDate,
+      harvestDate,
+    }
+
+    // TESTING ONLY TO BE REMOVED AND REPLACED WITH REAL API CALLS
+    // @ts-ignore
+    setPayload(payload)
+    setShowPayload(true)
+  }
 
   return (
     <section className="container">
@@ -109,9 +123,7 @@ const Farmer: FC = () => {
               <label className="label">Product Name</label>
               <div className="control">
                 <input
-                  className={
-                    isProductNameFieldValid ? 'input' : 'input is-danger'
-                  }
+                  className="input"
                   type="text"
                   name="productName"
                   id="productName"
@@ -124,9 +136,7 @@ const Farmer: FC = () => {
               <label className="label">Product Location</label>
               <div className="control">
                 <input
-                  className={
-                    isProductLocationFieldValid ? 'input' : 'input is-danger'
-                  }
+                  className="input"
                   type="text"
                   name="productLocation"
                   id="productLocation"
@@ -163,6 +173,7 @@ const Farmer: FC = () => {
 
             <button
               className="button is-block is-link is-fullwidth mt-3"
+              onClick={(e) => handleAddProduct(e)}
               disabled={
                 !isProductNameFieldValid ||
                 !isProductLocationFieldValid ||
@@ -176,6 +187,14 @@ const Farmer: FC = () => {
           </form>
         </div>
       </div>
+
+      {/*TESTING ONLY TO BE REMOVED AND REPLACED WITH REAL API CALLS*/}
+      {showPayload && (
+        <div>
+          <h1>SENDING PAYLOAD TO API</h1>
+          <h1>{JSON.stringify(payload)}</h1>
+        </div>
+      )}
     </section>
   )
 }
