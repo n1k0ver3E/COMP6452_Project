@@ -49,10 +49,6 @@ const SideNavBar: FC<IUserTypeProps> = ({ type }) => {
       link: '/participant/add-document',
     },
     {
-      title: 'View Document',
-      link: '/participant/view-document',
-    },
-    {
       title: 'Product',
       link: '/participant/product',
     },
