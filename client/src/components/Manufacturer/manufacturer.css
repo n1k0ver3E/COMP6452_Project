@@ -1,6 +1,11 @@
 .manufacturing-form {
-  height: 500px;
+  height: 710px;
   border-radius: 10px;
   margin-top: 10px;
-  padding: 70px !important;
+  padding: 50px 70px !important;
+}
+
+.manufacturer-image {
+  height: 700px;
+  border-radius: 20px;
 }
