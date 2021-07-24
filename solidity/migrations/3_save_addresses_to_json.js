@@ -19,8 +19,8 @@ module.exports = async function(deployer, networks, addresses) {
   
   ///await deployer.deploy(Profile, regulator, "Regulator", {from: creator});
   await Profile.deployed();
-  await deployer.deploy(Trace, Profile.address, {from: creator})
-  await deployer.deploy(ProductSC, Trace.address, {from: creator});
+  await deployer.deploy(Trace, Profile.address, {from: regulator})
+  await deployer.deploy(ProductSC, Trace.address, {from: regulator});
 
   
   

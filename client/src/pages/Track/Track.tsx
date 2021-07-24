@@ -28,8 +28,8 @@ const Track: FC = () => {
 
       if (resp) {
         alert("REQUESTED");
+        console.log(resp);
       }
-      
     } catch (error) {
     }
   }

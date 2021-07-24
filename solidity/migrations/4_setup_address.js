@@ -43,5 +43,5 @@ module.exports = async function(deployer, networks, addresses) {
 
   // await product.addProductFarmingInfo(productAId, 1, 2);
 
-  await trace.setProductContractAddress( product.address, {from: creator} );
+  await trace.setProductContractAddress( product.address, {from: regulator} );
 };
