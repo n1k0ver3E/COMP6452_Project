@@ -87,7 +87,14 @@ export interface IAccountsTableProps {
   data: IParticipantDetails[]
 }
 
+export type IFarmerProductInitial = Pick<
+  IFarmerProductDetails,
+  'productName' | 'productLocation'
+>
+
 export interface IFarmerProductDetails {
   productName: string
   productLocation: string
+  plantingDate: Date | string
+  harvestDate: Date | string
 }

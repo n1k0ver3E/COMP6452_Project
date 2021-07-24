@@ -1,17 +1,20 @@
-import React, { FC, useEffect, useState } from 'react'
+import React, { ChangeEvent, FC, useEffect, useState } from 'react'
 import 'bulma-calendar/dist/css/bulma-calendar.min.css'
 // @ts-ignore
 import bulmaCalendar from 'bulma-calendar/dist/js/bulma-calendar.min.js'
 import './farmer.css'
-import { IFarmerProductDetails } from '../../interfaces/contract'
+import {
+  IFarmerProductDetails,
+  IFarmerProductInitial,
+} from '../../interfaces/contract'
 
-const initialState: IFarmerProductDetails = {
+const initialState: IFarmerProductInitial = {
   productName: '',
   productLocation: '',
 }
 
 const Farmer: FC = () => {
-  const [data, setData] = useState<IFarmerProductDetails>(initialState)
+  const [data, setData] = useState<IFarmerProductInitial>(initialState)
   const [plantingDate, setPlantingDate] = useState<string>('')
   const [harvestDate, setHarvestDate] = useState<string>('')
   const [isProductNameFieldValid, setIsProductNameFieldValid] =
@@ -37,13 +40,13 @@ const Farmer: FC = () => {
     const plantingDate = document.querySelector('#plantingDate')
     if (plantingDate) {
       // @ts-ignore
-      plantingDate.bulmaCalendar.on('select', (datepicker: any) => {
+      plantingDate.bulmaCalendar.on('select', (datepicker) => {
         setPlantingDate(datepicker.data.value())
         setIsPlaningDateFieldValid(true)
       })
 
       // @ts-ignore
-      plantingDate.bulmaCalendar.on('clear', (_datepicker: any) => {
+      plantingDate.bulmaCalendar.on('clear', (_datepicker) => {
         setPlantingDate('')
         setIsPlaningDateFieldValid(false)
       })
@@ -52,20 +55,20 @@ const Farmer: FC = () => {
     const harvestDate = document.querySelector('#harvestDate')
     if (harvestDate) {
       // @ts-ignore
-      harvestDate.bulmaCalendar.on('select', (datepicker: any) => {
+      harvestDate.bulmaCalendar.on('select', (datepicker) => {
         setHarvestDate(datepicker.data.value())
         setIsHarvestDateFieldValid(true)
       })
 
       // @ts-ignore
-      harvestDate.bulmaCalendar.on('clear', (_datepicker: any) => {
+      harvestDate.bulmaCalendar.on('clear', (_datepicker) => {
         setHarvestDate('')
         setIsHarvestDateFieldValid(false)
       })
     }
   }, [])
 
-  const handleChange = (e: any) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
 
     if (name === 'productName') {
@@ -90,7 +93,7 @@ const Farmer: FC = () => {
   const handleAddProduct = (e: any) => {
     e.preventDefault()
 
-    const payload = {
+    const payload: IFarmerProductDetails = {
       ...data,
       plantingDate,
       harvestDate,
