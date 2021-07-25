@@ -117,7 +117,7 @@ export interface IDocumentsTableProps {
 }
 
 export interface ITraceContract {
-  traceContract: any
+  traceContract: any,
 }
 
 export type IFarmerProductInitial = Pick<

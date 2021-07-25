@@ -4,6 +4,7 @@ import { ProfileContractAPIContext } from '../../../contexts/ProfileContractAPI'
 import AccountsTable from '../../../components/AccountsTable'
 import { AccountType, AccountStatus } from '../../../enums/contract'
 import { titleCase } from '../../../helpers'
+import getAccounts from '../../../utils/getAccounts'
 
 const ReviewAccounts: FC = () => {
   const { profileContract, accounts } = useContext(ProfileContractContext)
@@ -73,9 +74,10 @@ const ReviewAccounts: FC = () => {
           const { value: updatedAccountStatus } = e.target
 
           try {
+            const _accounts = await getAccounts(accounts)
             const updateStatus = await profileContract?.methods
               .approveAccount(accountAddress, updatedAccountStatus)
-              .send({ from: accounts[0] })
+              .send({ from: _accounts[0] })
 
             if (updateStatus) {
               updateAccountStatus(
