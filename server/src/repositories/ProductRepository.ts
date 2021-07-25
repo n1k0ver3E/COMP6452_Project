@@ -1,6 +1,6 @@
 import { ProductModel } from '../models'
 import { IProduct } from '../interfaces/product'
-import { ProductStatus } from '../enums/productContract'
+import { ProductRepository } from '.'
 
 const addProductFarmingInfo = (productDetails: any): Promise<IProduct> => {
   return ProductModel.create(productDetails)
@@ -10,21 +10,70 @@ const createProduct = (productDetails: IProduct): Promise<IProduct> => {
   return ProductModel.create(productDetails)
 }
 
-const recallProduct =  async (productId: number) =>  {
-  //@ts-ignore
-  const product = await ProductModel.findOne({ productId: { $ne: null, $eq: productId} }).exec();
-  console.log( productId, product )
-  if( product === null || product.status == ProductStatus.RECALLING )
-    return false;
+const manuProductInfo = async (
+  productDetails: any,
+): Promise<IProduct> => {
+  // @ts-ignore
+  return ProductModel.findOneAndUpdate(
+    {
+      productId: productDetails.productId,
+    },
+    {
+      $set: {
+        processingType: productDetails.processingType,
+        status: productDetails.status,
+      },
+    },
+    {
+      new: true,
+    }
+  )
+}
+  
+const retailProductInfo = async (
+  productDetails: any,
+): Promise<IProduct> => {
+  // @ts-ignore
+  return ProductModel.findOneAndUpdate(
+    {
+      productId: productDetails.productId,
+    },
+    {
+      $set: {
+        status: productDetails.status,
+      },
+    },
+    {
+      new: true,
+    }
+  )
+}
 
-  product.status = ProductStatus.RECALLING;
-  await product.save();
 
-  return true;
+const purchasingProductInfo = async (
+  productDetails: any,
+): Promise<IProduct> => {
+  // @ts-ignore
+  return ProductModel.findOneAndUpdate(
+    {
+      productId: productDetails.productId,
+    },
+    {
+      $set: {
+        status: productDetails.status,
+        price: productDetails.price,
+      },
+    },
+    {
+      new: true,
+    }
+  )
 }
 
 export default {
   addProductFarmingInfo,
   createProduct,
-  recallProduct
+  retailProductInfo,
+  purchasingProductInfo,
+  manuProductInfo
 }
