@@ -15,8 +15,7 @@ const contextDefaultValues: IProductContractAPI = {
   // updateDocumentStatus: () => {},
   // getAllDocuments: () => {},
   // uploadDocument: () => {},
-  recallProduct: (productId: number)=>{},
-  recallProductResult: false,
+  recallProduct: (productId: number)=> {},
 }
 
 export const ProductContractAPIContext = createContext<IProductContractAPI>(
@@ -24,7 +23,7 @@ export const ProductContractAPIContext = createContext<IProductContractAPI>(
 )
 
 const ProductContractAPIProvider: FC = ({ children }): any => {
-  const [recallProductResult, setRecallProductResult] = useState<boolean>(false)
+  //const [recallProductResult, setRecallProductResult] = useState<boolean>(false)
   // const [pendingDocuments, setPendingDocuments] = useState<IDocumentDetails[]>(
   //   []
   // )
@@ -125,11 +124,9 @@ const ProductContractAPIProvider: FC = ({ children }): any => {
     try {
       const resp = await api.post(`/v1/products/recall-product`, {productId})
 
-      console.log(resp.data.result);
-
-      setRecallProductResult(resp.data.result);
+      return resp.data.result;
     } catch (err) {
-      setRecallProductResult(false);
+      return false;
     }
   }
 
@@ -143,7 +140,6 @@ const ProductContractAPIProvider: FC = ({ children }): any => {
         // getAllDocuments,
         // uploadDocument,
         recallProduct,
-        recallProductResult
       }}
     >
       {children}

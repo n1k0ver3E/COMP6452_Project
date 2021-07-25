@@ -36,7 +36,7 @@ const Recall: FC = () => {
   const { accounts } = useContext(ProfileContractContext)
 
   const { productContract } = useContext(ProductContractContext)
-  const { recallProduct, recallProductResult } = useContext(
+  const { recallProduct } = useContext(
     ProductContractAPIContext
   )
 
@@ -92,7 +92,7 @@ const Recall: FC = () => {
       // .send({ from: _accounts[0] })
 
       if (recallResp) {
-        await recallProduct(inputProductId)
+        const recallProductResult = await recallProduct(inputProductId)
 
         console.log( recallProductResult );
 

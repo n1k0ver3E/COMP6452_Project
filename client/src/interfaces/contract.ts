@@ -93,8 +93,7 @@ export interface IProductContract {
 }
 
 export interface IProductContractAPI {
-  recallProduct: (productId: number) => void,
-  recallProductResult: boolean,
+  recallProduct: any,
 }
 
 export interface IDocumentContract {
