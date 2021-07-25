@@ -1,6 +1,7 @@
 import { ProductRepository } from '../repositories'
 import { IProduct } from '../interfaces/product'
 import { ProductStatus } from '../enums/productContract'
+import P from 'pino'
 
 const addProductFarmingInfo = async (productDetails: IProduct) => {
   const newProductDetails = {
@@ -32,34 +33,35 @@ const createProduct = async (productDetails: IProduct) => {
   }
 }
 
-const manuProductInfo = async (productId:number, productDetails: IProduct) => {
+
+const manuProductInfo = async (
+  productDetails: IProduct) => {
   const newProductDetails = {
     ...productDetails,
     status: ProductStatus.MANUFACTURING,
   }
 
   const product = await ProductRepository.manuProductInfo(
-    productId,
-    newProductDetails
+    newProductDetails.productId
+    
   )
 
   return {
     id: product.productId,
-    processingType: product.processingType,
-    timestamp: product.timestamp,
     status: product.status,
   }
 }
 
-const retailProductInfo = async (productId:number, productDetails: IProduct) => {
+const retailProductInfo = async (
+  productDetails: IProduct) => {
   const newProductDetails = {
     ...productDetails,
     status: ProductStatus.RETAILING,
   }
 
   const product = await ProductRepository.retailProductInfo(
-    productId,
-    newProductDetails
+    newProductDetails.productId
+    
   )
 
   return {
@@ -68,15 +70,16 @@ const retailProductInfo = async (productId:number, productDetails: IProduct) => 
   }
 }
 
-const purchasingProductInfo = async (productId:number, productDetails: IProduct) => {
+const purchasingProductInfo = async (
+  productDetails: IProduct) => {
   const newProductDetails = {
     ...productDetails,
     status: ProductStatus.PURCHASING,
   }
 
   const product = await ProductRepository.purchasingProductInfo(
-    productId,
-    newProductDetails
+    newProductDetails.productId
+    
   )
 
   return {
