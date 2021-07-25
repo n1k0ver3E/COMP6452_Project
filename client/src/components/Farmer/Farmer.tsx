@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FC, useEffect, useState } from 'react'
+import React, { ChangeEvent, FC, useEffect, useState, useContext } from 'react'
 import 'bulma-calendar/dist/css/bulma-calendar.min.css'
 // @ts-ignore
 import bulmaCalendar from 'bulma-calendar/dist/js/bulma-calendar.min.js'
@@ -7,6 +7,7 @@ import {
   IFarmerProductDetails,
   IFarmerProductInitial,
 } from '../../interfaces/contract'
+import { ProductContractContext } from '../../contexts/ProductContract'
 
 const initialState: IFarmerProductInitial = {
   productName: '',
@@ -14,6 +15,8 @@ const initialState: IFarmerProductInitial = {
 }
 
 const Farmer: FC = () => {
+  const { productContract } = useContext(ProductContractContext)
+
   const [data, setData] = useState<IFarmerProductInitial>(initialState)
   const [farmDate, setFarmDate] = useState<string>('')
   const [harvestDate, setHarvestDate] = useState<string>('')
