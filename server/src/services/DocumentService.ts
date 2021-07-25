@@ -82,7 +82,7 @@ const updateDocStatusByAccIdSubDocId = async (
       updatedStatus
     )
   return {
-    documentId: updatedDocument.documentId,
+    //documentId: updatedDocument.documentId,
     subDocumentId: updatedDocument.subDocumentId,
     documentName: updatedDocument.documentName,
     accountId: updatedDocument.accountId,

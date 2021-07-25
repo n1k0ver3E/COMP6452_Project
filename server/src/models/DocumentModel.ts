@@ -4,10 +4,10 @@ import { DocumentStatus } from '../enums/documentContract'
 
 const DocumentSchema: Schema = new Schema(
   {
-    documentId: {
-      type: String,
-      required: true,
-    },
+    // documentId: {
+    //   type: String,
+    //   required: true,
+    // },
     subDocumentId: {
       type: Number,
       required: true,

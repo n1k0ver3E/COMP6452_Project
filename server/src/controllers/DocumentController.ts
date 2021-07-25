@@ -42,7 +42,7 @@ const getDocumentsByStatus = catchAsync(
 )
 
 
-const updateDocumentStatusByDocId = catchAsync(
+const updateDocStatusByAccIdSubDocId = catchAsync(
   async (req: Request, res: Response, _next: NextFunction) => {
     const { accountId: accountId } = req.params
     const { subDocumentId: subDocumentId } = req.params
@@ -65,7 +65,7 @@ export default {
   uploadDocument,
   getAllDocuments,
   getDocumentsByStatus,
-  updateDocumentStatusByDocId,
+  updateDocStatusByAccIdSubDocId,
 }
 
 
