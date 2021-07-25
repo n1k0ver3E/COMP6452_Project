@@ -90,17 +90,21 @@ export interface IAccountsTableProps {
 export interface IDocumentContract {
   documentContract: any
   documents: string[]
+  accounts: string[]
+}
+
+export interface IDocumentPayload {
+  accountId: number
+  documentName: string
 }
 
 export interface IDocumentContractAPI {
-  // registerParticipant: (participantDetails: IParticipantDetails) => void
-  // registeredAccounts: IParticipantDetails[]
-  // registrationError: boolean
   pendingDocuments: IDocumentDetails[]
   approvedDocuments: IDocumentDetails[]
   rejectedDocuments: IDocumentDetails[]
   updateDocumentStatus: (address: string, updatedDocumentStatus: number) => void
   getAllDocuments: () => void
+  uploadDocument: any
 }
 
 export interface IDocumentDetails {

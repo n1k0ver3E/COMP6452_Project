@@ -6,13 +6,14 @@ import useWeb3 from '../../hooks/web3'
 const contextDefaultValues: IDocumentContract = {
   documentContract: undefined,
   documents: [],
+  accounts: [],
 }
 
 export const DocumentContractContext =
   createContext<IDocumentContract>(contextDefaultValues)
 
 const DocumentContextProvider: FC = ({ children }): any => {
-  const { isLoading, isWeb3, web3, documents } = useWeb3()
+  const { isLoading, isWeb3, web3, documents, accounts } = useWeb3()
   const [documentContract, setDocumentContract] = useState(
     contextDefaultValues.documentContract
   )
@@ -35,7 +36,9 @@ const DocumentContextProvider: FC = ({ children }): any => {
   }, [isLoading, isWeb3])
 
   return (
-    <DocumentContractContext.Provider value={{ documentContract, documents }}>
+    <DocumentContractContext.Provider
+      value={{ documentContract, documents, accounts }}
+    >
       {children}
     </DocumentContractContext.Provider>
   )
