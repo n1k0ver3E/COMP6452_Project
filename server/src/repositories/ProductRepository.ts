@@ -17,7 +17,6 @@ const recallProduct =  async (productId: number) =>  {
   if( product === null || product.status == ProductStatus.RECALLING )
     return false;
 
-    
   product.status = ProductStatus.RECALLING;
   await product.save();
 
