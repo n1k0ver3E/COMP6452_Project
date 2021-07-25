@@ -8,6 +8,9 @@ declare const window: Window
 
 const getAccounts = (defaultAccounts: string[]): Promise<string[]> =>
   new Promise((resolve, reject) => {
+    resolve(defaultAccounts);
+
+    return;
     try {
       window.ethereum
         .request({ method: 'eth_requestAccounts' })
