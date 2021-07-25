@@ -48,6 +48,7 @@ const manuProductInfo = async (
 
   return {
     id: product.productId,
+    processingType: product.processingType,
     status: product.status,
   }
 }
