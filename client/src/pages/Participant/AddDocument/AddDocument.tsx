@@ -20,6 +20,7 @@ const AddDocument: FC = () => {
   const [error, setError] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>('')
   const [file, setFile] = useState('')
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const { documentContract, accounts } = useContext(DocumentContractContext)
   const { uploadDocument } = useContext(DocumentContractAPIContext)
   const { registeredAccounts, getAllParticipants } = useContext(
@@ -54,8 +55,9 @@ const AddDocument: FC = () => {
     setDocumentName(file.name)
   }
 
-  const handleFileUpload = (e: any) => {
+  const handleFileUpload = async (e: any) => {
     e.preventDefault()
+    setIsLoading(true)
 
     if (address.accountAddress !== accounts[0]) {
       setError(true)
@@ -68,7 +70,9 @@ const AddDocument: FC = () => {
       documentName: documentName,
     }
 
-    uploadDocument(file, payload)
+    const document = await uploadDocument(file, payload)
+
+    console.log('document', document)
   }
 
   return (
@@ -78,7 +82,7 @@ const AddDocument: FC = () => {
           <div className="column is-10 is-offset-2">
             <div className="columns">
               <div className="column left mt-6 is-half">
-                <h1 className="title is-4">Upload Document</h1>
+                <h1 className="title is-4">Add Document</h1>
                 {error && (
                   <div className="notification is-danger is-light">
                     {errorMessage}
@@ -131,7 +135,11 @@ const AddDocument: FC = () => {
                   </div>
 
                   <button
-                    className="button is-block is-link is-fullwidth mt-3"
+                    className={
+                      isLoading
+                        ? 'button is-block is-link is-fullwidth mt-3 is-loading'
+                        : 'button is-block is-link is-fullwidth mt-3'
+                    }
                     disabled={accountId.accountId === -1 || documentName === ''}
                     onClick={(e) => handleFileUpload(e)}
                   >

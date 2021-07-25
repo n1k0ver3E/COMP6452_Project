@@ -6,6 +6,7 @@ import {
   IDocumentPayload,
 } from '../../interfaces/contract'
 import { DocumentStatus } from '../../enums/contract'
+const FormData = require('form-data')
 
 const contextDefaultValues: IDocumentContractAPI = {
   pendingDocuments: [],
@@ -96,9 +97,24 @@ const DocumentContractAPIProvider: FC = ({ children }): any => {
     }
   }
 
-  const uploadDocument = (file: File | string, payload: IDocumentPayload) => {
-    console.log('file', file)
-    console.log('payload', payload)
+  const uploadDocument = async (
+    file: File | string,
+    payload: IDocumentPayload
+  ) => {
+    try {
+      const formData = new FormData()
+
+      // @ts-ignore
+      formData.append('accountId', payload.accountId)
+      formData.append('documentName', payload.documentName)
+      formData.append('avatar', file)
+
+      const resp = await api.post('/v1/documents', formData)
+
+      return resp.data.document
+    } catch (e) {
+      console.log(e)
+    }
   }
 
   return (

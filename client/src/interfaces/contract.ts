@@ -104,7 +104,7 @@ export interface IDocumentContractAPI {
   rejectedDocuments: IDocumentDetails[]
   updateDocumentStatus: (address: string, updatedDocumentStatus: number) => void
   getAllDocuments: () => void
-  uploadDocument: (file: File | string, payload: IDocumentPayload) => void
+  uploadDocument: any
 }
 
 export interface IDocumentDetails {
@@ -112,6 +112,14 @@ export interface IDocumentDetails {
   docTypeValue: number
   referenceId: number
   hashContent: string
+}
+
+export interface IDocumentContent {
+  accountId: number
+  documentName: string
+  documentStatus: number
+  hashContent: string
+  id: string
 }
 
 export interface IDocumentsTableProps {
