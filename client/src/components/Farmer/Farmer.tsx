@@ -132,6 +132,12 @@ const Farmer: FC = () => {
       if (createProductResp) {
         // CALL AN API AND DONE!
 
+        // TODO: Clear Values after submission
+        setData(initialState)
+        setFarmDate('')
+        setHarvestDate('')
+
+        // Unset the error message if any
         setError(false)
         setErrorMessage('')
       }
@@ -177,6 +183,7 @@ const Farmer: FC = () => {
                   name="productName"
                   id="productName"
                   onChange={handleChange}
+                  value={data.productName}
                 />
               </div>
             </div>
@@ -190,6 +197,7 @@ const Farmer: FC = () => {
                   name="productLocation"
                   id="productLocation"
                   onChange={handleChange}
+                  value={data.productLocation}
                 />
               </div>
             </div>
