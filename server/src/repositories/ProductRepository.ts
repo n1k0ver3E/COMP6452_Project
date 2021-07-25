@@ -20,7 +20,8 @@ const manuProductInfo = async (
     },
     {
       $set: {
-        productDetails: productDetails,
+        processingType: productDetails.processingType,
+        status: productDetails.status,
       },
     },
     {
@@ -39,7 +40,7 @@ const retailProductInfo = async (
     },
     {
       $set: {
-        productDetails: productDetails,
+        status: productDetails.status,
       },
     },
     {
@@ -59,7 +60,8 @@ const purchasingProductInfo = async (
     },
     {
       $set: {
-        productDetails: productDetails,
+        status: productDetails.status,
+        price: productDetails.price,
       },
     },
     {

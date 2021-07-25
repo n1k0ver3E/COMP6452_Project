@@ -26,13 +26,11 @@ const addProductFarmingInfo = catchAsync(
 
 const manuProductInfo = catchAsync(
   async (req: Request, res: Response, _next: NextFunction) => {
-    
-    
     const product = await ProductService.manuProductInfo(
       req.body
     )
     
-    return res.status(httpStatus.CREATED).json({
+    return res.status(httpStatus.OK).json({
       success: true,
       product,
     })
@@ -41,13 +39,10 @@ const manuProductInfo = catchAsync(
 
 const retailProductInfo = catchAsync(
   async (req: Request, res: Response, _next: NextFunction) => {
-    const { productId: productId } = req.body.productId
-    const {productDetails: productDetails} = req.body
-    
     const product = await ProductService.retailProductInfo(
-      productDetails
+      req.body
     )
-    return res.status(httpStatus.CREATED).json({
+    return res.status(httpStatus.OK).json({
       success: true,
       product,
     })
@@ -56,13 +51,10 @@ const retailProductInfo = catchAsync(
 
 const purchasingProductInfo = catchAsync(
   async (req: Request, res: Response, _next: NextFunction) => {
-    const { productId: productId } = req.body.productId
-    const {productDetails: productDetails} = req.body
-    
-    const product = await ProductService.retailProductInfo(
-      productDetails
+    const product = await ProductService.purchasingProductInfo(
+      req.body
     )
-    return res.status(httpStatus.CREATED).json({
+    return res.status(httpStatus.OK).json({
       success: true,
       product,
     })

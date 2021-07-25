@@ -6,7 +6,7 @@ import P from 'pino'
 const addProductFarmingInfo = async (productDetails: IProduct) => {
   const newProductDetails = {
     ...productDetails,
-    status: ProductStatus.HARVESTING,
+    status: ProductStatus.FARMING,
   }
 
   const product = await ProductRepository.addProductFarmingInfo(
