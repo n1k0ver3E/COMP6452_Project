@@ -114,14 +114,6 @@ export interface IDocumentDetails {
   hashContent: string
 }
 
-export interface IDocumentContent {
-  accountId: number
-  documentName: string
-  documentStatus: number
-  hashContent: string
-  id: string
-}
-
 export interface IDocumentsTableProps {
   columns: any
   data: IDocumentDetails[]

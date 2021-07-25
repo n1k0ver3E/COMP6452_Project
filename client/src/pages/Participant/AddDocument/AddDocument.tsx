@@ -21,6 +21,8 @@ const AddDocument: FC = () => {
   const [errorMessage, setErrorMessage] = useState<string>('')
   const [file, setFile] = useState('')
   const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [successDocumentContent, setSuccessDocumentContent] =
+    useState(undefined)
   const { documentContract, accounts } = useContext(DocumentContractContext)
   const { uploadDocument } = useContext(DocumentContractAPIContext)
   const { registeredAccounts, getAllParticipants } = useContext(
@@ -72,8 +74,23 @@ const AddDocument: FC = () => {
 
     const document = await uploadDocument(file, payload)
 
-    console.log('document', document)
+    if (document) {
+      const addDocumentResp = await documentContract?.methods
+        .addDocument(
+          document.accountId,
+          document.documentName,
+          document.hashContent
+        )
+        .send({ from: accounts[0] })
+
+      if (addDocumentResp) {
+        setSuccessDocumentContent(document)
+        setIsLoading(false)
+      }
+    }
   }
+
+  console.log('successDocumentContent', successDocumentContent)
 
   return (
     <div>
