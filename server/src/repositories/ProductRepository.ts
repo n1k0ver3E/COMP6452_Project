@@ -1,18 +1,11 @@
 import { ProductModel } from '../models'
 import { IProduct } from '../interfaces/product'
-import { ProductRepository } from '.'
-
-const addProductFarmingInfo = (productDetails: any): Promise<IProduct> => {
-  return ProductModel.create(productDetails)
-}
 
 const createProduct = (productDetails: IProduct): Promise<IProduct> => {
   return ProductModel.create(productDetails)
 }
 
-const manuProductInfo = async (
-  productDetails: any,
-): Promise<IProduct> => {
+const manuProductInfo = async (productDetails: any): Promise<IProduct> => {
   // @ts-ignore
   return ProductModel.findOneAndUpdate(
     {
@@ -29,10 +22,8 @@ const manuProductInfo = async (
     }
   )
 }
-  
-const retailProductInfo = async (
-  productDetails: any,
-): Promise<IProduct> => {
+
+const retailProductInfo = async (productDetails: any): Promise<IProduct> => {
   // @ts-ignore
   return ProductModel.findOneAndUpdate(
     {
@@ -49,9 +40,8 @@ const retailProductInfo = async (
   )
 }
 
-
 const purchasingProductInfo = async (
-  productDetails: any,
+  productDetails: any
 ): Promise<IProduct> => {
   // @ts-ignore
   return ProductModel.findOneAndUpdate(
@@ -71,9 +61,8 @@ const purchasingProductInfo = async (
 }
 
 export default {
-  addProductFarmingInfo,
   createProduct,
   retailProductInfo,
   purchasingProductInfo,
-  manuProductInfo
+  manuProductInfo,
 }

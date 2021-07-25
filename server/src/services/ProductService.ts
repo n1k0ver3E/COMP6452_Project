@@ -1,17 +1,9 @@
 import { ProductRepository } from '../repositories'
 import { IProduct } from '../interfaces/product'
 import { ProductStatus } from '../enums/productContract'
-import P from 'pino'
 
-const addProductFarmingInfo = async (productDetails: IProduct) => {
-  const newProductDetails = {
-    ...productDetails,
-    status: ProductStatus.FARMING,
-  }
-
-  const product = await ProductRepository.addProductFarmingInfo(
-    newProductDetails
-  )
+const createProduct = async (productDetails: IProduct) => {
+  const product = await ProductRepository.createProduct(productDetails)
 
   return {
     id: product.productId,
@@ -23,28 +15,13 @@ const addProductFarmingInfo = async (productDetails: IProduct) => {
   }
 }
 
-const createProduct = async (productDetails: IProduct) => {
-  const product = await ProductRepository.createProduct(productDetails)
-
-  return {
-    id: product.productId,
-    productName: product.productName,
-    status: product.status,
-  }
-}
-
-
-const manuProductInfo = async (
-  productDetails: IProduct) => {
+const manuProductInfo = async (productDetails: IProduct) => {
   const newProductDetails = {
     ...productDetails,
     status: ProductStatus.MANUFACTURING,
   }
 
-  const product = await ProductRepository.manuProductInfo(
-    newProductDetails
-    
-  )
+  const product = await ProductRepository.manuProductInfo(newProductDetails)
 
   return {
     id: product.productId,
@@ -53,17 +30,13 @@ const manuProductInfo = async (
   }
 }
 
-const retailProductInfo = async (
-  productDetails: IProduct) => {
+const retailProductInfo = async (productDetails: IProduct) => {
   const newProductDetails = {
     ...productDetails,
     status: ProductStatus.RETAILING,
   }
 
-  const product = await ProductRepository.retailProductInfo(
-    newProductDetails
-    
-  )
+  const product = await ProductRepository.retailProductInfo(newProductDetails)
 
   return {
     id: product.productId,
@@ -71,8 +44,7 @@ const retailProductInfo = async (
   }
 }
 
-const purchasingProductInfo = async (
-  productDetails: IProduct) => {
+const purchasingProductInfo = async (productDetails: IProduct) => {
   const newProductDetails = {
     ...productDetails,
     status: ProductStatus.PURCHASING,
@@ -80,7 +52,6 @@ const purchasingProductInfo = async (
 
   const product = await ProductRepository.purchasingProductInfo(
     newProductDetails
-    
   )
 
   return {
@@ -91,10 +62,8 @@ const purchasingProductInfo = async (
 }
 
 export default {
-  addProductFarmingInfo,
   createProduct,
   manuProductInfo,
   retailProductInfo,
   purchasingProductInfo,
-  
 }
