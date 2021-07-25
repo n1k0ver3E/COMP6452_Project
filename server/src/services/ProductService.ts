@@ -42,7 +42,7 @@ const manuProductInfo = async (
   }
 
   const product = await ProductRepository.manuProductInfo(
-    newProductDetails.productId
+    newProductDetails
     
   )
 
@@ -60,7 +60,7 @@ const retailProductInfo = async (
   }
 
   const product = await ProductRepository.retailProductInfo(
-    newProductDetails.productId
+    newProductDetails
     
   )
 
@@ -78,7 +78,7 @@ const purchasingProductInfo = async (
   }
 
   const product = await ProductRepository.purchasingProductInfo(
-    newProductDetails.productId
+    newProductDetails
     
   )
 

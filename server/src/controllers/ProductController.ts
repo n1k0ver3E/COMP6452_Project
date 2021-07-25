@@ -26,7 +26,13 @@ const addProductFarmingInfo = catchAsync(
 
 const manuProductInfo = catchAsync(
   async (req: Request, res: Response, _next: NextFunction) => {
-    const product = await ProductService.manuProductInfo(req.body)
+    const { productId: productId } = req.body.productId
+    const {productDetails: productDetails} = req.body
+    
+    const product = await ProductService.manuProductInfo(
+      productDetails
+    )
+    
     return res.status(httpStatus.CREATED).json({
       success: true,
       product,
@@ -36,7 +42,12 @@ const manuProductInfo = catchAsync(
 
 const retailProductInfo = catchAsync(
   async (req: Request, res: Response, _next: NextFunction) => {
-    const product = await ProductService.retailProductInfo(req.body)
+    const { productId: productId } = req.body.productId
+    const {productDetails: productDetails} = req.body
+    
+    const product = await ProductService.retailProductInfo(
+      productDetails
+    )
     return res.status(httpStatus.CREATED).json({
       success: true,
       product,
@@ -46,7 +57,12 @@ const retailProductInfo = catchAsync(
 
 const purchasingProductInfo = catchAsync(
   async (req: Request, res: Response, _next: NextFunction) => {
-    const product = await ProductService.purchasingProductInfo(req.body)
+    const { productId: productId } = req.body.productId
+    const {productDetails: productDetails} = req.body
+    
+    const product = await ProductService.retailProductInfo(
+      productDetails
+    )
     return res.status(httpStatus.CREATED).json({
       success: true,
       product,

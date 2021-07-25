@@ -11,7 +11,7 @@ const createProduct = (productDetails: IProduct): Promise<IProduct> => {
 }
 
 const manuProductInfo = async (
-  productDetails: IProduct,
+  productDetails: any,
 ): Promise<IProduct> => {
   // @ts-ignore
   return ProductModel.findOneAndUpdate(
