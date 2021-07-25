@@ -75,6 +75,11 @@ contract Trace {
         _;
     }
 
+    modifier allowedProductContract() {
+        require( msg.sender == productContractAddress, "Incorrect product contract" );
+        _;
+    }
+
     /// Set the product contract address. This is accessible only for the owner and can only be setted once.
     function setProductContractAddress(address _productContractAddress) public onlyOwner {
         // Check weather the product contract address is setted or not.
@@ -90,7 +95,10 @@ contract Trace {
     /// @param trackingNumber The tracking number.
     function addProduct(uint productId, address logisticAccountAddress, string memory trackingNumber)
     public
-    productContractSetted {
+    productContractSetted 
+    allowedProductContract {
+
+        require( bytes(trackingNumber).length != 0, "trackingNumber is required" );
 
         // Check with  the profile contract weather the logisticAccountAddress is a logistic account or an oracle account or not.
         Profile pf = Profile( profileAddress );
@@ -175,7 +183,7 @@ contract Trace {
     /// Manually request for the location
     /// @param productId The product Id
     /// @return The request is success or not.
-    function requestForLocation(uint productId) public productContractSetted returns (bool) {
+    function requestForLocation(uint productId) public productContractSetted  returns (bool) {
 
         // Retrieve the tracking information
         ProductTrack storage t = _tracks[ productId ];
