@@ -21,10 +21,9 @@ contract Document {
     Profile profile;
 
     address public regulatorAddress;
-    uint256 public lastDocIndex;
 
     struct DocumentItem {
-        uint256 documentId;
+        uint256 subDocumentId;
         string documentName;
         uint256 accountId;
         address accountAddress;
@@ -38,14 +37,13 @@ contract Document {
     // @notice To create document contract and have an association relationship with Profile contract
     constructor(address _profileAddress) {
         profile = Profile(_profileAddress);
-        lastDocIndex = 0;
         regulatorAddress = profile.getRegulatorAddress();
     }
 
     // Create events for using in JavaScript API
     // Event 1: AddDocument by Farmer,Manufacturer,Reatiler,Logistic
     event AddDocument(
-        uint256 indexed documentId,
+        uint256 indexed subDocumentId,
         string documentName,
         uint256 indexed accountId,
         address accountAddress,
@@ -56,7 +54,7 @@ contract Document {
     event VerifyDocument(
         uint256 indexed accountId,
         address accountAddress,
-        uint256 indexed documentId,
+        uint256 indexed subDocumentId,
         uint256 documentStatus
     );
 
@@ -70,7 +68,7 @@ contract Document {
             bytes(_documentName).length != 0,
             "Document name cannot be empty"
         );
-        uint256 newId = lastDocIndex + 1;
+        uint256 newId = documentsByAccId[_accountId].length + 1;
         // create a new doc item
         DocumentItem memory documentItem = DocumentItem(
             newId,
@@ -84,11 +82,9 @@ contract Document {
 
         // Add doc item to mapping documentsByRefId
         documentsByAccId[_accountId].push(documentItem);
-        // upd next index
-        lastDocIndex = lastDocIndex + 1;
 
         emit AddDocument(
-            documentItem.documentId,
+            documentItem.subDocumentId,
             documentItem.documentName,
             documentItem.accountId,
             documentItem.accountAddress,
@@ -100,25 +96,25 @@ contract Document {
     /// @notice Function 2: approveAccount. Only regulator account can use this function.
     function verifydocument(
         uint256 _accountId,
-        uint256 _documentId,
+        uint256 _subDocumentId,
         uint256 _documentStatusValue
     ) public onlyRegulator {
         require(
-            _documentId > 0 &&
-                _documentId <= documentsByAccId[_accountId].length,
+            _subDocumentId > 0 &&
+                _subDocumentId <= documentsByAccId[_accountId].length,
             "Cannot find the document."
         );
         // Get document item by referenceId and doc. item index
 
-        documentsByAccId[_accountId][_documentId - 1]
+        documentsByAccId[_accountId][_subDocumentId - 1]
         .documentStatus = DocumentStatus(_documentStatusValue);
 
         emit VerifyDocument(
-            documentsByAccId[_accountId][_documentId - 1].accountId,
+            documentsByAccId[_accountId][_subDocumentId - 1].accountId,
             msg.sender,
-            documentsByAccId[_accountId][_documentId - 1].documentId,
+            documentsByAccId[_accountId][_subDocumentId - 1].subDocumentId,
             uint256(
-                documentsByAccId[_accountId][_documentId - 1].documentStatus
+                documentsByAccId[_accountId][_subDocumentId - 1].documentStatus
             )
         );
     }
