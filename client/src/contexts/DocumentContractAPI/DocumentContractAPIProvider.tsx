@@ -3,28 +3,24 @@ import api from '../../api'
 import {
   IDocumentContractAPI,
   IDocumentDetails,
+  IDocumentPayload,
 } from '../../interfaces/contract'
 import { DocumentStatus } from '../../enums/contract'
+const FormData = require('form-data')
 
 const contextDefaultValues: IDocumentContractAPI = {
-  // registerParticipant: () => {},
-  // registeredAccounts: [],
-  // registrationError: false,
   pendingDocuments: [],
   approvedDocuments: [],
   rejectedDocuments: [],
   updateDocumentStatus: () => {},
   getAllDocuments: () => {},
+  uploadDocument: () => {},
 }
 
 export const DocumentContractAPIContext =
   createContext<IDocumentContractAPI>(contextDefaultValues)
 
 const DocumentContractAPIProvider: FC = ({ children }): any => {
-  // const [registrationError, setRegistrationError] = useState<boolean>(false)
-  // const [registeredAccounts, setRegisteredAccounts] = useState<
-  //   IDocumentDetails[]
-  // >([])
   const [pendingDocuments, setPendingDocuments] = useState<IDocumentDetails[]>(
     []
   )
@@ -38,21 +34,6 @@ const DocumentContractAPIProvider: FC = ({ children }): any => {
   useEffect(() => {
     getAllDocuments()
   }, [])
-
-  // const registerParticipant = async (
-  //   participantDetails: IParticipantDetails
-  // ) => {
-  //   try {
-  //     Promise.all([
-  //       await api.post('/v1/participants/register', participantDetails),
-  //       await getAllParticipants(),
-  //     ])
-
-  //     setRegistrationError(false)
-  //   } catch (err) {
-  //     setRegistrationError(true)
-  //   }
-  // }
 
   const getAllDocuments = async () => {
     await getDocumentsByStatus(DocumentStatus.Pending)
@@ -69,27 +50,12 @@ const DocumentContractAPIProvider: FC = ({ children }): any => {
       switch (documentStatus) {
         case DocumentStatus.Pending:
           setPendingDocuments(resp.data.documents)
-          // setRegisteredDocuments([
-          //   ...pendingAccounts,
-          //   ...rejectedAccounts,
-          //   ...approvedAccounts,
-          // ])
           break
         case DocumentStatus.Approved:
           setApprovedDocuments(resp.data.documents)
-          // setRegisteredDocuments([
-          //   ...pendingAccounts,
-          //   ...rejectedAccounts,
-          //   ...approvedAccounts,
-          // ])
           break
         case DocumentStatus.Rejected:
           setRejectedDocuments(resp.data.documents)
-          // setRegisteredDocuments([
-          //   ...pendingAccounts,
-          //   ...rejectedAccounts,
-          //   ...approvedAccounts,
-          // ])
           break
         default:
           break
@@ -131,17 +97,35 @@ const DocumentContractAPIProvider: FC = ({ children }): any => {
     }
   }
 
+  const uploadDocument = async (
+    file: File | string,
+    payload: IDocumentPayload
+  ) => {
+    try {
+      const formData = new FormData()
+
+      // @ts-ignore
+      formData.append('accountId', payload.accountId)
+      formData.append('documentName', payload.documentName)
+      formData.append('avatar', file)
+
+      const resp = await api.post('/v1/documents', formData)
+
+      return resp.data.document
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
   return (
     <DocumentContractAPIContext.Provider
       value={{
-        // registerParticipant,
-        // registeredAccounts,
-        // registrationError,
         pendingDocuments,
         approvedDocuments,
         rejectedDocuments,
         updateDocumentStatus,
         getAllDocuments,
+        uploadDocument,
       }}
     >
       {children}

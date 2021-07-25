@@ -4,12 +4,14 @@ import { TraceContractAPIContext } from '../../contexts/TraceContractAPI'
 import { TraceContractContext } from '../../contexts/TraceContract'
 //import getWeb3 from '../../utils/getWeb3'
 import useWeb3 from '../../hooks/web3'
+import getAccounts from '../../utils/getAccounts'
+
 //import api from '../../api'
 
 //import { IProductLocation } from '../../interfaces/trace'
 
 const Track: FC = () => {
-  const { web3 } = useWeb3()
+  const { accounts } = useWeb3()
   const [inputProductId, setInputProductId] = useState<string>('0')
   //const {  accounts } = useContext(ProfileContractContext)
   const { logs, queryLogs } = useContext(TraceContractAPIContext)
@@ -23,11 +25,10 @@ const Track: FC = () => {
     //setShowErrorNotice(false)
 
     try {
-      const accounts = await web3?.eth.getAccounts()
-
+      const _accounts = await getAccounts(accounts);
       const resp = await traceContract?.methods
         .requestForLocation(parseInt(inputProductId))
-        .send({ from: accounts == null ? null : accounts[0] })
+        .send({ from: _accounts[0] })
 
       if (resp) {
         alert('REQUESTED')
@@ -47,6 +48,7 @@ const Track: FC = () => {
                 Product ID
                 <input
                   type="number"
+                  min="1"
                   onChange={(e: ChangeEvent<HTMLInputElement>) =>
                     setInputProductId(e.target.value)
                   }

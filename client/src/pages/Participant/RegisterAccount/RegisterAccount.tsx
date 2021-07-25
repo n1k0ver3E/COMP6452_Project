@@ -9,6 +9,7 @@ import {
 import RegisterForm from '../../../components/RegisterForm'
 import RegistrationSuccess from '../../../components/RegistrationSuccess'
 import './registeraccount.css'
+import getAccounts from '../../../utils/getAccounts'
 
 const initialState: IRegisterAccountDetails = {
   accountAddress: '',
@@ -81,9 +82,10 @@ const RegisterAccount: FC = () => {
     setShowErrorNotice(false)
 
     try {
+      const _accounts = await getAccounts(accounts)
       const registerAccountResp = await profileContract?.methods
         .registerAccount(accountAddress, accountName, accountType)
-        .send({ from: accounts[0] })
+        .send({ from: _accounts[0] })
 
       if (registerAccountResp) {
         const {

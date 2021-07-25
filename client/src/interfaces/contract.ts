@@ -90,17 +90,21 @@ export interface IAccountsTableProps {
 export interface IDocumentContract {
   documentContract: any
   documents: string[]
+  accounts: string[]
+}
+
+export interface IDocumentPayload {
+  accountId: number
+  documentName: string
 }
 
 export interface IDocumentContractAPI {
-  // registerParticipant: (participantDetails: IParticipantDetails) => void
-  // registeredAccounts: IParticipantDetails[]
-  // registrationError: boolean
   pendingDocuments: IDocumentDetails[]
   approvedDocuments: IDocumentDetails[]
   rejectedDocuments: IDocumentDetails[]
   updateDocumentStatus: (address: string, updatedDocumentStatus: number) => void
   getAllDocuments: () => void
+  uploadDocument: any
 }
 
 export interface IDocumentDetails {
@@ -110,14 +114,13 @@ export interface IDocumentDetails {
   hashContent: string
 }
 
-
 export interface IDocumentsTableProps {
   columns: any
   data: IDocumentDetails[]
 }
 
 export interface ITraceContract {
-  traceContract: any
+  traceContract: any,
 }
 
 export type IFarmerProductInitial = Pick<
@@ -132,15 +135,9 @@ export interface IFarmerProductDetails {
   harvestDate: Date | string
 }
 
-export type IManufacturerProcessInitial = Pick<
-  IManufacturerProcessDetails,
-  'productId' | 'processingType'
->
-
 export interface IManufacturerProcessDetails {
   productId: number | string
   processingType: string
-  timeStamp: string
 }
 
 export type IRetailProcessDetails = Pick<
@@ -151,4 +148,10 @@ export type IRetailProcessDetails = Pick<
 export interface IPurchaseProcessDetails {
   productId: number | string
   price: number | string
+}
+
+export interface ISendProductDetails {
+  receiverAddress: string
+  logisticsAddress: string
+  trackNumber: string
 }
