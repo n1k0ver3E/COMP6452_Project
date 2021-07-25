@@ -1,14 +1,17 @@
 import React, { FC } from 'react'
 import './adddocumentsuccess.css'
 
-// interface IRegistrationSuccessProps {
-//   accountName: string
-//   accountType: number
-//   accountAddress: string
-//   backToRegister: () => void
-// }
+interface IAddDocumentSuccessProps {
+  documentName: string
+  hashContent: string
+  backToAddDocument: () => void
+}
 
-const AddDocumentSuccess: FC = () => {
+const AddDocumentSuccess: FC<IAddDocumentSuccessProps> = ({
+  documentName,
+  hashContent,
+  backToAddDocument,
+}) => {
   return (
     <div className="upload-success mb-3">
       <div className="icon-text upload-check-icon">
@@ -17,24 +20,25 @@ const AddDocumentSuccess: FC = () => {
         </span>
       </div>
       <div className="mt-5">
-        <div className="notification is-info is-light">
+        <div className="notification is-info is-light upload-notification">
+          <div>Congratulations!</div>
           <div>
-            Congratulations,{' '}
-            <span className="has-text-weight-bold">Awesome</span>!
+            The file <strong>{documentName}</strong> upload was successful.
           </div>
-          <div>The registration was a success</div>
-          <div className="mt-4">
-            Your registration for account type{' '}
-            <span className="has-text-weight-bold">Peekaboo</span> is now in
-            pending. You can track the status of this account via the 'View
-            Account' menu and entering the below address:
+          <div className="mt-5">
+            Your document is currently pending review. For reference, please
+            take not of the file hash content:
           </div>
-          <div className="mt-5 has-text-weight-bold">Got it</div>
+          <div className="hash-content mt-3">
+            <strong>{hashContent}</strong>
+          </div>
         </div>
       </div>
 
       <div className="mt-3">
-        <button className="button is-link">Back to Add Document </button>
+        <button className="button is-link" onClick={() => backToAddDocument()}>
+          Back to Add Document{' '}
+        </button>
       </div>
     </div>
   )

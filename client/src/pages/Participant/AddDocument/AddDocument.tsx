@@ -8,6 +8,7 @@ import { IParticipantDetails } from '../../../interfaces/contract'
 import { titleCase } from '../../../helpers'
 import { AccountType } from '../../../enums/contract'
 import { shortenedAddress } from '../../../helpers/stringMutations'
+import AddDocumentSuccess from '../../../components/AddDocumentSuccess'
 
 const AddDocument: FC = () => {
   const [accountId, setAccountId] = useState<{ accountId: number }>({
@@ -23,6 +24,7 @@ const AddDocument: FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [successDocumentContent, setSuccessDocumentContent] =
     useState(undefined)
+  const [uploadSuccess, setUploadSuccess] = useState<boolean>(false)
   const { documentContract, accounts } = useContext(DocumentContractContext)
   const { uploadDocument } = useContext(DocumentContractAPIContext)
   const { registeredAccounts, getAllParticipants } = useContext(
@@ -85,12 +87,17 @@ const AddDocument: FC = () => {
 
       if (addDocumentResp) {
         setSuccessDocumentContent(document)
+        setUploadSuccess(true)
         setIsLoading(false)
       }
     }
   }
 
-  console.log('successDocumentContent', successDocumentContent)
+  const backToAddDocument = () => {
+    setUploadSuccess(false)
+    setDocumentName('')
+    setFile('')
+  }
 
   return (
     <div>
@@ -99,71 +106,87 @@ const AddDocument: FC = () => {
           <div className="column is-10 is-offset-2">
             <div className="columns">
               <div className="column left mt-6 is-half">
-                <h1 className="title is-4">Add Document</h1>
-                {error && (
-                  <div className="notification is-danger is-light">
-                    {errorMessage}
-                  </div>
-                )}
+                {!uploadSuccess ? (
+                  <>
+                    <h1 className="title is-4">Add Document</h1>
+                    {error && (
+                      <div className="notification is-danger is-light">
+                        {errorMessage}
+                      </div>
+                    )}
 
-                <form className="mt-5">
-                  <div className="select is-fullwidth">
-                    <select
-                      defaultValue={'DEFAULT'}
-                      name="accountId"
-                      id="accountId"
-                      onChange={handleChange}
-                    >
-                      <option value={'DEFAULT'} disabled>
-                        Select Account Address
-                      </option>
-                      {registeredAccounts?.map(
-                        (account: IParticipantDetails, idx: number) => (
-                          <option
-                            key={idx}
-                            value={`${account.accountId}:${account.accountAddress}`}
-                          >
-                            {`${account.accountName} (${titleCase(
-                              AccountType[account.accountType]
-                            )}) [${shortenedAddress(account.accountAddress)}`}
-                            ]
+                    <form className="mt-5">
+                      <div className="select is-fullwidth">
+                        <select
+                          defaultValue={'DEFAULT'}
+                          name="accountId"
+                          id="accountId"
+                          onChange={handleChange}
+                        >
+                          <option value={'DEFAULT'} disabled>
+                            Select Account Address
                           </option>
-                        )
-                      )}
-                    </select>
-                  </div>
+                          {registeredAccounts?.map(
+                            (account: IParticipantDetails, idx: number) => (
+                              <option
+                                key={idx}
+                                value={`${account.accountId}:${account.accountAddress}`}
+                              >
+                                {`${account.accountName} (${titleCase(
+                                  AccountType[account.accountType]
+                                )}) [${shortenedAddress(
+                                  account.accountAddress
+                                )}`}
+                                ]
+                              </option>
+                            )
+                          )}
+                        </select>
+                      </div>
 
-                  <div className="file has-name is-primary mt-3 is-fullwidth">
-                    <label className="file-label">
-                      <input
-                        className="file-input"
-                        type="file"
-                        name="resume"
-                        onChange={handleCaptureFile}
-                      />
-                      <span className="file-cta">
-                        <span className="file-icon">
-                          <i className="fas fa-upload" />
-                        </span>
-                        <span className="file-label">Select file…</span>
-                      </span>
-                      <span className="file-name">{documentName}</span>
-                    </label>
-                  </div>
+                      <div className="file has-name is-primary mt-3 is-fullwidth">
+                        <label className="file-label">
+                          <input
+                            className="file-input"
+                            type="file"
+                            name="resume"
+                            onChange={handleCaptureFile}
+                          />
+                          <span className="file-cta">
+                            <span className="file-icon">
+                              <i className="fas fa-upload" />
+                            </span>
+                            <span className="file-label">Select file…</span>
+                          </span>
+                          <span className="file-name">{documentName}</span>
+                        </label>
+                      </div>
 
-                  <button
-                    className={
-                      isLoading
-                        ? 'button is-block is-link is-fullwidth mt-3 is-loading'
-                        : 'button is-block is-link is-fullwidth mt-3'
-                    }
-                    disabled={accountId.accountId === -1 || documentName === ''}
-                    onClick={(e) => handleFileUpload(e)}
-                  >
-                    Upload
-                  </button>
-                  <br />
-                </form>
+                      <button
+                        className={
+                          isLoading
+                            ? 'button is-block is-link is-fullwidth mt-3 is-loading'
+                            : 'button is-block is-link is-fullwidth mt-3'
+                        }
+                        disabled={
+                          accountId.accountId === -1 || documentName === ''
+                        }
+                        onClick={(e) => handleFileUpload(e)}
+                      >
+                        Upload
+                      </button>
+                      <br />
+                    </form>
+                  </>
+                ) : (
+                  <AddDocumentSuccess
+                    // @ts-ignore
+                    documentName={successDocumentContent.documentName}
+                    // @ts-ignore
+                    hashContent={successDocumentContent.hashContent}
+                    backToAddDocument={backToAddDocument}
+                  />
+                )}
               </div>
               <div className="column right has-text-centered is-half">
                 <img
