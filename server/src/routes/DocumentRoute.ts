@@ -11,7 +11,11 @@ router
 
 router.route('/status').get(DocumentController.getDocumentsByStatus);
 
-router.route('/verify').get(DocumentController.updateDocStatusByAccIdSubDocId);
+
+
+router
+  .route('/verify/')
+  .patch(DocumentController.updateDocStatusByAccIdSubDocId)
 
 // router
 //   .route('/:address')

@@ -27,6 +27,7 @@ const getAllDocuments = catchAsync(
 
 const getDocumentsByStatus = catchAsync(
   async (req: Request, res: Response, _next: NextFunction) => {
+
     const documentStatuses: string[] | string =
       (Object.values(req.query)[0] as string[] | string) || []
 
@@ -44,13 +45,14 @@ const getDocumentsByStatus = catchAsync(
 
 const updateDocStatusByAccIdSubDocId = catchAsync(
   async (req: Request, res: Response, _next: NextFunction) => {
-    const { accountId: accountId } = req.params
-    const { subDocumentId: subDocumentId } = req.params
-    const { accountStatus: updatedStatus } = req.body
+    const subDocumentId = (Object.values(req.query)[0] as string)
+    const accountId = (Object.values(req.query)[1] as string)
 
+    const { documentStatus: updatedStatus } = req.body
+    //console.log(subDocumentId)
     const documents = await DocumentService.updateDocStatusByAccIdSubDocId(
-      parseInt(accountId),
       parseInt(subDocumentId),
+      parseInt(accountId),
       parseInt(updatedStatus)
     )
 

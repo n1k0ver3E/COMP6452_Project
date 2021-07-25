@@ -1,5 +1,5 @@
 import { DocumentModel } from '../models'
-import { IDocumentResp, IDocument } from '../interfaces/document'
+import { IDocumentResp, IDocument, IDocumentVerify } from '../interfaces/document'
 
 const documentUpload = (body: IDocumentResp) => {
   return DocumentModel.create(body)
@@ -17,17 +17,17 @@ const getDocumentsByStatus = (
     documentStatus: { $in: documentStatuses },
   }).exec()
 }
-// composite keys for document Item  is accountId and subDocumentId
+
 const updateDocStatusByAccIdSubDocId = async (
-  accountId: number,
   subDocumentId: number,
+  accountId: number,
   updatedStatus: number
-): Promise<IDocument> => {
+): Promise<IDocumentVerify> => {
   // @ts-ignore
   return DocumentModel.findOneAndUpdate(
     {
-      accountId: accountId,
       subDocumentId: subDocumentId,
+      accountId: accountId,
     },
     {
       $set: {

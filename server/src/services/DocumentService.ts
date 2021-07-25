@@ -71,18 +71,19 @@ const getDocumentsByStatus = async (
 
 
 const updateDocStatusByAccIdSubDocId = async (
-  accountId: number,
   subDocumentId: number,
+  accountId: number,
   updatedStatus: number
 ): Promise<IDocumentVerify> => {
+  //console.log("subDocumentId", subDocumentId)
+  //console.log("accountId", accountId)
   const updatedDocument =
     await DocumentRepository.updateDocStatusByAccIdSubDocId(
-      accountId,
       subDocumentId,
+      accountId,
       updatedStatus
     )
   return {
-    //documentId: updatedDocument.documentId,
     subDocumentId: updatedDocument.subDocumentId,
     documentName: updatedDocument.documentName,
     accountId: updatedDocument.accountId,
