@@ -6,6 +6,8 @@ import DocumentContextProvider from './contexts/DocumentContract/DocumentContrac
 import DocumentContractAPIProvider from './contexts/DocumentContractAPI/DocumentContractAPIProvider'
 import TraceContractAPIProvider from './contexts/TraceContractAPI/TraceContractAPIProvider'
 import TraceContractContext from './contexts/TraceContract/TraceContractProvider'
+import ProductContractAPIProvider from './contexts/ProductContractAPI/ProductContractAPIProvider'
+import ProductContractContext from './contexts/ProductContract/ProductContractProvider'
 import Landing from './pages/Landing'
 import Regulator from './pages/Regulator'
 import Participant from './pages/Participant'
@@ -31,11 +33,15 @@ export default () => (
     <ProfileContractAPIProvider>
       <DocumentContextProvider>
         <DocumentContractAPIProvider>
-          <TraceContractContext>
-            <TraceContractAPIProvider>
-              <App />
-            </TraceContractAPIProvider>
-          </TraceContractContext>
+          <ProductContractContext>
+            <ProductContractAPIProvider>
+              <TraceContractContext>
+                <TraceContractAPIProvider>
+                  <App />
+                </TraceContractAPIProvider>
+              </TraceContractContext>
+            </ProductContractAPIProvider>
+          </ProductContractContext>
         </DocumentContractAPIProvider>
       </DocumentContextProvider>
     </ProfileContractAPIProvider>

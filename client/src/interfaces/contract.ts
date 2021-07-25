@@ -87,6 +87,16 @@ export interface IAccountsTableProps {
   data: IParticipantDetails[]
 }
 
+
+export interface IProductContract {
+  productContract: any
+}
+
+export interface IProductContractAPI {
+  recallProduct: (productId: number) => void,
+  recallProductResult: boolean,
+}
+
 export interface IDocumentContract {
   documentContract: any
   documents: string[]

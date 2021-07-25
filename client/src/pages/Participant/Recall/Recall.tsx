@@ -1,13 +1,16 @@
 import React, { ChangeEvent, FC, useContext, useEffect, useState } from 'react'
-import { DocumentContractContext } from '../../../contexts/DocumentContract'
-import { DocumentContractAPIContext } from '../../../contexts/DocumentContractAPI'
-import { ProfileContractAPIContext } from '../../../contexts/ProfileContractAPI'
+// import { DocumentContractContext } from '../../../contexts/DocumentContract'
+// import { DocumentContractAPIContext } from '../../../contexts/DocumentContractAPI'
+// import { ProfileContractAPIContext } from '../../../contexts/ProfileContractAPI'
+import { ProfileContractContext } from '../../../contexts/ProfileContract'
+import { ProductContractContext } from '../../../contexts/ProductContract'
+import { ProductContractAPIContext } from '../../../contexts/ProductContractAPI'
 import DocumentImage from '../../../assets/documents.png'
-import { IParticipantDetails } from '../../../interfaces/contract'
-import { titleCase } from '../../../helpers'
-import { AccountType } from '../../../enums/contract'
-import { shortenedAddress } from '../../../helpers/stringMutations'
-import AddDocumentSuccess from '../../../components/AddDocumentSuccess'
+// import { IParticipantDetails } from '../../../interfaces/contract'
+// import { titleCase } from '../../../helpers'
+// import { AccountType } from '../../../enums/contract'
+// import { shortenedAddress } from '../../../helpers/stringMutations'
+import RecallProductSuccess from '../../../components/RecallProductSuccess'
 import getAccounts from '../../../utils/getAccounts'
 
 const Recall: FC = () => {
@@ -24,10 +27,17 @@ const Recall: FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   // const [successDocumentContent, setSuccessDocumentContent] = useState(undefined)
   const [recallSuccess, setRecallSuccess] = useState<boolean>(false)
-  const { documentContract, accounts } = useContext(DocumentContractContext)
-  const { uploadDocument } = useContext(DocumentContractAPIContext)
-  const { registeredAccounts, getAllParticipants } = useContext(
-    ProfileContractAPIContext
+  //const { documentContract, accounts } = useContext(DocumentContractContext)
+  //const { uploadDocument } = useContext(DocumentContractAPIContext)
+  // const { registeredAccounts, getAllParticipants } = useContext(
+  //   ProfileContractAPIContext
+  // )
+
+  const { accounts } = useContext(ProfileContractContext)
+
+  const { productContract } = useContext(ProductContractContext)
+  const { recallProduct, recallProductResult } = useContext(
+    ProductContractAPIContext
   )
 
   const [inputProductId, setInputProductId] = useState<number>(0)
@@ -64,7 +74,7 @@ const Recall: FC = () => {
     e.preventDefault()
     setIsLoading(true)
 
-    const _accounts = await getAccounts(accounts);
+    const _accounts = await getAccounts(accounts)
 
     // if (address.accountAddress !== _accounts[0]) {
     //   setError(true)
@@ -72,28 +82,38 @@ const Recall: FC = () => {
     //   return
     // }
 
-    const payload = {
-      productId: inputProductId,
-      //documentName: documentName,
-    }
-
     // const document = await uploadDocument(file, payload)
 
-    // if (document) {
-      // const recallResp = await documentContract?.methods
-      //   .addDocument(
-      //     document.accountId,
-      //     document.documentName,
-      //     document.hashContent
-      //   )
-      //   .send({ from: _accounts[0] })
+    try {
+      // if (document) {
+      const recallResp = await productContract?.methods.recallProduct(
+        inputProductId
+      )
+      // .send({ from: _accounts[0] })
 
-      // if (addDocumentResp) {
-      //   // setSuccessDocumentContent(document)
-      //   setRecallSuccess(true)
-      //   setIsLoading(false)
+      if (recallResp) {
+        await recallProduct(inputProductId)
+
+        console.log( recallProductResult );
+
+        if (recallProductResult) {
+          // setSuccessDocumentContent(document)
+          setRecallSuccess(true)
+          setIsLoading(false)
+        } else {
+          setRecallSuccess(false)
+          setIsLoading(false)
+          setError(true)
+          setErrorMessage('An error occurred.')
+        }
+      }
       // }
-    // }
+    } catch (error) {
+      setRecallSuccess(false)
+      setIsLoading(false)
+      setError(true)
+      setErrorMessage(error.message)
+    }
   }
 
   const backToRecallProduct = () => {
@@ -120,7 +140,13 @@ const Recall: FC = () => {
 
                     <form className="mt-5">
                       <div className="is-fullwidth">
-                        <input type="number" min="0" onChange={(e) =>{ setInputProductId( parseInt( e.target.value ) ) }}></input>
+                        <input
+                          type="number"
+                          min="0"
+                          onChange={(e) => {
+                            setInputProductId(parseInt(e.target.value))
+                          }}
+                        ></input>
                         {/* <select
                           defaultValue={'DEFAULT'}
                           name="accountId"
@@ -172,9 +198,7 @@ const Recall: FC = () => {
                             ? 'button is-block is-link is-fullwidth mt-3 is-loading'
                             : 'button is-block is-link is-fullwidth mt-3'
                         }
-                        disabled={
-                          inputProductId === 0
-                        }
+                        disabled={inputProductId === 0}
                         onClick={(e) => handleRecall(e)}
                       >
                         Recall
@@ -183,11 +207,8 @@ const Recall: FC = () => {
                     </form>
                   </>
                 ) : (
-                  <AddDocumentSuccess
-                    // @ts-ignore
-                    productId={successDocumentContent.documentName}
-                    // // @ts-ignore
-                    // hashContent={successDocumentContent.hashContent}
+                  <RecallProductSuccess
+                    productId={inputProductId}
                     backToRecallProduct={backToRecallProduct}
                   />
                 )}

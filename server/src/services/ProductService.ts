@@ -32,7 +32,14 @@ const createProduct = async (productDetails: IProduct) => {
   }
 }
 
+const recallProduct = async(productId: number) => {
+  const result = await ProductRepository.recallProduct(productId)
+
+  return result
+}
+
 export default {
   addProductFarmingInfo,
   createProduct,
+  recallProduct
 }
