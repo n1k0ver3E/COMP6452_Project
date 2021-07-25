@@ -16,9 +16,9 @@ const HeroSection: FC = () => {
     history.push('/participant')
   }
 
-  const goToTrace = () => {
-    history.push('/track');
-  }
+  // const goToTrace = () => {
+  //   history.push('/track')
+  // }
 
   return (
     <section className="hero is-fullheight wrapper">
@@ -43,23 +43,25 @@ const HeroSection: FC = () => {
               </h2>
               <div className="buttons">
                 <a
+                  href="#"
                   className="button is-primary is-outlined"
                   onClick={goToRegulator}
                 >
                   Regulator
                 </a>
                 <a
+                  href="#"
                   className="button is-link is-outlined"
                   onClick={goToParticipant}
                 >
                   Participant
                 </a>
-                <a
+                {/* <a
                   className="button is-link is-outlined"
                   onClick={goToTrace}
                 >
                   Trace
-                </a>
+                </a> */}
               </div>
             </div>
             <div

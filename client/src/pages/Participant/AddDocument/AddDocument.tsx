@@ -9,6 +9,7 @@ import { titleCase } from '../../../helpers'
 import { AccountType } from '../../../enums/contract'
 import { shortenedAddress } from '../../../helpers/stringMutations'
 import AddDocumentSuccess from '../../../components/AddDocumentSuccess'
+import getAccounts from '../../../utils/getAccounts'
 
 const AddDocument: FC = () => {
   const [accountId, setAccountId] = useState<{ accountId: number }>({
@@ -63,7 +64,9 @@ const AddDocument: FC = () => {
     e.preventDefault()
     setIsLoading(true)
 
-    if (address.accountAddress !== accounts[0]) {
+    const _accounts = await getAccounts(accounts);
+
+    if (address.accountAddress !== _accounts[0]) {
       setError(true)
       setErrorMessage('This function can only be executed by the owner.')
       return
@@ -83,7 +86,7 @@ const AddDocument: FC = () => {
           document.documentName,
           document.hashContent
         )
-        .send({ from: accounts[0] })
+        .send({ from: _accounts[0] })
 
       if (addDocumentResp) {
         setSuccessDocumentContent(document)

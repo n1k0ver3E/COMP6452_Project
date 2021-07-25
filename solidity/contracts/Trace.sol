@@ -4,123 +4,188 @@ pragma solidity >=0.8.0 <0.9.0;
 import "./Profile.sol";
 
 contract Trace {
+    // Events
     event ProductTracking(address indexed logisticAccountAddress, uint productId );
     event ProductLocation(uint indexed productId, uint indexed timestamp, int latitude, int longitude);
     event ProductLocationRequest(uint indexed blockNumber, uint indexed productId);
 
+    // Information for tracking the product
     struct ProductTrack {
         uint timestamp;
         int latitude;
         int longitude;
-        address logisticAccountAddress;
-        bytes trackingNumber;
         uint nextRequestForLocationBlockNumber;
         bool isRequestingForLocation;
+
+        address logisticAccountAddress;
+
+        bytes trackingNumber;
     }
 
+    // The owner of this contract
     address public owner;
+    // The address of the profile contract
     address public profileAddress;
+    // The address of the product contract
     address public productContractAddress;
+
+    // All the track information. Indexed by the productId
     mapping (uint => ProductTrack) _tracks;
 
+    /// View of the track information
+    /// @param productId The productId
+    /// @return trackingNumber The trackingNumber of the transportation.
+    /// @return latitude Last known product's latitude. (Store up to 5 decimals)
+    /// @return longitude Last known product's longitude. (Store up to 5 decimals)
+    /// @return isRequestingForLocation Is someone request for the product location.
     function tracks(uint productId)
     public
     view
     returns(string memory trackingNumber, int latitude, int longitude, bool isRequestingForLocation)  {
+
+        // Retrieve the product from map.
         ProductTrack memory t = _tracks[ productId ];
 
+        // Check if the product exists or not by check the tracking number.
         if( t.trackingNumber.length == 0 ) {
+            // Return `null` data.
             return ("", 0, 0, false);
         } else {
+            // Return the product data.
             return ( string(t.trackingNumber), t.latitude, t.longitude, t.isRequestingForLocation );
         }
     }
 
+    /// Constructor
+    /// @param _profileAddress The address of the profile contract.
     constructor(address _profileAddress) {
         profileAddress = _profileAddress;
         owner = msg.sender;
     }
 
-    function setProductContractAddress(address _productContractAddress) public onlyOwner {
-        require( productContractAddress == address(0), "Product contract is setted." );
-
-        productContractAddress = _productContractAddress;
-    }
-
+    /// Modifer to check for the owner
     modifier onlyOwner() {
         require( msg.sender == owner, "Must be owner" );
         _;
     }
 
+    /// Modifer to check if the product contract address is setted or not. Error if not setted.
     modifier productContractSetted() {
-        require( productContractAddress != address(0), "Prodcut contract is not setted." );
+        require( productContractAddress != address(0), "Product contract is not setted." );
         _;
     }
 
+    /// Set the product contract address. This is accessible only for the owner and can only be setted once.
+    function setProductContractAddress(address _productContractAddress) public onlyOwner {
+        // Check weather the product contract address is setted or not.
+        require( productContractAddress == address(0), "Product contract is setted." );
+
+        // Set the address.
+        productContractAddress = _productContractAddress;
+    }
+
+    /// Add the product for tracking.
+    /// @param productId The product id.
+    /// @param logisticAccountAddress The account addres of the tracker.
+    /// @param trackingNumber The tracking number.
     function addProduct(uint productId, address logisticAccountAddress, string memory trackingNumber)
     public
     productContractSetted {
+
+        // Check with  the profile contract weather the logisticAccountAddress is a logistic account or an oracle account or not.
         Profile pf = Profile( profileAddress );
         bool isLogistic = pf.isLogisticOrOracle(logisticAccountAddress);
 
+        // Revert the transaction if the logisticAccountAddress is not a logistic account nor an oracle account.
         require( isLogistic, "logisticAccountAddress must be a logistic or an oracle" );
 
+        // Retrieve the product.
         ProductTrack memory t = _tracks[ productId ];
         
+        // Revert the transaction if the product by productId is already added.
         require( t.trackingNumber.length == 0, "Product already added" );
 
+        // Set the information
         t.logisticAccountAddress = logisticAccountAddress;
         t.trackingNumber = bytes(trackingNumber);
         t.latitude = 0;
         t.longitude = 0;
 
+        // Add the information to the map
         _tracks[ productId  ] = t;
 
+        // Emit the event for reverse oracle.
         emit ProductTracking(logisticAccountAddress, productId);
     }
 
+
+    /// Log the location of the product
+    /// @param productId The product id.
+    /// @param timestamp The time of the log. This information is provided by the tracker.
+    /// @param latitude The product's latitude. (Store up to 5 decimals)
+    /// @param longitude The product's latitude. (Store up to 5 decimals)
+    /// @return success Weather the logging is success or not.
     function logLocation(uint productId, uint timestamp, int latitude, int longitude)
     public
     productContractSetted
     returns(bool success) {
+        // Retrieve the product.
         ProductTrack storage t = _tracks[ productId ];
 
+        // If there is no tracking number then the product is not added.
         if( t.trackingNumber.length == 0 ) {
             return false;
         }
 
+        // Only the selected account could add the track information
         require( msg.sender == t.logisticAccountAddress, "Incorrect logistic account" );
 
+        // Check weather is the product is requested for the location.
         if( t.isRequestingForLocation ) {
+            // If there is a request.
+
+            // Only save the latest location in case the timestamp is newer
             if ( t.timestamp < timestamp ) {
                 saveProductLocation(t, productId, timestamp, latitude, longitude);
             }
 
+            // Set the requesting to false.
             t.isRequestingForLocation = false;
 
             // TODO:: Insert callback code here
 
+            // Returns true to indicate success log.
             return true;
         } else {
+            // Only update the location if the timestamp of the new log is newer.
             if ( t.timestamp >= timestamp ) {
                 return false;
             }
 
+            // Save the latest location
             saveProductLocation(t, productId, timestamp, latitude, longitude);
 
             // TODO:: Insert callback code here
 
+            // Returns true to indicate success log.
             return true;
         }
     }
 
+    /// Manually request for the location
+    /// @param productId The product Id
+    /// @return The request is success or not.
     function requestForLocation(uint productId) public productContractSetted returns (bool) {
+
+        // Retrieve the tracking information
         ProductTrack storage t = _tracks[ productId ];
 
+        // If there is no tracking number then the product is not added.
         if( t.trackingNumber.length == 0 ) {
             return false;
         }
 
+        // If there is already a request then this request is ignored.
         if( t.isRequestingForLocation ) {
             return false;
         }
@@ -130,24 +195,35 @@ contract Trace {
             return false;
         }
 
+        // Update the request flag.
         t.isRequestingForLocation = true;
 
         // Update the next request block number to be roughly next 6 hours.
         // This simply work as a rate limit
         t.nextRequestForLocationBlockNumber = block.number + 1650;
 
+        // Emit an event for reverse oracle.
         emit ProductLocationRequest(block.number, productId);
 
+        // Returns true to indicate the success of request
         return true;
     }
 
+    /// Update the product location.
+    /// @param t The product tracking information
+    /// @param productId The product id
+    /// @param timestamp The timestamp of the log
+    /// @param latitude The product latitude
+    /// @param longitude The product longitude
     function saveProductLocation( ProductTrack storage t, uint productId, uint timestamp, int latitude, int longitude ) 
     private
     {
+        // Update the information
         t.timestamp = timestamp;
         t.latitude = latitude;
         t.longitude = longitude;
 
+        // Emit the event for the reverse oracle and to store it on the blockchain.
         emit ProductLocation( productId, timestamp, latitude, longitude);
     }
 }
