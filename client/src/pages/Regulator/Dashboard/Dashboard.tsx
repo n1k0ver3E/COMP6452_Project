@@ -2,6 +2,7 @@ import React, { FC, useContext, useEffect } from 'react'
 import DashboardHeroHeader from '../../../components/DashboardHeroHeader'
 import DashboardHeroFooter from '../../../components/DashboardHeroFooter'
 import { ProfileContractAPIContext } from '../../../contexts/ProfileContractAPI'
+import { DocumentContractAPIContext } from '../../../contexts/DocumentContractAPI'
 
 const Dashboard: FC = () => {
   const {
@@ -11,8 +12,15 @@ const Dashboard: FC = () => {
     approvedAccounts,
   } = useContext(ProfileContractAPIContext)
 
+  const {
+    getAllDocuments,
+    pendingDocuments,
+    approvedDocuments,
+  } = useContext(DocumentContractAPIContext)
+
   useEffect(() => {
     getAllParticipants()
+    getAllDocuments()
   }, [])
 
   return (
@@ -55,15 +63,19 @@ const Dashboard: FC = () => {
           </div>
           <div className="tile is-parent">
             <article className="tile is-child box">
-              <p className="title">0</p>
-              <p className="subtitle">Document to verify</p>
+              <p className="title">{pendingDocuments.length}</p>
+              <p className="subtitle">{pendingDocuments.length === 0 || pendingDocuments.length === 1
+                  ? 'Document'
+                  : 'Documents'} to verify</p>
             </article>
           </div>
 
           <div className="tile is-parent">
             <article className="tile is-child box">
-              <p className="title">0</p>
-              <p className="subtitle">Document verified</p>
+              <p className="title">{approvedDocuments.length}</p>
+              <p className="subtitle">{approvedDocuments.length === 0 || approvedDocuments.length === 1
+                  ? 'Document'
+                  : 'Documents'} verified</p>
             </article>
           </div>
         </div>
