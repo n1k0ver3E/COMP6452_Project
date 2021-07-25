@@ -17,10 +17,33 @@ const getDocumentsByStatus = (
     documentStatus: { $in: documentStatuses },
   }).exec()
 }
+// composite keys for document Item  is accountId and subDocumentId
+const updateDocStatusByAccIdSubDocId = async (
+  accountId: number,
+  subDocumentId: number,
+  updatedStatus: number
+): Promise<IDocument> => {
+  // @ts-ignore
+  return DocumentModel.findOneAndUpdate(
+    {
+      accountId: accountId,
+      subDocumentId: subDocumentId,
+    },
+    {
+      $set: {
+        documentStatus: updatedStatus,
+      },
+    },
+    {
+      new: true,
+    }
+  )
+}
 
 
 export default {
   documentUpload,
   getAllDocuments,
-  getDocumentsByStatus
+  getDocumentsByStatus,
+  updateDocStatusByAccIdSubDocId
 }

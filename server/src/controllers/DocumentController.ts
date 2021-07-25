@@ -41,8 +41,31 @@ const getDocumentsByStatus = catchAsync(
   }
 )
 
+
+const updateDocumentStatusByDocId = catchAsync(
+  async (req: Request, res: Response, _next: NextFunction) => {
+    const { accountId: accountId } = req.params
+    const { subDocumentId: subDocumentId } = req.params
+    const { accountStatus: updatedStatus } = req.body
+
+    const documents = await DocumentService.updateDocStatusByAccIdSubDocId(
+      parseInt(accountId),
+      parseInt(subDocumentId),
+      parseInt(updatedStatus)
+    )
+
+    return res.status(httpStatus.OK).json({
+      success: true,
+      documents,
+    })
+  }
+)
+
 export default {
   uploadDocument,
   getAllDocuments,
-  getDocumentsByStatus
+  getDocumentsByStatus,
+  updateDocumentStatusByDocId,
 }
+
+

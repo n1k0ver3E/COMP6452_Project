@@ -1,6 +1,6 @@
 import fs from 'fs'
 import { DocumentRepository } from '../repositories'
-import { IDocumentResp, IDocument } from '../interfaces/document'
+import { IDocumentResp, IDocument, IDocumentVerify } from '../interfaces/document'
 const ipfsAPI = require('ipfs-api')
 const NodeRSA = require('node-rsa')
 const path = require('path')
@@ -37,7 +37,7 @@ const documentUpload = async (
     const document = await DocumentRepository.documentUpload(newBody)
 
     return {
-      id: document.id,
+      //id: document.id,
       documentName: document.documentName,
       accountId: document.accountId,
       hashContent: document.hashContent,
@@ -69,8 +69,32 @@ const getDocumentsByStatus = async (
   return documents
 }
 
+
+const updateDocStatusByAccIdSubDocId = async (
+  accountId: number,
+  subDocumentId: number,
+  updatedStatus: number
+): Promise<IDocumentVerify> => {
+  const updatedDocument =
+    await DocumentRepository.updateDocStatusByAccIdSubDocId(
+      accountId,
+      subDocumentId,
+      updatedStatus
+    )
+  return {
+    documentId: updatedDocument.documentId,
+    subDocumentId: updatedDocument.subDocumentId,
+    documentName: updatedDocument.documentName,
+    accountId: updatedDocument.accountId,
+    hashContent: updatedDocument.hashContent,
+    documentStatus: updatedDocument.documentStatus,
+  }
+}
+
 export default {
   documentUpload,
   getAllDocuments,
   getDocumentsByStatus,
+  updateDocStatusByAccIdSubDocId
 }
+
