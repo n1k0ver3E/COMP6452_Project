@@ -110,7 +110,6 @@ export interface IDocumentDetails {
   hashContent: string
 }
 
-
 export interface IDocumentsTableProps {
   columns: any
   data: IDocumentDetails[]
@@ -132,15 +131,9 @@ export interface IFarmerProductDetails {
   harvestDate: Date | string
 }
 
-export type IManufacturerProcessInitial = Pick<
-  IManufacturerProcessDetails,
-  'productId' | 'processingType'
->
-
 export interface IManufacturerProcessDetails {
   productId: number | string
   processingType: string
-  timeStamp: string
 }
 
 export type IRetailProcessDetails = Pick<
@@ -151,4 +144,10 @@ export type IRetailProcessDetails = Pick<
 export interface IPurchaseProcessDetails {
   productId: number | string
   price: number | string
+}
+
+export interface ISendProductDetails {
+  receiverAddress: string
+  logisticsAddress: string
+  trackNumber: string
 }

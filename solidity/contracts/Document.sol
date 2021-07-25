@@ -30,6 +30,7 @@ contract Document {
         address accountAddress;
         DocumentStatus documentStatus;
         string hashContent; // TODO: recheck that it can store hash data
+        uint256 timestamp;
     }
     // Get account Info. by referenceId
     mapping(uint256 => DocumentItem[]) public documentsByAccId;
@@ -77,7 +78,8 @@ contract Document {
             _accountId,
             msg.sender,
             DocumentStatus.Pending,
-            _hashContent
+            _hashContent,
+            block.number
         );
 
         // Add doc item to mapping documentsByRefId

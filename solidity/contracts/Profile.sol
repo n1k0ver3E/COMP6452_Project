@@ -44,6 +44,7 @@ contract Profile {
         AccountType accountType;
         AccountStatus accountStatus;
         bool isValue; // To check duplicate account
+        uint256 blockNo;
     }
     // Get account Info. by account address.
     mapping(address => Account) public accountInfoByAddress;
@@ -59,7 +60,8 @@ contract Profile {
             lastAccountId,
             AccountType.Regulator,
             AccountStatus.Approved,
-            true
+            true,
+            block.number
         );
 
         //add regulator acc. address to mapping.
@@ -95,7 +97,8 @@ contract Profile {
             tmpNewId,
             AccountType(_accountTypeValue),
             AccountStatus.Pending,
-            true
+            true,
+            block.number
         );
 
         //add a new acc. address to mapping.
@@ -178,6 +181,86 @@ contract Profile {
                     AccountType.Oracle ||
                     accountInfoByAddress[_accountAddress].accountType ==
                     AccountType.Logistic)
+            ) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    function isFarmer(address _accountAddress) public view returns (bool) {
+        if (
+            bytes(accountInfoByAddress[_accountAddress].accountName).length != 0
+        ) {
+            if (
+                (accountInfoByAddress[_accountAddress].accountType ==
+                    AccountType.Farmer) &&
+                (accountInfoByAddress[_accountAddress].accountStatus ==
+                    AccountStatus.Approved)
+            ) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    function isManufacturer(address _accountAddress)
+        public
+        view
+        returns (bool)
+    {
+        if (
+            bytes(accountInfoByAddress[_accountAddress].accountName).length != 0
+        ) {
+            if (
+                (accountInfoByAddress[_accountAddress].accountType ==
+                    AccountType.Manufacturer) &&
+                (accountInfoByAddress[_accountAddress].accountStatus ==
+                    AccountStatus.Approved)
+            ) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    function isRetailer(address _accountAddress) public view returns (bool) {
+        if (
+            bytes(accountInfoByAddress[_accountAddress].accountName).length != 0
+        ) {
+            if (
+                (accountInfoByAddress[_accountAddress].accountType ==
+                    AccountType.Retailer) &&
+                (accountInfoByAddress[_accountAddress].accountStatus ==
+                    AccountStatus.Approved)
+            ) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    function isConsumer(address _accountAddress) public view returns (bool) {
+        if (
+            bytes(accountInfoByAddress[_accountAddress].accountName).length != 0
+        ) {
+            if (
+                (accountInfoByAddress[_accountAddress].accountType ==
+                    AccountType.Consumer) &&
+                (accountInfoByAddress[_accountAddress].accountStatus ==
+                    AccountStatus.Approved)
             ) {
                 return true;
             } else {
