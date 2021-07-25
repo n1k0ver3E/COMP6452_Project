@@ -213,6 +213,11 @@ contract ProductSC {
         isManufacturerOnly
         isProductActive(_pid)
     {
+        require(
+            products[_pid].statusType == status.FARMING,
+            "The current status of product should be FARMING."
+        );
+
         Product storage existProduct = products[_pid];
         existProduct.manufacturerId = msg.sender;
         existProduct.statusType = status.MANUFACTURING;
@@ -277,6 +282,11 @@ contract ProductSC {
         isConsumerOnly
         isProductActive(_pid)
     {
+        require(
+            products[_pid].statusType == status.RETAILING,
+            "The current status of product should be RETAILING."
+        );
+
         Product storage existProduct = products[_pid];
         existProduct.ConsumerId = msg.sender;
         existProduct.statusType = status.PURCHASING;
@@ -318,6 +328,10 @@ contract ProductSC {
         require(
             profile.isRetailer(receiver) == true,
             "The receiver is not the retailer address."
+        );
+        require(
+            products[productId].statusType == status.MANUFACTURING,
+            "The current status of product should be MANUFACTURING."
         );
         SendProductItem memory newSendProductItem = SendProductItem(
             productId,
