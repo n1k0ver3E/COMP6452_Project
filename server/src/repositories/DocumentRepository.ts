@@ -1,5 +1,5 @@
 import { DocumentModel } from '../models'
-import { IDocumentResp, IDocument } from '../interfaces/document'
+import { IDocumentResp, IDocument, IDocumentVerify } from '../interfaces/document'
 
 const documentUpload = (body: IDocumentResp) => {
   return DocumentModel.create(body)
@@ -18,9 +18,32 @@ const getDocumentsByStatus = (
   }).exec()
 }
 
+const updateDocStatusByAccIdSubDocId = async (
+  subDocumentId: number,
+  accountId: number,
+  updatedStatus: number
+): Promise<IDocumentVerify> => {
+  // @ts-ignore
+  return DocumentModel.findOneAndUpdate(
+    {
+      subDocumentId: subDocumentId,
+      accountId: accountId,
+    },
+    {
+      $set: {
+        documentStatus: updatedStatus,
+      },
+    },
+    {
+      new: true,
+    }
+  )
+}
+
 
 export default {
   documentUpload,
   getAllDocuments,
-  getDocumentsByStatus
+  getDocumentsByStatus,
+  updateDocStatusByAccIdSubDocId
 }

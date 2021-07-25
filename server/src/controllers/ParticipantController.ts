@@ -55,6 +55,7 @@ const getAllParticipants = catchAsync(
 
 const updateAccountStatusByAddress = catchAsync(
   async (req: Request, res: Response, _next: NextFunction) => {
+    console.log(req.params)
     const { address: accountAddress } = req.params
     const { accountStatus: updatedStatus } = req.body
 

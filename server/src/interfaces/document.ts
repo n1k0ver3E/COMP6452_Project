@@ -5,10 +5,18 @@ export type IDocumentResp = Pick<
   'id' | 'documentName' | 'accountId' | 'hashContent'
 >
 
+export type IDocumentVerify = Pick<
+  IDocument,
+  'subDocumentId' | 'documentName' | 'accountId' | 'hashContent' | 'documentStatus'
+>
+
 export interface IDocument extends Document {
-  id?: string
+  //documentId: string
+  subDocumentId: number
   documentName: string
   accountId: number
   hashContent: string
   documentStatus: number
 }
+  //'id' | 'documentName' | 'accountId' | 'hashContent'
+

@@ -11,6 +11,12 @@ router
 
 router.route('/status').get(DocumentController.getDocumentsByStatus);
 
+
+
+router
+  .route('/verify/')
+  .patch(DocumentController.updateDocStatusByAccIdSubDocId)
+
 // router
 //   .route('/:address')
 //   .patch(DocumentController.uploadDocument)
