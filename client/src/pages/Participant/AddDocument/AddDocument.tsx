@@ -1,5 +1,6 @@
 import React, { ChangeEvent, FC, useContext, useEffect, useState } from 'react'
 import { DocumentContractContext } from '../../../contexts/DocumentContract'
+import { DocumentContractAPIContext } from '../../../contexts/DocumentContractAPI'
 import { ProfileContractAPIContext } from '../../../contexts/ProfileContractAPI'
 import DocumentImage from '../../../assets/documents.png'
 import './adddocument.css'
@@ -20,6 +21,7 @@ const AddDocument: FC = () => {
   const [errorMessage, setErrorMessage] = useState<string>('')
   const [file, setFile] = useState('')
   const { documentContract, accounts } = useContext(DocumentContractContext)
+  const { uploadDocument } = useContext(DocumentContractAPIContext)
   const { registeredAccounts, getAllParticipants } = useContext(
     ProfileContractAPIContext
   )
@@ -66,8 +68,7 @@ const AddDocument: FC = () => {
       documentName: documentName,
     }
 
-    console.log('sending file', file)
-    console.log('payload', payload)
+    uploadDocument(file, payload)
   }
 
   return (

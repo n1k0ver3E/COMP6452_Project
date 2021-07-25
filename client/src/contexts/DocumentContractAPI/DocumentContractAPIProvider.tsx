@@ -3,6 +3,7 @@ import api from '../../api'
 import {
   IDocumentContractAPI,
   IDocumentDetails,
+  IDocumentPayload,
 } from '../../interfaces/contract'
 import { DocumentStatus } from '../../enums/contract'
 
@@ -12,6 +13,7 @@ const contextDefaultValues: IDocumentContractAPI = {
   rejectedDocuments: [],
   updateDocumentStatus: () => {},
   getAllDocuments: () => {},
+  uploadDocument: () => {},
 }
 
 export const DocumentContractAPIContext =
@@ -94,6 +96,11 @@ const DocumentContractAPIProvider: FC = ({ children }): any => {
     }
   }
 
+  const uploadDocument = (file: File | string, payload: IDocumentPayload) => {
+    console.log('file', file)
+    console.log('payload', payload)
+  }
+
   return (
     <DocumentContractAPIContext.Provider
       value={{
@@ -102,6 +109,7 @@ const DocumentContractAPIProvider: FC = ({ children }): any => {
         rejectedDocuments,
         updateDocumentStatus,
         getAllDocuments,
+        uploadDocument,
       }}
     >
       {children}
