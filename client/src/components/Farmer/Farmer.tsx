@@ -25,9 +25,8 @@ const Farmer: FC = () => {
     useState<boolean>(false)
   const [isHarvestDateFieldValid, setIsHarvestDateFieldValid] =
     useState<boolean>(false)
-  // TESTING ONLY
-  const [showPayload, setShowPayload] = useState<boolean>(false)
-  const [payload, setPayload] = useState('')
+  const [error, setError] = useState<boolean>(false)
+  const [errorMessage, setErrorMessage] = useState<string>('')
 
   useEffect(() => {
     const calendars = bulmaCalendar.attach('[type="date"]', {})
@@ -99,14 +98,27 @@ const Farmer: FC = () => {
       harvestDate,
     }
 
-    // TESTING ONLY TO BE REMOVED AND REPLACED WITH REAL API CALLS
-    // @ts-ignore
-    setPayload(payload)
-    setShowPayload(true)
+    const farmDateType = new Date(farmDate)
+    const harvestDateType = new Date(harvestDate)
+
+    if (harvestDateType < farmDateType) {
+      setError(true)
+      setErrorMessage(
+        'Harvest time should be later than farm date. Please select a different date.'
+      )
+      return
+    }
+
+    console.log(payload)
+    setError(false)
+    setErrorMessage('')
   }
 
   return (
     <section className="container">
+      {error && (
+        <div className="notification is-danger is-light">{errorMessage}</div>
+      )}
       <div className="columns">
         <div className="column is-half">
           <img
@@ -190,14 +202,6 @@ const Farmer: FC = () => {
           </form>
         </div>
       </div>
-
-      {/*TESTING ONLY TO BE REMOVED AND REPLACED WITH REAL API CALLS*/}
-      {showPayload && (
-        <div>
-          <h1>SENDING PAYLOAD TO API</h1>
-          <h1>{JSON.stringify(payload)}</h1>
-        </div>
-      )}
     </section>
   )
 }
