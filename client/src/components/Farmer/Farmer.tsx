@@ -15,13 +15,13 @@ const initialState: IFarmerProductInitial = {
 
 const Farmer: FC = () => {
   const [data, setData] = useState<IFarmerProductInitial>(initialState)
-  const [plantingDate, setPlantingDate] = useState<string>('')
+  const [farmDate, setFarmDate] = useState<string>('')
   const [harvestDate, setHarvestDate] = useState<string>('')
   const [isProductNameFieldValid, setIsProductNameFieldValid] =
     useState<boolean>(false)
   const [isProductLocationFieldValid, setIsProductLocationFieldValid] =
     useState<boolean>(false)
-  const [isPlantingDateFieldValid, setIsPlaningDateFieldValid] =
+  const [isFarmDateFieldValid, setIsFarmDateFieldValid] =
     useState<boolean>(false)
   const [isHarvestDateFieldValid, setIsHarvestDateFieldValid] =
     useState<boolean>(false)
@@ -37,18 +37,18 @@ const Farmer: FC = () => {
       })
     })
 
-    const plantingDate = document.querySelector('#plantingDate')
-    if (plantingDate) {
+    const farmDate = document.querySelector('#farmDate')
+    if (farmDate) {
       // @ts-ignore
-      plantingDate.bulmaCalendar.on('select', (datepicker) => {
-        setPlantingDate(datepicker.data.value())
-        setIsPlaningDateFieldValid(true)
+      farmDate.bulmaCalendar.on('select', (datepicker) => {
+        setFarmDate(datepicker.data.value())
+        setIsFarmDateFieldValid(true)
       })
 
       // @ts-ignore
-      plantingDate.bulmaCalendar.on('clear', (_datepicker) => {
-        setPlantingDate('')
-        setIsPlaningDateFieldValid(false)
+      farmDate.bulmaCalendar.on('clear', (_datepicker) => {
+        setFarmDate('')
+        setIsFarmDateFieldValid(false)
       })
     }
 
@@ -95,7 +95,7 @@ const Farmer: FC = () => {
 
     const payload: IFarmerProductDetails = {
       ...data,
-      plantingDate,
+      farmDate,
       harvestDate,
     }
 
@@ -149,13 +149,13 @@ const Farmer: FC = () => {
             </div>
 
             <div className="field">
-              <label className="label">Planting Date</label>
+              <label className="label">Farm Date</label>
               <div className="control">
                 <input
                   className="input"
                   type="date"
-                  name="plantingDate"
-                  id="plantingDate"
+                  name="farmDate"
+                  id="farmDate"
                   onChange={handleChange}
                 />
               </div>
@@ -180,7 +180,7 @@ const Farmer: FC = () => {
               disabled={
                 !isProductNameFieldValid ||
                 !isProductLocationFieldValid ||
-                !isPlantingDateFieldValid ||
+                !isFarmDateFieldValid ||
                 !isHarvestDateFieldValid
               }
             >

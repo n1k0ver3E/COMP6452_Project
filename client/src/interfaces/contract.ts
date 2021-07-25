@@ -87,13 +87,12 @@ export interface IAccountsTableProps {
   data: IParticipantDetails[]
 }
 
-
 export interface IProductContract {
   productContract: any
 }
 
 export interface IProductContractAPI {
-  recallProduct: any,
+  recallProduct: any
 }
 
 export interface IDocumentContract {
@@ -129,7 +128,7 @@ export interface IDocumentsTableProps {
 }
 
 export interface ITraceContract {
-  traceContract: any,
+  traceContract: any
 }
 
 export type IFarmerProductInitial = Pick<
@@ -140,7 +139,7 @@ export type IFarmerProductInitial = Pick<
 export interface IFarmerProductDetails {
   productName: string
   productLocation: string
-  plantingDate: Date | string
+  farmDate: Date | string
   harvestDate: Date | string
 }
 
