@@ -1,4 +1,5 @@
 import React, { ChangeEvent, FC, useEffect, useState, useContext } from 'react'
+import getUnixTime from 'date-fns/getUnixTime'
 import 'bulma-calendar/dist/css/bulma-calendar.min.css'
 // @ts-ignore
 import bulmaCalendar from 'bulma-calendar/dist/js/bulma-calendar.min.js'
@@ -7,7 +8,9 @@ import {
   IFarmerProductDetails,
   IFarmerProductInitial,
 } from '../../interfaces/contract'
+import { ProfileContractContext } from '../../contexts/ProfileContract'
 import { ProductContractContext } from '../../contexts/ProductContract'
+import getAccounts from '../../utils/getAccounts'
 
 const initialState: IFarmerProductInitial = {
   productName: '',
@@ -15,6 +18,7 @@ const initialState: IFarmerProductInitial = {
 }
 
 const Farmer: FC = () => {
+  const { accounts } = useContext(ProfileContractContext)
   const { productContract } = useContext(ProductContractContext)
 
   const [data, setData] = useState<IFarmerProductInitial>(initialState)
@@ -92,7 +96,7 @@ const Farmer: FC = () => {
     setData({ ...data, [name]: value })
   }
 
-  const handleAddProduct = (e: any) => {
+  const handleAddProduct = async (e: any) => {
     e.preventDefault()
 
     const payload: IFarmerProductDetails = {
@@ -101,20 +105,47 @@ const Farmer: FC = () => {
       harvestDate,
     }
 
-    const farmDateType = new Date(farmDate)
-    const harvestDateType = new Date(harvestDate)
+    const farmDateType = new Date(payload.farmDate)
+    const harvestDateType = new Date(payload.harvestDate)
+    const farmDateEpoch = getUnixTime(farmDateType)
+    const harvestDateEpoch = getUnixTime(harvestDateType)
 
     if (harvestDateType < farmDateType) {
       setError(true)
       setErrorMessage(
-        'Harvest time should be later than farm date. Please select a different date.'
+        'Harvest date cannot be before farm date. Please select a different date.'
       )
       return
     }
 
-    console.log(payload)
-    setError(false)
-    setErrorMessage('')
+    try {
+      const _accounts = await getAccounts(accounts)
+      const createProductResp = await productContract?.methods
+        .createProduct(
+          payload.productName,
+          farmDateEpoch,
+          harvestDateEpoch,
+          payload.productLocation
+        )
+        .send({ from: _accounts[0] })
+
+      if (createProductResp) {
+        // CALL AN API AND DONE!
+
+        setError(false)
+        setErrorMessage('')
+      }
+    } catch (e) {
+      if (
+        e.message.includes('This function can only be executed by the farmer')
+      ) {
+        setError(true)
+        setErrorMessage(
+          'This function can only be executed by the farmer. Please also ensure that your account has been approved by the regulator before proceeding.'
+        )
+      }
+      console.log(e.message)
+    }
   }
 
   return (
