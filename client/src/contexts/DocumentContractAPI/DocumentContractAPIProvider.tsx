@@ -12,9 +12,9 @@ const contextDefaultValues: IDocumentContractAPI = {
   pendingDocuments: [],
   approvedDocuments: [],
   rejectedDocuments: [],
-  updateDocumentStatus: () => {},
-  getAllDocuments: () => {},
-  uploadDocument: () => {},
+  updateDocumentStatus: () => { },
+  getAllDocuments: () => { },
+  uploadDocument: () => { },
 }
 
 export const DocumentContractAPIContext =
@@ -65,6 +65,7 @@ const DocumentContractAPIProvider: FC = ({ children }): any => {
     }
   }
 
+  /*
   const updateDocumentStatus = async (
     address: string,
     updatedDocumentStatus: number
@@ -75,6 +76,41 @@ const DocumentContractAPIProvider: FC = ({ children }): any => {
 
       const resp = await api.patch(`/v1/document/${address}`, {
         documenStatus: updatedDocumentStatus,
+      })
+
+      switch (updatedDocumentStatus) {
+        case DocumentStatus.Pending:
+          setPendingDocuments(resp.data.documents)
+          break
+        case DocumentStatus.Approved:
+          setApprovedDocuments(resp.data.documents)
+          break
+        case DocumentStatus.Rejected:
+          setRejectedDocuments(resp.data.documents)
+          break
+        default:
+          break
+      }
+
+      getAllDocuments()
+    } catch (err) {
+      console.log(err)
+    }
+  }
+*/
+
+  const updateDocumentStatus = async (
+    subDocumentId: number,
+    accountId: number,
+    updatedDocumentStatus: number
+  ) => {
+    try {
+      console.log('subDocumentId', subDocumentId)
+      console.log('accountId', accountId)
+      console.log('updatedDocumentStatus', updatedDocumentStatus)
+
+      const resp = await api.patch(`/v1/documents/verify/?subDocumentId=${subDocumentId}&accountId=${accountId}`, {
+        documentStatus: updatedDocumentStatus,
       })
 
       switch (updatedDocumentStatus) {
@@ -116,6 +152,8 @@ const DocumentContractAPIProvider: FC = ({ children }): any => {
       console.log(e)
     }
   }
+
+
 
   return (
     <DocumentContractAPIContext.Provider

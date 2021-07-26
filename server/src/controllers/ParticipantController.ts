@@ -57,8 +57,9 @@ const updateAccountStatusByAddress = catchAsync(
   async (req: Request, res: Response, _next: NextFunction) => {
     console.log(req.params)
     const { address: accountAddress } = req.params
+    console.log("body", req.body)
     const { accountStatus: updatedStatus } = req.body
-
+    console.log("updatedStatus", updatedStatus)
     const participants = await ParticipantService.updateAccountStatusByAddress(
       accountAddress,
       parseInt(updatedStatus)

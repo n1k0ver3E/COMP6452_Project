@@ -111,7 +111,8 @@ export interface IDocumentContractAPI {
   pendingDocuments: IDocumentDetails[]
   approvedDocuments: IDocumentDetails[]
   rejectedDocuments: IDocumentDetails[]
-  updateDocumentStatus: (address: string, updatedDocumentStatus: number) => void
+  //updateDocumentStatus: (address: string, updatedDocumentStatus: number) => void
+  updateDocumentStatus: (subDocumentId: number, accountId: number, updatedAccountStatus: number) => void
   getAllDocuments: () => void
   uploadDocument: any
 }
