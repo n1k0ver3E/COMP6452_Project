@@ -182,12 +182,12 @@ const Farmer: FC = () => {
         <div className="notification is-danger is-light">{errorMessage}</div>
       ) : null}
       <div className="notification is-success is-light">
-        <h1>
-          <strong>Success!</strong>
-        </h1>
+        <div className="title is-6">
+          <strong>Product Created Successfully!</strong>
+        </div>
 
         <div className="container">
-          <table className="table is-striped">
+          <table className="table is-striped is-small table-style">
             <thead>
               <tr>
                 <th>Product Id</th>
@@ -195,6 +195,7 @@ const Farmer: FC = () => {
                 <th>Product Location</th>
                 <th>Farm Date</th>
                 <th>Harvest Date</th>
+                <th>Status</th>
               </tr>
             </thead>
 
@@ -205,6 +206,7 @@ const Farmer: FC = () => {
                 <td>Location</td>
                 <td>Farm Date</td>
                 <td>Harvest Date</td>
+                <td>Pending</td>
               </tr>
             </tbody>
           </table>
