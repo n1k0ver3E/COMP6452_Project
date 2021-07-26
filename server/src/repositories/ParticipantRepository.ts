@@ -48,10 +48,15 @@ const updateAccountStatusByAddress = async (
   )
 }
 
+const getAccountTypeByAddress = (address: string) => {
+  return ParticipantModel.find({ accountAddress: address })
+}
+
 export default {
   register,
   isAccountAlreadyRegistered,
   getParticipantsByStatus,
   getAllParticipants,
   updateAccountStatusByAddress,
+  getAccountTypeByAddress,
 }
