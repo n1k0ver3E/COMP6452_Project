@@ -15,7 +15,6 @@ const contextDefaultValues: IProfileContractAPI = {
   rejectedAccounts: [],
   updateAccountStatus: () => {},
   getAllParticipants: () => {},
-  getParticipantByAddress: () => {},
 }
 
 export const ProfileContractAPIContext =
@@ -129,16 +128,6 @@ const ProfileContractAPIProvider: FC = ({ children }): any => {
     }
   }
 
-  const getParticipantByAddress = async (address: string) => {
-    try {
-      const resp = await api.get(`/v1/participants/${address}`)
-
-      return resp.data.participant[0]
-    } catch {
-      return false
-    }
-  }
-
   return (
     <ProfileContractAPIContext.Provider
       value={{
@@ -150,7 +139,6 @@ const ProfileContractAPIProvider: FC = ({ children }): any => {
         rejectedAccounts,
         updateAccountStatus,
         getAllParticipants,
-        getParticipantByAddress,
       }}
     >
       {children}
