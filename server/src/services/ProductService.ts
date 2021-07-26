@@ -9,7 +9,7 @@ const createProduct = async (productDetails: IProduct) => {
     id: product.productId,
     productName: product.productName,
     productLocation: product.productLocation,
-    plantingDate: product.plantingDate,
+    farmDate: product.farmDate,
     harvestDate: product.harvestDate,
     status: product.status,
   }

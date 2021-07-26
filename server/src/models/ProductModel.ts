@@ -16,7 +16,7 @@ const ProductSchema: Schema = new Schema(
       type: String,
       default: '',
     },
-    plantingDate: {
+    farmDate: {
       type: Date,
       default: '',
     },
