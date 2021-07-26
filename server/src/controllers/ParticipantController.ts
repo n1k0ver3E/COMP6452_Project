@@ -55,11 +55,8 @@ const getAllParticipants = catchAsync(
 
 const updateAccountStatusByAddress = catchAsync(
   async (req: Request, res: Response, _next: NextFunction) => {
-    console.log(req.params)
     const { address: accountAddress } = req.params
-    console.log("body", req.body)
     const { accountStatus: updatedStatus } = req.body
-    console.log("updatedStatus", updatedStatus)
     const participants = await ParticipantService.updateAccountStatusByAddress(
       accountAddress,
       parseInt(updatedStatus)
@@ -72,9 +69,26 @@ const updateAccountStatusByAddress = catchAsync(
   }
 )
 
+// getAccountTypeByAddress
+const getAccountTypeByAddress = catchAsync(
+  async (req: Request, res: Response, _next: NextFunction) => {
+    const { address: accountAddress } = req.params
+
+    const participant = await ParticipantService.getAccountTypeByAddress(
+      accountAddress
+    )
+
+    return res.status(httpStatus.OK).json({
+      success: true,
+      participant,
+    })
+  }
+)
+
 export default {
   register,
   getParticipantsByStatus,
   getAllParticipants,
   updateAccountStatusByAddress,
+  getAccountTypeByAddress,
 }

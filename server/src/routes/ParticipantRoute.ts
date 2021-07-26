@@ -6,6 +6,7 @@ const router = express.Router()
 router.route('/').get(ParticipantController.getAllParticipants)
 router.route('/status').get(ParticipantController.getParticipantsByStatus)
 router.route('/register').post(ParticipantController.register)
+router.route('/:address').get(ParticipantController.getAccountTypeByAddress)
 
 router
   .route('/:address')

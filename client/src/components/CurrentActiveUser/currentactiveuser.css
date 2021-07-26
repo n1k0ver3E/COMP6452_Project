@@ -1,0 +1,13 @@
+.current-active-user {
+    text-align: end;
+}
+
+.user {
+    font-weight: bold;
+}
+
+.refresh-user {
+    margin-left: 12px;
+    font-size: 17px;
+    cursor: pointer;
+}

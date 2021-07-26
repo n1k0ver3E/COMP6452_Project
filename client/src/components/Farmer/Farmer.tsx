@@ -219,18 +219,8 @@ const Farmer: FC = () => {
                 <td>{successProductDetails.productId}</td>
                 <td>{successProductDetails.productName}</td>
                 <td>{successProductDetails.productLocation}</td>
-                <td>
-                  {format(
-                    new Date(successProductDetails.farmDate),
-                    'dd MMM yyy'
-                  )}
-                </td>
-                <td>
-                  {format(
-                    new Date(successProductDetails.harvestDate),
-                    'dd MMM yyy'
-                  )}
-                </td>
+                <td>{successProductDetails.farmDate}</td>
+                <td>{successProductDetails.harvestDate}</td>
                 <td>{ProductCategory[successProductDetails.status!]}</td>
               </tr>
             </tbody>
