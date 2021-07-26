@@ -2,7 +2,7 @@ import { Document } from 'mongoose'
 
 export type IDocumentResp = Pick<
   IDocument,
-  'id' | 'documentName' | 'accountId' | 'hashContent'
+  'id' | 'subDocumentId' | 'documentName' | 'accountId' | 'hashContent'
 >
 
 export type IDocumentVerify = Pick<
@@ -12,7 +12,7 @@ export type IDocumentVerify = Pick<
 
 export interface IDocument extends Document {
   //documentId: string
-  subDocumentId: number
+  subDocumentId?: number
   documentName: string
   accountId: number
   hashContent: string

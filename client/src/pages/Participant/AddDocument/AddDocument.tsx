@@ -27,7 +27,7 @@ const AddDocument: FC = () => {
     useState(undefined)
   const [uploadSuccess, setUploadSuccess] = useState<boolean>(false)
   const { documentContract, accounts } = useContext(DocumentContractContext)
-  const { uploadDocument } = useContext(DocumentContractAPIContext)
+  const { uploadDocument, getDocumentHash } = useContext(DocumentContractAPIContext)
   const { registeredAccounts, getAllParticipants } = useContext(
     ProfileContractAPIContext
   )
@@ -73,28 +73,82 @@ const AddDocument: FC = () => {
       return
     }
 
-    const payload = {
-      accountId: accountId.accountId,
-      documentName: documentName,
-    }
+    const hashContent = await getDocumentHash(file)
 
-    const document = await uploadDocument(file, payload)
+    console.log("hashContent", hashContent)
 
-    if (document) {
+    if (hashContent) {
       const addDocumentResp = await documentContract?.methods
         .addDocument(
-          document.accountId,
-          document.documentName,
-          document.hashContent
+          accountId.accountId,
+          documentName,
+          hashContent
         )
         .send({ from: _accounts[0] })
-
       if (addDocumentResp) {
+        const
+          {
+            subDocumentId,
+            documentName,
+            accountId,
+            accountAddress,
+            documentStatus,
+            hashContent
+          }
+            = addDocumentResp.events.AddDocument.returnValues
+        console.log("On-chain subDocumentId", subDocumentId)
+
+        const document = await uploadDocument({
+          subDocumentId,
+          documentName,
+          accountId,
+          documentStatus,
+          hashContent
+        })
         setSuccessDocumentContent(document)
         setUploadSuccess(true)
         setIsLoading(false)
       }
     }
+    //   const payload = {
+    //     accountId: accountId.accountId,
+    //     documentName: documentName,
+    //   }
+
+    //   const document = await uploadDocument(file, payload)
+
+    //   if (document) {
+    //     const addDocumentResp = await documentContract?.methods
+    //       .addDocument(
+    //         document.accountId,
+    //         document.documentName,
+    //         document.hashContent
+    //       )
+    //       .send({ from: _accounts[0] })
+
+    //     if (addDocumentResp) {
+    //       // get subDocumentId
+    //       const
+    //         {
+    //           subDocumentId,
+    //           accountId,
+    //           accountAddress,
+    //           documentName,
+    //           documentStatus,
+    //           hashContent
+    //         }
+    //           = addDocumentResp.events.AddDocument.returnValues
+
+
+    //       console.log("On-chain subDocumentId", subDocumentId)
+    //       // call API to upd subDocumentId
+
+    //   setSuccessDocumentContent(document)
+    //   setUploadSuccess(true)
+    //   setIsLoading(false)
+    // }
+    //}
+
   }
 
   const backToAddDocument = () => {

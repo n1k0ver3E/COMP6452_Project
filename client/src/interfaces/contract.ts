@@ -121,6 +121,7 @@ export interface IDocumentContractAPI {
   ) => void
   getAllDocuments: () => void
   uploadDocument: any
+  getDocumentHash: any
 }
 
 export interface IDocumentDetails {

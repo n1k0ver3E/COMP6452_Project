@@ -7,9 +7,20 @@ const path = require('path')
 
 const ipfs = ipfsAPI('ipfs.infura.io', '5001', { protocol: 'https' })
 
-const documentUpload = async (
-  fileContent: File | undefined | Express.Multer.File,
+const documentUpload = (
   body: IDocument
+) => {
+  try {
+    return DocumentRepository.documentUpload(body)
+  } catch (err) {
+    console.log(err)
+  }
+}
+
+
+//TODO : Must get subDocumentId from on-chain before inserting doc tx to mongo
+const getDocumentHash = async (
+  fileContent: File | undefined | Express.Multer.File
 ) => {
   // @ts-ignore
   const data = new Buffer(fs.readFileSync(fileContent.path))
@@ -28,21 +39,8 @@ const documentUpload = async (
   try {
     const file = await ipfs.add(encrypted)
 
-    const newBody: IDocumentResp = {
-      documentName: body.documentName,
-      accountId: body.accountId,
-      hashContent: file[0].hash,
-    }
+    return file[0].hash
 
-    const document = await DocumentRepository.documentUpload(newBody)
-
-    return {
-      //id: document.id,
-      documentName: document.documentName,
-      accountId: document.accountId,
-      hashContent: document.hashContent,
-      documentStatus: document.documentStatus,
-    }
   } catch (err) {
     console.log(err)
   }
@@ -94,6 +92,7 @@ const updateDocStatusByAccIdSubDocId = async (
 
 export default {
   documentUpload,
+  getDocumentHash,
   getAllDocuments,
   getDocumentsByStatus,
   updateDocStatusByAccIdSubDocId

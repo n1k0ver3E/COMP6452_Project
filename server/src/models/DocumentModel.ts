@@ -10,7 +10,7 @@ const DocumentSchema: Schema = new Schema(
     // },
     subDocumentId: {
       type: Number,
-      required: true,
+      required: false,
     },
     documentName: {
       type: String,

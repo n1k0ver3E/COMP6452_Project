@@ -7,7 +7,9 @@ const router = express.Router()
 
 router
   .route('/')
-  .post(upload.single('avatar'), DocumentController.uploadDocument)
+  .post(DocumentController.uploadDocument)
+
+router.route('/hash').post(upload.single('document'), DocumentController.getDocumentHash);
 
 router.route('/status').get(DocumentController.getDocumentsByStatus);
 
