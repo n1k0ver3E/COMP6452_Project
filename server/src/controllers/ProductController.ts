@@ -54,6 +54,16 @@ const getFarmingAndManufacturingProducts = catchAsync(
   }
 )
 
+const getProductById = catchAsync(
+  async (req: Request, res: Response, _next: NextFunction) => {
+    const product = await ProductService.getProductById(parseInt(req.params.id))
+    return res.status(httpStatus.OK).json({
+      success: true,
+      product,
+    })
+  }
+)
+
 // const recallProduct = catchAsync(
 //   async (req: Request, res: Response, _next: NextFunction) => {
 //     const { productId: productId } = req.body
@@ -75,4 +85,5 @@ export default {
   retailProductInfo,
   purchasingProductInfo,
   getFarmingAndManufacturingProducts,
+  getProductById,
 }

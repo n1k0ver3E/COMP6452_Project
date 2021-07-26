@@ -10,6 +10,7 @@ router.route('/purchasing-info').patch(ProductController.purchasingProductInfo)
 router
   .route('/farming-man-products')
   .get(ProductController.getFarmingAndManufacturingProducts)
+router.route('/:id').get(ProductController.getProductById)
 
 // router.route('/recall-product').post(ProductController.recallProduct)
 

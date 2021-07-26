@@ -67,10 +67,15 @@ const getFarmingAndManufacturingProducts = () => {
   })
 }
 
+const getProductById = (productId: number) => {
+  return ProductModel.find({ productId })
+}
+
 export default {
   createProduct,
   retailProductInfo,
   purchasingProductInfo,
   manuProductInfo,
   getFarmingAndManufacturingProducts,
+  getProductById,
 }
