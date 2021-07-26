@@ -47,6 +47,7 @@ const Farmer: FC = () => {
       harvestDate: '',
       status: -1,
     })
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   useEffect(() => {
     const calendars = bulmaCalendar.attach('[type="date"]', {})
@@ -111,6 +112,7 @@ const Farmer: FC = () => {
 
   const handleAddProduct = async (e: any) => {
     e.preventDefault()
+    setIsLoading(true)
 
     const payload: IFarmerProductDetails = {
       ...data,
@@ -168,9 +170,10 @@ const Farmer: FC = () => {
         // TODO: Clear Values after submission
         setData(initialState)
 
-        // Unset the error message if any
+        // Unset the error message if any and loading state back to false
         setError(false)
         setErrorMessage('')
+        setIsLoading(false)
       }
     } catch (e) {
       if (
@@ -184,8 +187,6 @@ const Farmer: FC = () => {
       console.log(e.message)
     }
   }
-
-  console.log(successProductDetails)
 
   return (
     <section className="container">
@@ -205,6 +206,8 @@ const Farmer: FC = () => {
                 <th>Product Id</th>
                 <th>Product Name</th>
                 <th>Product Location</th>
+                <th>Farm Date</th>
+                <th>Harvest Date</th>
                 <th>Status</th>
               </tr>
             </thead>
@@ -214,6 +217,8 @@ const Farmer: FC = () => {
                 <td>{successProductDetails.id}</td>
                 <td>{successProductDetails.productName}</td>
                 <td>{successProductDetails.productLocation}</td>
+                <td>{successProductDetails.farmDate}</td>
+                <td>{successProductDetails.harvestDate}</td>
                 <td>{successProductDetails.status}</td>
               </tr>
             </tbody>
@@ -291,7 +296,11 @@ const Farmer: FC = () => {
             </div>
 
             <button
-              className="button is-block is-link is-fullwidth mt-3"
+              className={
+                isLoading
+                  ? 'button is-block is-link is-fullwidth mt-3 is-loading'
+                  : 'button is-block is-link is-fullwidth mt-3'
+              }
               onClick={(e) => handleAddProduct(e)}
               disabled={
                 !isProductNameFieldValid ||
