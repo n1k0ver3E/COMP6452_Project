@@ -51,7 +51,7 @@ Mongoose().initialiseMongoConnection().then(function(mongo) {
                             .logLocation(r.productId, Date.now(), ...retrieveProductLocaionByTrackingNumber())
                             .send({ from: addresses.oracle }, function(err: any, result: any) {
 
-                            console.log(err, result);
+                            // console.log(err, result);
                             resolve();
                         });
                     });
@@ -70,14 +70,14 @@ Mongoose().initialiseMongoConnection().then(function(mongo) {
                                 .logLocation(r.productId, Date.now(), ...retrieveProductLocaionByTrackingNumber())
                                 .send({ from: addresses.logistic }, function(err: any, result: any) {
 
-                                console.log(err, result);
+                                //console.log(err, result);
                                 resolve();
                             });
                         });
                     });
                 });
 
-                console.log(promises);
+                //console.log(promises);
 
                 return Promise.all(promises);
             });
@@ -102,13 +102,13 @@ Mongoose().initialiseMongoConnection().then(function(mongo) {
                     });
                 });
 
-                console.log(promises);
+                // console.log(promises);
 
                 return Promise.all(promises);
             });
         }).then(() => {
-            console.log("timeout")
-            setTimeout(getLogs, 1000);
+            // console.log("timeout")
+            setTimeout(getLogs, 7000);
         });
     }
 

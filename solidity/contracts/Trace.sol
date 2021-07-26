@@ -23,7 +23,7 @@ contract Trace {
     }
 
     // The owner of this contract
-    address public owner;
+    address payable public owner;
     // The address of the profile contract
     address public profileAddress;
     // The address of the product contract
@@ -31,6 +31,8 @@ contract Trace {
 
     // All the track information. Indexed by the productId
     mapping (uint => ProductTrack) _tracks;
+
+    bool public isInEmergencyMode;
 
     /// View of the track information
     /// @param productId The productId
@@ -60,12 +62,18 @@ contract Trace {
     /// @param _profileAddress The address of the profile contract.
     constructor(address _profileAddress) {
         profileAddress = _profileAddress;
-        owner = msg.sender;
+        owner = payable(msg.sender);
     }
 
     /// Modifer to check for the owner
     modifier onlyOwner() {
         require( msg.sender == owner, "Must be owner" );
+        _;
+    }
+
+    /// Allow some function only when not in emergency mode.
+    modifier notInEmergencyMode() {
+        require( !isInEmergencyMode, "This contract is currently in emergency mode." );
         _;
     }
 
@@ -75,6 +83,7 @@ contract Trace {
         _;
     }
 
+    /// Modifier to check if the sender is product contract or not.
     modifier allowedProductContract() {
         require( msg.sender == productContractAddress, "Incorrect product contract" );
         _;
@@ -136,6 +145,7 @@ contract Trace {
     function logLocation(uint productId, uint timestamp, int latitude, int longitude)
     public
     productContractSetted
+    notInEmergencyMode
     returns(bool success) {
         // Retrieve the product.
         ProductTrack storage t = _tracks[ productId ];
@@ -183,7 +193,11 @@ contract Trace {
     /// Manually request for the location
     /// @param productId The product Id
     /// @return The request is success or not.
-    function requestForLocation(uint productId) public productContractSetted  returns (bool) {
+    function requestForLocation(uint productId) 
+    public 
+    productContractSetted 
+    notInEmergencyMode
+    returns (bool) {
 
         // Retrieve the tracking information
         ProductTrack storage t = _tracks[ productId ];
@@ -233,5 +247,22 @@ contract Trace {
 
         // Emit the event for the reverse oracle and to store it on the blockchain.
         emit ProductLocation( productId, timestamp, latitude, longitude);
+    }
+
+    /// Self destroy
+    function destroyContract() public onlyOwner {
+        selfdestruct( owner );
+    }
+
+    /// Set the emergerncy mode on.
+    function enterEmergencyMode() public onlyOwner {
+        require( !isInEmergencyMode, "The contract already in the emergency mode." );
+        isInEmergencyMode = true;
+    }
+
+    /// Set the emergerncy mode off.
+    function exitEmergencyMode() public onlyOwner {
+        require( isInEmergencyMode, "The contract already in the emergency mode." );
+        isInEmergencyMode = false;
     }
 }
