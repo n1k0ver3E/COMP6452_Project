@@ -9,7 +9,6 @@ import "./Trace.sol";
 contract ProductSC {
     enum status {
         FARMING,
-        HARVESTING,
         MANUFACTURING,
         SHIPPING,
         RETAILING,
@@ -124,6 +123,7 @@ contract ProductSC {
         profile = Profile(_profileAddress);
     }
 
+    /*
     function createProduct(string memory name) public returns (uint256) {
         Product memory p;
         p.productName = name;
@@ -133,7 +133,7 @@ contract ProductSC {
         products[p.productId] = p;
         return numProducts;
     }
-
+    
     // Valiadation
     // 1. msg.sender account type = farmer
     // 2. The product status is not RECALLING
@@ -142,7 +142,8 @@ contract ProductSC {
         uint256 _farmtime,
         uint256 _harvtime,
         string memory _productLocation
-    ) public isFarmerOnly isProductActive(_pid) {
+    ) public isFarmerOnly isProductActive(_pid){
+        
         require(
             _harvtime > _farmtime,
             "Harvest time should be later than farm time."
@@ -159,14 +160,52 @@ contract ProductSC {
         f.recordBlock = block.number;
         f.productLocation = _productLocation;
         farming_process[_pid] = f;
+        
+        emit Harvested( f.productId,
+        f.farmingTime,
+        f.harvestTime,
+        f.recordBlock,
+        f.productLocation);
+    }
+    */
+
+    function createProduct(
+        string memory name,
+        uint256 _farmtime,
+        uint256 _harvtime,
+        string memory _productLocation
+    ) public isFarmerOnly returns (uint256) {
+        require(
+            _harvtime > _farmtime,
+            "Harvest time should be later than farm time."
+        );
+
+        numProducts = numProducts + 1;
+        Product memory p;
+        p.productName = name;
+
+        p.productId = numProducts;
+        p.statusType = status.FARMING;
+        p.FarmerId = msg.sender;
+        products[p.productId] = p;
+
+        Farming memory f;
+        f.productId = p.productId;
+        f.farmingTime = _farmtime;
+        f.harvestTime = _harvtime;
+        f.recordBlock = block.number;
+        f.productLocation = _productLocation;
+        farming_process[p.productId] = f;
 
         emit Harvested(
             f.productId,
+            f.recordBlock,
             f.farmingTime,
             f.harvestTime,
-            f.recordBlock,
             f.productLocation
         );
+
+        return numProducts;
     }
 
     function manuProductInfo(uint256 _pid, string memory _processtype)
@@ -174,6 +213,11 @@ contract ProductSC {
         isManufacturerOnly
         isProductActive(_pid)
     {
+        require(
+            products[_pid].statusType == status.FARMING,
+            "The current status of product should be FARMING."
+        );
+
         Product storage existProduct = products[_pid];
         existProduct.manufacturerId = msg.sender;
         existProduct.statusType = status.MANUFACTURING;
@@ -238,6 +282,11 @@ contract ProductSC {
         isConsumerOnly
         isProductActive(_pid)
     {
+        require(
+            products[_pid].statusType == status.RETAILING,
+            "The current status of product should be RETAILING."
+        );
+
         Product storage existProduct = products[_pid];
         existProduct.ConsumerId = msg.sender;
         existProduct.statusType = status.PURCHASING;
@@ -277,8 +326,12 @@ contract ProductSC {
             "It is not the logistic address."
         );
         require(
-            profile.isLogisticOrOracle(receiver) == true,
+            profile.isRetailer(receiver) == true,
             "The receiver is not the retailer address."
+        );
+        require(
+            products[productId].statusType == status.MANUFACTURING,
+            "The current status of product should be MANUFACTURING."
         );
         SendProductItem memory newSendProductItem = SendProductItem(
             productId,

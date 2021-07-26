@@ -5,7 +5,7 @@ export interface IProduct extends Document {
   productId?: number
   productName?: string
   productLocation?: string
-  plantingDate?: Date
+  farmDate?: Date
   harvestDate?: Date
   processingType?: string
   timestamp?: Date

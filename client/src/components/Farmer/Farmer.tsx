@@ -1,4 +1,5 @@
-import React, { ChangeEvent, FC, useEffect, useState } from 'react'
+import React, { ChangeEvent, FC, useEffect, useState, useContext } from 'react'
+import getUnixTime from 'date-fns/getUnixTime'
 import 'bulma-calendar/dist/css/bulma-calendar.min.css'
 // @ts-ignore
 import bulmaCalendar from 'bulma-calendar/dist/js/bulma-calendar.min.js'
@@ -7,6 +8,10 @@ import {
   IFarmerProductDetails,
   IFarmerProductInitial,
 } from '../../interfaces/contract'
+import { ProfileContractContext } from '../../contexts/ProfileContract'
+import { ProductContractContext } from '../../contexts/ProductContract'
+import { ProductContractAPIContext } from '../../contexts/ProductContractAPI'
+import getAccounts from '../../utils/getAccounts'
 
 const initialState: IFarmerProductInitial = {
   productName: '',
@@ -14,20 +19,23 @@ const initialState: IFarmerProductInitial = {
 }
 
 const Farmer: FC = () => {
+  const { accounts } = useContext(ProfileContractContext)
+  const { productContract } = useContext(ProductContractContext)
+  const { createProduct } = useContext(ProductContractAPIContext)
+
   const [data, setData] = useState<IFarmerProductInitial>(initialState)
-  const [plantingDate, setPlantingDate] = useState<string>('')
+  const [farmDate, setFarmDate] = useState<string>('')
   const [harvestDate, setHarvestDate] = useState<string>('')
   const [isProductNameFieldValid, setIsProductNameFieldValid] =
     useState<boolean>(false)
   const [isProductLocationFieldValid, setIsProductLocationFieldValid] =
     useState<boolean>(false)
-  const [isPlantingDateFieldValid, setIsPlaningDateFieldValid] =
+  const [isFarmDateFieldValid, setIsFarmDateFieldValid] =
     useState<boolean>(false)
   const [isHarvestDateFieldValid, setIsHarvestDateFieldValid] =
     useState<boolean>(false)
-  // TESTING ONLY
-  const [showPayload, setShowPayload] = useState<boolean>(false)
-  const [payload, setPayload] = useState('')
+  const [error, setError] = useState<boolean>(false)
+  const [errorMessage, setErrorMessage] = useState<string>('')
 
   useEffect(() => {
     const calendars = bulmaCalendar.attach('[type="date"]', {})
@@ -37,18 +45,18 @@ const Farmer: FC = () => {
       })
     })
 
-    const plantingDate = document.querySelector('#plantingDate')
-    if (plantingDate) {
+    const farmDate = document.querySelector('#farmDate')
+    if (farmDate) {
       // @ts-ignore
-      plantingDate.bulmaCalendar.on('select', (datepicker) => {
-        setPlantingDate(datepicker.data.value())
-        setIsPlaningDateFieldValid(true)
+      farmDate.bulmaCalendar.on('select', (datepicker) => {
+        setFarmDate(datepicker.data.value())
+        setIsFarmDateFieldValid(true)
       })
 
       // @ts-ignore
-      plantingDate.bulmaCalendar.on('clear', (_datepicker) => {
-        setPlantingDate('')
-        setIsPlaningDateFieldValid(false)
+      farmDate.bulmaCalendar.on('clear', (_datepicker) => {
+        setFarmDate('')
+        setIsFarmDateFieldValid(false)
       })
     }
 
@@ -90,23 +98,83 @@ const Farmer: FC = () => {
     setData({ ...data, [name]: value })
   }
 
-  const handleAddProduct = (e: any) => {
+  const handleAddProduct = async (e: any) => {
     e.preventDefault()
 
     const payload: IFarmerProductDetails = {
       ...data,
-      plantingDate,
+      farmDate,
       harvestDate,
     }
 
-    // TESTING ONLY TO BE REMOVED AND REPLACED WITH REAL API CALLS
-    // @ts-ignore
-    setPayload(payload)
-    setShowPayload(true)
+    const farmDateType = new Date(payload.farmDate)
+    const harvestDateType = new Date(payload.harvestDate)
+    const farmDateEpoch = getUnixTime(farmDateType)
+    const harvestDateEpoch = getUnixTime(harvestDateType)
+
+    if (harvestDateType < farmDateType) {
+      setError(true)
+      setErrorMessage(
+        'Harvest date cannot be before farm date. Please select a different date.'
+      )
+      return
+    }
+
+    try {
+      // Call createProduct on the product contract
+      const _accounts = await getAccounts(accounts)
+      const createProductResp = await productContract?.methods
+        .createProduct(
+          payload.productName,
+          farmDateEpoch,
+          harvestDateEpoch,
+          payload.productLocation
+        )
+        .send({ from: _accounts[0] })
+
+      if (createProductResp) {
+        const { productId, productLocation } =
+          createProductResp.events.Harvested.returnValues
+
+        const productName = payload.productName
+
+        const apiPayload = {
+          productId,
+          productName,
+          productLocation,
+          farmDate: farmDateType,
+          harvestDate: harvestDateType,
+        }
+
+        const product = await createProduct(apiPayload)
+
+        console.log('PRODUCT', product)
+
+        // TODO: Clear Values after submission
+        setData(initialState)
+
+        // Unset the error message if any
+        setError(false)
+        setErrorMessage('')
+      }
+    } catch (e) {
+      if (
+        e.message.includes('This function can only be executed by the farmer')
+      ) {
+        setError(true)
+        setErrorMessage(
+          'This function can only be executed by the farmer. Please also ensure that your account has been approved by the regulator before proceeding.'
+        )
+      }
+      console.log(e.message)
+    }
   }
 
   return (
     <section className="container">
+      {error && (
+        <div className="notification is-danger is-light">{errorMessage}</div>
+      )}
       <div className="columns">
         <div className="column is-half">
           <img
@@ -131,6 +199,7 @@ const Farmer: FC = () => {
                   name="productName"
                   id="productName"
                   onChange={handleChange}
+                  value={data.productName}
                 />
               </div>
             </div>
@@ -144,18 +213,19 @@ const Farmer: FC = () => {
                   name="productLocation"
                   id="productLocation"
                   onChange={handleChange}
+                  value={data.productLocation}
                 />
               </div>
             </div>
 
             <div className="field">
-              <label className="label">Planting Date</label>
+              <label className="label">Farm Date</label>
               <div className="control">
                 <input
                   className="input"
                   type="date"
-                  name="plantingDate"
-                  id="plantingDate"
+                  name="farmDate"
+                  id="farmDate"
                   onChange={handleChange}
                 />
               </div>
@@ -180,7 +250,7 @@ const Farmer: FC = () => {
               disabled={
                 !isProductNameFieldValid ||
                 !isProductLocationFieldValid ||
-                !isPlantingDateFieldValid ||
+                !isFarmDateFieldValid ||
                 !isHarvestDateFieldValid
               }
             >
@@ -190,14 +260,6 @@ const Farmer: FC = () => {
           </form>
         </div>
       </div>
-
-      {/*TESTING ONLY TO BE REMOVED AND REPLACED WITH REAL API CALLS*/}
-      {showPayload && (
-        <div>
-          <h1>SENDING PAYLOAD TO API</h1>
-          <h1>{JSON.stringify(payload)}</h1>
-        </div>
-      )}
     </section>
   )
 }
