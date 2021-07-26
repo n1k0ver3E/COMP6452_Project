@@ -94,6 +94,7 @@ export interface IProductContract {
 export interface IProductContractAPI {
   recallProduct: any
   createProduct: any
+  getFarmingAndManufacturingProducts: any
 }
 
 export interface IDocumentContract {
@@ -112,7 +113,11 @@ export interface IDocumentContractAPI {
   approvedDocuments: IDocumentDetails[]
   rejectedDocuments: IDocumentDetails[]
   //updateDocumentStatus: (address: string, updatedDocumentStatus: number) => void
-  updateDocumentStatus: (subDocumentId: number, accountId: number, updatedAccountStatus: number) => void
+  updateDocumentStatus: (
+    subDocumentId: number,
+    accountId: number,
+    updatedAccountStatus: number
+  ) => void
   getAllDocuments: () => void
   uploadDocument: any
 }

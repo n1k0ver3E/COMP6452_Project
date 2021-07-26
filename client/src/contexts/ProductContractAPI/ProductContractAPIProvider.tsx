@@ -8,6 +8,7 @@ import {
 const contextDefaultValues: IProductContractAPI = {
   recallProduct: (productId: number) => {},
   createProduct: () => {},
+  getFarmingAndManufacturingProducts: () => {},
 }
 
 export const ProductContractAPIContext =
@@ -34,11 +35,22 @@ const ProductContractAPIProvider: FC = ({ children }): any => {
     }
   }
 
+  const getFarmingAndManufacturingProducts = async () => {
+    try {
+      const resp = await api.get(`/v1/products/farming-man-products`)
+
+      return resp.data.products
+    } catch (err) {
+      return false
+    }
+  }
+
   return (
     <ProductContractAPIContext.Provider
       value={{
         recallProduct,
         createProduct,
+        getFarmingAndManufacturingProducts,
       }}
     >
       {children}
