@@ -13,6 +13,8 @@ import { ProfileContractContext } from '../../contexts/ProfileContract'
 import { ProductContractContext } from '../../contexts/ProductContract'
 import { ProductContractAPIContext } from '../../contexts/ProductContractAPI'
 import getAccounts from '../../utils/getAccounts'
+import { titleCase } from '../../helpers'
+import { SendProductStatus } from '../../enums/contract'
 
 const initialState: IFarmerProductInitial = {
   productName: '',
@@ -130,6 +132,7 @@ const Farmer: FC = () => {
       setErrorMessage(
         'Harvest date cannot be before farm date. Please select a different date.'
       )
+      setIsLoading(false)
       return
     }
 
@@ -195,9 +198,9 @@ const Farmer: FC = () => {
       ) : null}
 
       {success && !error ? (
-        <div className="notification is-success is-light">
+        <div className="is-success is-light mb-5">
           <div className="title is-6">
-            <strong>Product Created Successfully!</strong>
+            <strong>Product Information</strong>
           </div>
 
           <table className="table is-striped table-style">
@@ -219,7 +222,7 @@ const Farmer: FC = () => {
                 <td>{successProductDetails.productLocation}</td>
                 <td>{successProductDetails.farmDate}</td>
                 <td>{successProductDetails.harvestDate}</td>
-                <td>{successProductDetails.status}</td>
+                <td>{SendProductStatus[successProductDetails.status!]}</td>
               </tr>
             </tbody>
           </table>
