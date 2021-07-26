@@ -3,14 +3,14 @@ import { ProfileContractContext } from '../../../contexts/ProfileContract'
 import { DocumentContractContext } from '../../../contexts/DocumentContract'
 import { DocumentContractAPIContext } from '../../../contexts/DocumentContractAPI'
 import DocumentsTable from '../../../components/DocumentsTable'
-import { DocumentType, DocumentStatus } from '../../../enums/contract'
+import { DocumentStatus } from '../../../enums/contract'
 import { titleCase } from '../../../helpers'
-//import { IDocumentDetails } from "../../../interfaces/contract"
 import getAccounts from '../../../utils/getAccounts'
 
 const VerifyDocument: FC = () => {
-  const { profileContract, accounts } = useContext(ProfileContractContext)
-  const { documentContract, documents } = useContext(DocumentContractContext)
+  const { accounts } = useContext(ProfileContractContext)
+  //console.log("accounts 1", accounts)
+  const { documentContract } = useContext(DocumentContractContext)
   const {
     pendingDocuments,
     approvedDocuments,
@@ -101,6 +101,18 @@ const VerifyDocument: FC = () => {
             const updateStatus = await documentContract?.methods
               .verifydocument(accountId, subDocumentId, updateDocumentStatusValue)
               .send({ from: _accounts[0] })
+            if (updateStatus) {
+              const
+                {
+                  accountId,
+                  accountAddress,
+                  subDocumentId,
+                  documentStatus,
+                }
+                  = updateStatus.events.VerifyDocument.returnValues
+              console.log("On-chain updatedStatus", documentStatus)
+            }
+
 
             if (updateStatus) {
               updateDocumentStatus(

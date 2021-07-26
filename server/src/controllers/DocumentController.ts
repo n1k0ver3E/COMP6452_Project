@@ -5,11 +5,24 @@ import { catchAsync } from '../utils'
 
 const uploadDocument = catchAsync(
   async (req: Request, res: Response, _next: NextFunction) => {
-    const document = await DocumentService.documentUpload(req.file, req.body)
+    console.log("body", req.body)
+
+    const document = await DocumentService.documentUpload(req.body)
 
     return res.status(httpStatus.OK).json({
       success: true,
       document,
+    })
+  }
+)
+
+const getDocumentHash = catchAsync(
+  async (req: Request, res: Response, _next: NextFunction) => {
+    const hashContent = await DocumentService.getDocumentHash(req.file)
+
+    return res.status(httpStatus.OK).json({
+      success: true,
+      hashContent,
     })
   }
 )
@@ -67,6 +80,7 @@ const updateDocStatusByAccIdSubDocId = catchAsync(
 
 export default {
   uploadDocument,
+  getDocumentHash,
   getAllDocuments,
   getDocumentsByStatus,
   updateDocStatusByAccIdSubDocId,

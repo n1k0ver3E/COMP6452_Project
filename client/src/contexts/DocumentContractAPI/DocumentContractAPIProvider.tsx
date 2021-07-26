@@ -15,6 +15,7 @@ const contextDefaultValues: IDocumentContractAPI = {
   updateDocumentStatus: () => { },
   getAllDocuments: () => { },
   uploadDocument: () => { },
+  getDocumentHash: () => { },
 }
 
 export const DocumentContractAPIContext =
@@ -134,20 +135,31 @@ const DocumentContractAPIProvider: FC = ({ children }): any => {
   }
 
   const uploadDocument = async (
-    file: File | string,
     payload: IDocumentPayload
+  ) => {
+    try {
+
+
+      const resp = await api.post('/v1/documents', payload)
+      console.log("payload", payload)
+      return resp.data.document
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  const getDocumentHash = async (
+    file: File | string
   ) => {
     try {
       const formData = new FormData()
 
       // @ts-ignore
-      formData.append('accountId', payload.accountId)
-      formData.append('documentName', payload.documentName)
-      formData.append('avatar', file)
+      formData.append('document', file)
 
-      const resp = await api.post('/v1/documents', formData)
+      const resp = await api.post('/v1/documents/hash', formData)
 
-      return resp.data.document
+      return resp.data.hashContent
     } catch (e) {
       console.log(e)
     }
@@ -164,6 +176,7 @@ const DocumentContractAPIProvider: FC = ({ children }): any => {
         updateDocumentStatus,
         getAllDocuments,
         uploadDocument,
+        getDocumentHash
       }}
     >
       {children}

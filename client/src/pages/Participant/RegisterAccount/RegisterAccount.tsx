@@ -88,6 +88,7 @@ const RegisterAccount: FC = () => {
         .send({ from: _accounts[0] })
 
       if (registerAccountResp) {
+        console.log("On-chain registerAccountResp", registerAccountResp)
         const {
           accountAddress,
           accountId,

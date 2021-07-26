@@ -115,6 +115,7 @@ export interface IDocumentContractAPI {
   updateDocumentStatus: (subDocumentId: number, accountId: number, updatedAccountStatus: number) => void
   getAllDocuments: () => void
   uploadDocument: any
+  getDocumentHash: any
 }
 
 export interface IDocumentDetails {
