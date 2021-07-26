@@ -6,6 +6,7 @@ import {
   ISendProductDetails,
 } from '../../interfaces/contract'
 import { ProductContractAPIContext } from '../../contexts/ProductContractAPI'
+import { ProductCategory } from '../../enums/contract'
 
 const initialState: IManufacturerProcessDetails = {
   productId: -1,
@@ -36,9 +37,7 @@ const Manufacturer: FC = () => {
   const [isTrackNumberFieldValid, setIsTrackNumberFieldValid] =
     useState<boolean>(false)
   const [products, setProducts] = useState<ICreateProductPayload[]>([])
-  // TESTING ONLY
-  const [showPayload, setShowPayload] = useState<boolean>(false)
-  const [payload, setPayload] = useState('')
+  const [showTable, setShowTable] = useState<boolean>(true)
 
   useEffect(() => {
     const getProducts = async () => {
@@ -57,7 +56,11 @@ const Manufacturer: FC = () => {
 
     if (name === 'productId') {
       // GET THE VALUE HERE AND MAKE AN API CALL TO SHOW TABLE
+
+      console.log('what is the value??', value)
       // SHOW PRODUCT INFO TABLE
+      // MAKE AN API CALL
+      // SET THE TABLE DATA
     }
 
     if (name === 'processingType') {
@@ -113,6 +116,39 @@ const Manufacturer: FC = () => {
 
   return (
     <section className="container">
+      {showTable && (
+        <div className="is-success is-light mb-5">
+          <div className="title is-6">
+            <strong>Product Information</strong>
+          </div>
+
+          <table className="table is-striped table-style">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Location</th>
+                <th>Farm Date</th>
+                <th>Harvest Date</th>
+                <th>Processing Type</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>2</td>
+                <td>3</td>
+                <td>4</td>
+                <td>5</td>
+                <td>6</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      )}
+
       <div className="columns">
         <div className="column is-half">
           <img

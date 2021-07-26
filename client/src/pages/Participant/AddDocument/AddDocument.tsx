@@ -145,6 +145,12 @@ const AddDocument: FC = () => {
                               </option>
                             )
                           )}
+
+                          {!registeredAccounts.length && (
+                            <option disabled>
+                              Address Selection Unavailable
+                            </option>
+                          )}
                         </select>
                       </div>
 

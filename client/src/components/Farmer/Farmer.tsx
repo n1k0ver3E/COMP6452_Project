@@ -163,8 +163,6 @@ const Farmer: FC = () => {
 
         const product = await createProduct(apiPayload)
 
-        console.log('product', product)
-
         // Set Success Message and set product object
         setSuccess(true)
         setSuccessProductDetails(product)
