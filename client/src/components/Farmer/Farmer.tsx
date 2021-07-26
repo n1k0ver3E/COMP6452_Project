@@ -36,6 +36,8 @@ const Farmer: FC = () => {
     useState<boolean>(false)
   const [error, setError] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>('')
+  const [success, setSuccess] = useState<boolean>(false)
+  const [successProductDetails, setSuccessProductDetails] = useState({})
 
   useEffect(() => {
     const calendars = bulmaCalendar.attach('[type="date"]', {})
@@ -148,6 +150,10 @@ const Farmer: FC = () => {
 
         const product = await createProduct(apiPayload)
 
+        // Set Success Message
+        setSuccess(true)
+        setSuccessProductDetails(product)
+
         console.log('PRODUCT', product)
 
         // TODO: Clear Values after submission
@@ -172,9 +178,39 @@ const Farmer: FC = () => {
 
   return (
     <section className="container">
-      {error && (
+      {error && !success ? (
         <div className="notification is-danger is-light">{errorMessage}</div>
-      )}
+      ) : null}
+      <div className="notification is-success is-light">
+        <h1>
+          <strong>Success!</strong>
+        </h1>
+
+        <div className="container">
+          <table className="table is-striped">
+            <thead>
+              <tr>
+                <th>Product Id</th>
+                <th>Product Name</th>
+                <th>Product Location</th>
+                <th>Farm Date</th>
+                <th>Harvest Date</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr>
+                <td>Id</td>
+                <td>Name</td>
+                <td>Location</td>
+                <td>Farm Date</td>
+                <td>Harvest Date</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <div className="columns">
         <div className="column is-half">
           <img
