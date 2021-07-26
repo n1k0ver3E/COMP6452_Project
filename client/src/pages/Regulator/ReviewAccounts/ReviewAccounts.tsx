@@ -74,6 +74,7 @@ const ReviewAccounts: FC = () => {
           const { value: updatedAccountStatus } = e.target
 
           try {
+            console.log("accounts", accounts)
             const _accounts = await getAccounts(accounts)
             const updateStatus = await profileContract?.methods
               .approveAccount(accountAddress, updatedAccountStatus)

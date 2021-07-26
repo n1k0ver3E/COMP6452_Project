@@ -1,12 +1,15 @@
 import React, { ChangeEvent, FC, useContext, useEffect, useState } from 'react'
+import { ProfileContractContext } from '../../../contexts/ProfileContract'
 import { DocumentContractContext } from '../../../contexts/DocumentContract'
 import { DocumentContractAPIContext } from '../../../contexts/DocumentContractAPI'
 import DocumentsTable from '../../../components/DocumentsTable'
-import {  DocumentType, DocumentStatus } from '../../../enums/contract'
+import { DocumentType, DocumentStatus } from '../../../enums/contract'
 import { titleCase } from '../../../helpers'
 //import { IDocumentDetails } from "../../../interfaces/contract"
+import getAccounts from '../../../utils/getAccounts'
 
 const VerifyDocument: FC = () => {
+  const { profileContract, accounts } = useContext(ProfileContractContext)
   const { documentContract, documents } = useContext(DocumentContractContext)
   const {
     pendingDocuments,
@@ -46,6 +49,14 @@ const VerifyDocument: FC = () => {
 
   const COLUMNS = [
     {
+      Header: 'Account ID',
+      accessor: 'accountId',
+    },
+    {
+      Header: 'Sub Doc. ID',
+      accessor: 'subDocumentId',
+    },
+    {
       Header: 'Document Name',
       accessor: 'documentName',
     },
@@ -55,11 +66,11 @@ const VerifyDocument: FC = () => {
       Cell: ({
         value,
         row: {
-          original: {documentName, accountAddress, documentStatus: originalAccountStatus },
+          original: { documentName, accountAddress, documentStatus: originalDocumentStatus },
         },
       }: any) => {
         return (
-          <a href={"https://ipfs.infura.io/ipfs/"+value} rel="noreferrer" target="_blank" download={documentName}>{value}</a>
+          <a href={"https://ipfs.infura.io/ipfs/" + value} rel="noreferrer" target="_blank" download={documentName}>{value}</a>
         )
       },
     },
@@ -76,33 +87,36 @@ const VerifyDocument: FC = () => {
       Cell: ({
         value,
         row: {
-          original: { accountAddress, documentStatus: originalAccountStatus },
+          original: { accountId, subDocumentId, documentStatus: originalDocumentStatus },
         },
       }: any) => {
         const handleChange = async (
           e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
         ) => {
-          //const { value: updatedAccountStatus } = e.target
+          const { value: updateDocumentStatusValue } = e.target
+          try {
+            console.log("accounts", accounts)
+            const _accounts = await getAccounts(accounts)
 
-          // try {
-          //   const updateStatus = await profileContract?.methods
-          //     .approveAccount(accountAddress, updatedAccountStatus)
-          //     .send({ from: accounts[0] })
+            const updateStatus = await documentContract?.methods
+              .verifydocument(accountId, subDocumentId, updateDocumentStatusValue)
+              .send({ from: _accounts[0] })
 
-          //   if (updateStatus) {
-          //     updateAccountStatus(
-          //       accountAddress,
-          //       parseInt(updatedAccountStatus)
-          //     )
+            if (updateStatus) {
+              updateDocumentStatus(
+                accountId,
+                subDocumentId,
+                parseInt(updateDocumentStatusValue)
+              )
 
-          //     setTimeout(() => {
-          //       switchTab(originalAccountStatus)
-          //     }, 200)
-          //     switchTab(parseInt(updatedAccountStatus))
-          //   }
-          // } catch (error) {
-          //   console.log(error.message)
-          // }
+              setTimeout(() => {
+                switchTab(originalDocumentStatus)
+              }, 200)
+              switchTab(parseInt(updateDocumentStatusValue))
+            }
+          } catch (error) {
+            console.log(error.message)
+          }
         }
 
         return (
