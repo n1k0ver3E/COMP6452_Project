@@ -95,6 +95,7 @@ export interface IProductContractAPI {
   recallProduct: any
   createProduct: any
   getFarmingAndManufacturingProducts: any
+  getProductById: any
 }
 
 export interface IDocumentContract {

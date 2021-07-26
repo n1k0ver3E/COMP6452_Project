@@ -20,7 +20,7 @@ const sendProductInitialState: ISendProductDetails = {
 }
 
 const Manufacturer: FC = () => {
-  const { getFarmingAndManufacturingProducts } = useContext(
+  const { getFarmingAndManufacturingProducts, getProductById } = useContext(
     ProductContractAPIContext
   )
 
@@ -37,7 +37,16 @@ const Manufacturer: FC = () => {
   const [isTrackNumberFieldValid, setIsTrackNumberFieldValid] =
     useState<boolean>(false)
   const [products, setProducts] = useState<ICreateProductPayload[]>([])
-  const [showTable, setShowTable] = useState<boolean>(true)
+  const [productDetails, setProductDetails] = useState({
+    productId: -1,
+    productName: '',
+    productLocation: '',
+    farmDate: '',
+    harvestDate: '',
+    processingType: '',
+    status: -1,
+  })
+  const [showTable, setShowTable] = useState<boolean>(false)
 
   useEffect(() => {
     const getProducts = async () => {
@@ -49,18 +58,16 @@ const Manufacturer: FC = () => {
     getProducts()
   }, [])
 
-  const handleChange = (
+  const handleChange = async (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target
 
     if (name === 'productId') {
-      // GET THE VALUE HERE AND MAKE AN API CALL TO SHOW TABLE
+      const product = await getProductById(parseInt(value))
 
-      console.log('what is the value??', value)
-      // SHOW PRODUCT INFO TABLE
-      // MAKE AN API CALL
-      // SET THE TABLE DATA
+      setProductDetails(product)
+      setShowTable(true)
     }
 
     if (name === 'processingType') {
@@ -114,6 +121,8 @@ const Manufacturer: FC = () => {
     e.preventDefault()
   }
 
+  console.log('productDetails', productDetails)
+
   return (
     <section className="container">
       {showTable && (
@@ -137,12 +146,13 @@ const Manufacturer: FC = () => {
 
             <tbody>
               <tr>
-                <td>1</td>
-                <td>2</td>
-                <td>3</td>
-                <td>4</td>
-                <td>5</td>
-                <td>6</td>
+                <td>{productDetails.productId}</td>
+                <td>{productDetails.productName}</td>
+                <td>{productDetails.productLocation}</td>
+                <td>{productDetails.farmDate}</td>
+                <td>{productDetails.harvestDate}</td>
+                <td>{productDetails.processingType}</td>
+                <td>{ProductCategory[productDetails.status]}</td>
               </tr>
             </tbody>
           </table>
