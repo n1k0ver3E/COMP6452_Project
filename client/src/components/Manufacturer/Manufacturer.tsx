@@ -1,5 +1,4 @@
 import React, { ChangeEvent, FC, useState, useContext, useEffect } from 'react'
-import format from 'date-fns/format'
 import './manufacturer.css'
 import {
   ICreateProductPayload,

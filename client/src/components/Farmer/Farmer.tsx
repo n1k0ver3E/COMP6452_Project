@@ -1,6 +1,5 @@
 import React, { ChangeEvent, FC, useEffect, useState, useContext } from 'react'
 import getUnixTime from 'date-fns/getUnixTime'
-import format from 'date-fns/format'
 import 'bulma-calendar/dist/css/bulma-calendar.min.css'
 // @ts-ignore
 import bulmaCalendar from 'bulma-calendar/dist/js/bulma-calendar.min.js'
