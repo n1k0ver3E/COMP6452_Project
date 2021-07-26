@@ -1,4 +1,5 @@
 import React, { ChangeEvent, FC, useState, useContext, useEffect } from 'react'
+import format from 'date-fns/format'
 import './manufacturer.css'
 import {
   ICreateProductPayload,
@@ -149,8 +150,12 @@ const Manufacturer: FC = () => {
                 <td>{productDetails.productId}</td>
                 <td>{productDetails.productName}</td>
                 <td>{productDetails.productLocation}</td>
-                <td>{productDetails.farmDate}</td>
-                <td>{productDetails.harvestDate}</td>
+                <td>
+                  {format(new Date(productDetails.farmDate), 'dd MMM yyy')}
+                </td>
+                <td>
+                  {format(new Date(productDetails.harvestDate), 'dd MMM yyy')}
+                </td>
                 <td>{productDetails.processingType}</td>
                 <td>{ProductCategory[productDetails.status]}</td>
               </tr>
