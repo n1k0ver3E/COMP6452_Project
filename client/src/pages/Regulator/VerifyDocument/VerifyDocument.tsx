@@ -104,8 +104,8 @@ const VerifyDocument: FC = () => {
 
             if (updateStatus) {
               updateDocumentStatus(
-                accountId,
                 subDocumentId,
+                accountId,
                 parseInt(updateDocumentStatusValue)
               )
 

@@ -110,7 +110,7 @@ const DocumentContractAPIProvider: FC = ({ children }): any => {
       console.log('updatedDocumentStatus', updatedDocumentStatus)
 
       const resp = await api.patch(`/v1/documents/verify/?subDocumentId=${subDocumentId}&accountId=${accountId}`, {
-        documenStatus: updatedDocumentStatus,
+        documentStatus: updatedDocumentStatus,
       })
 
       switch (updatedDocumentStatus) {

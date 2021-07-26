@@ -49,8 +49,9 @@ const updateDocStatusByAccIdSubDocId = catchAsync(
     console.log("subDocumentId", subDocumentId)
     const accountId = (Object.values(req.query)[1] as string)
     console.log("accountId", accountId)
+    console.log("body", req.body)
     const { documentStatus: updatedStatus } = req.body
-    //console.log(subDocumentId)
+    console.log("updatedStatus", updatedStatus)
     const documents = await DocumentService.updateDocStatusByAccIdSubDocId(
       parseInt(subDocumentId),
       parseInt(accountId),
