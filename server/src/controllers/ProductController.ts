@@ -44,6 +44,16 @@ const purchasingProductInfo = catchAsync(
   }
 )
 
+const getFarmingAndManufacturingProducts = catchAsync(
+  async (_req: Request, res: Response, _next: NextFunction) => {
+    const products = await ProductService.getFarmingAndManufacturingProducts()
+    return res.status(httpStatus.OK).json({
+      success: true,
+      products,
+    })
+  }
+)
+
 // const recallProduct = catchAsync(
 //   async (req: Request, res: Response, _next: NextFunction) => {
 //     const { productId: productId } = req.body
@@ -64,4 +74,5 @@ export default {
   manuProductInfo,
   retailProductInfo,
   purchasingProductInfo,
+  getFarmingAndManufacturingProducts,
 }

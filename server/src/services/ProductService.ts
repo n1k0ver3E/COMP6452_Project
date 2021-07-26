@@ -61,9 +61,14 @@ const purchasingProductInfo = async (productDetails: IProduct) => {
   }
 }
 
+const getFarmingAndManufacturingProducts = () => {
+  return ProductRepository.getFarmingAndManufacturingProducts()
+}
+
 export default {
   createProduct,
   manuProductInfo,
   retailProductInfo,
   purchasingProductInfo,
+  getFarmingAndManufacturingProducts,
 }
