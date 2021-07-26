@@ -206,9 +206,9 @@ const Farmer: FC = () => {
           <table className="table is-striped table-style">
             <thead>
               <tr>
-                <th>Product Id</th>
-                <th>Product Name</th>
-                <th>Product Location</th>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Location</th>
                 <th>Farm Date</th>
                 <th>Harvest Date</th>
                 <th>Status</th>
