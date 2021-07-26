@@ -5,6 +5,7 @@ import 'bulma-calendar/dist/css/bulma-calendar.min.css'
 import bulmaCalendar from 'bulma-calendar/dist/js/bulma-calendar.min.js'
 import './farmer.css'
 import {
+  ICreateProductPayload,
   IFarmerProductDetails,
   IFarmerProductInitial,
 } from '../../interfaces/contract'
@@ -37,7 +38,15 @@ const Farmer: FC = () => {
   const [error, setError] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>('')
   const [success, setSuccess] = useState<boolean>(false)
-  const [successProductDetails, setSuccessProductDetails] = useState({})
+  const [successProductDetails, setSuccessProductDetails] =
+    useState<ICreateProductPayload>({
+      id: -1,
+      productName: '',
+      productLocation: '',
+      farmDate: '',
+      harvestDate: '',
+      status: -1,
+    })
 
   useEffect(() => {
     const calendars = bulmaCalendar.attach('[type="date"]', {})
@@ -150,11 +159,11 @@ const Farmer: FC = () => {
 
         const product = await createProduct(apiPayload)
 
-        // Set Success Message
+        console.log('product', product)
+
+        // Set Success Message and set product object
         setSuccess(true)
         setSuccessProductDetails(product)
-
-        console.log('PRODUCT', product)
 
         // TODO: Clear Values after submission
         setData(initialState)
@@ -176,42 +185,41 @@ const Farmer: FC = () => {
     }
   }
 
+  console.log(successProductDetails)
+
   return (
     <section className="container">
       {error && !success ? (
         <div className="notification is-danger is-light">{errorMessage}</div>
       ) : null}
-      <div className="notification is-success is-light">
-        <div className="title is-6">
-          <strong>Product Created Successfully!</strong>
-        </div>
 
-        <div className="container">
-          <table className="table is-striped is-small table-style">
+      {success && !error ? (
+        <div className="notification is-success is-light">
+          <div className="title is-6">
+            <strong>Product Created Successfully!</strong>
+          </div>
+
+          <table className="table is-striped table-style">
             <thead>
               <tr>
                 <th>Product Id</th>
                 <th>Product Name</th>
                 <th>Product Location</th>
-                <th>Farm Date</th>
-                <th>Harvest Date</th>
                 <th>Status</th>
               </tr>
             </thead>
 
             <tbody>
               <tr>
-                <td>Id</td>
-                <td>Name</td>
-                <td>Location</td>
-                <td>Farm Date</td>
-                <td>Harvest Date</td>
-                <td>Pending</td>
+                <td>{successProductDetails.id}</td>
+                <td>{successProductDetails.productName}</td>
+                <td>{successProductDetails.productLocation}</td>
+                <td>{successProductDetails.status}</td>
               </tr>
             </tbody>
           </table>
         </div>
-      </div>
+      ) : null}
 
       <div className="columns">
         <div className="column is-half">
