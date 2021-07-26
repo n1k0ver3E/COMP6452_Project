@@ -167,9 +167,11 @@ export interface ISendProductDetails {
 }
 
 export interface ICreateProductPayload {
-  productId: number | string
+  id?: number
+  productId?: number | string
   productName: string
   productLocation: string
   farmDate: Date | string
   harvestDate: Date | string
+  status?: number
 }

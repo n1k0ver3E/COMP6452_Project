@@ -5,6 +5,7 @@ import 'bulma-calendar/dist/css/bulma-calendar.min.css'
 import bulmaCalendar from 'bulma-calendar/dist/js/bulma-calendar.min.js'
 import './farmer.css'
 import {
+  ICreateProductPayload,
   IFarmerProductDetails,
   IFarmerProductInitial,
 } from '../../interfaces/contract'
@@ -12,6 +13,8 @@ import { ProfileContractContext } from '../../contexts/ProfileContract'
 import { ProductContractContext } from '../../contexts/ProductContract'
 import { ProductContractAPIContext } from '../../contexts/ProductContractAPI'
 import getAccounts from '../../utils/getAccounts'
+import { titleCase } from '../../helpers'
+import { SendProductStatus } from '../../enums/contract'
 
 const initialState: IFarmerProductInitial = {
   productName: '',
@@ -36,6 +39,17 @@ const Farmer: FC = () => {
     useState<boolean>(false)
   const [error, setError] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>('')
+  const [success, setSuccess] = useState<boolean>(false)
+  const [successProductDetails, setSuccessProductDetails] =
+    useState<ICreateProductPayload>({
+      id: -1,
+      productName: '',
+      productLocation: '',
+      farmDate: '',
+      harvestDate: '',
+      status: -1,
+    })
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   useEffect(() => {
     const calendars = bulmaCalendar.attach('[type="date"]', {})
@@ -100,6 +114,7 @@ const Farmer: FC = () => {
 
   const handleAddProduct = async (e: any) => {
     e.preventDefault()
+    setIsLoading(true)
 
     const payload: IFarmerProductDetails = {
       ...data,
@@ -117,6 +132,7 @@ const Farmer: FC = () => {
       setErrorMessage(
         'Harvest date cannot be before farm date. Please select a different date.'
       )
+      setIsLoading(false)
       return
     }
 
@@ -148,14 +164,19 @@ const Farmer: FC = () => {
 
         const product = await createProduct(apiPayload)
 
-        console.log('PRODUCT', product)
+        console.log('product', product)
+
+        // Set Success Message and set product object
+        setSuccess(true)
+        setSuccessProductDetails(product)
 
         // TODO: Clear Values after submission
         setData(initialState)
 
-        // Unset the error message if any
+        // Unset the error message if any and loading state back to false
         setError(false)
         setErrorMessage('')
+        setIsLoading(false)
       }
     } catch (e) {
       if (
@@ -172,9 +193,42 @@ const Farmer: FC = () => {
 
   return (
     <section className="container">
-      {error && (
+      {error && !success ? (
         <div className="notification is-danger is-light">{errorMessage}</div>
-      )}
+      ) : null}
+
+      {success && !error ? (
+        <div className="is-success is-light mb-5">
+          <div className="title is-6">
+            <strong>Product Information</strong>
+          </div>
+
+          <table className="table is-striped table-style">
+            <thead>
+              <tr>
+                <th>Product Id</th>
+                <th>Product Name</th>
+                <th>Product Location</th>
+                <th>Farm Date</th>
+                <th>Harvest Date</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr>
+                <td>{successProductDetails.id}</td>
+                <td>{successProductDetails.productName}</td>
+                <td>{successProductDetails.productLocation}</td>
+                <td>{successProductDetails.farmDate}</td>
+                <td>{successProductDetails.harvestDate}</td>
+                <td>{SendProductStatus[successProductDetails.status!]}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      ) : null}
+
       <div className="columns">
         <div className="column is-half">
           <img
@@ -245,7 +299,11 @@ const Farmer: FC = () => {
             </div>
 
             <button
-              className="button is-block is-link is-fullwidth mt-3"
+              className={
+                isLoading
+                  ? 'button is-block is-link is-fullwidth mt-3 is-loading'
+                  : 'button is-block is-link is-fullwidth mt-3'
+              }
               onClick={(e) => handleAddProduct(e)}
               disabled={
                 !isProductNameFieldValid ||

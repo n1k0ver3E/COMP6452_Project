@@ -23,15 +23,20 @@ export enum DocumentType {
 export enum DocumentStatus {
   Pending,
   Approved,
-  Rejected
+  Rejected,
 }
 
 export enum ProductCategory {
   FARMING,
-  HARVESTING,
   MANUFACTURING,
   SHIPPING,
   RETAILING,
   PURCHASING,
   RECALLING,
+}
+
+export enum SendProductStatus {
+  PENDING,
+  APPROVED,
+  REJECTED,
 }
