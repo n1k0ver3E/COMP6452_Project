@@ -170,9 +170,7 @@ contract Trace {
             // Set the requesting to false.
             t.isRequestingForLocation = false;
 
-            // TODO:: Insert callback code here
-
-            // Returns true to indicate success log.
+            // Returns true to indicate the successful.
             return true;
         } else {
             // Only update the location if the timestamp of the new log is newer.
@@ -183,9 +181,7 @@ contract Trace {
             // Save the latest location
             saveProductLocation(t, productId, timestamp, latitude, longitude);
 
-            // TODO:: Insert callback code here
-
-            // Returns true to indicate success log.
+            // Returns true to indicate the successful.
             return true;
         }
     }
