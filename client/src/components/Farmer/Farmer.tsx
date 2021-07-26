@@ -10,6 +10,7 @@ import {
 } from '../../interfaces/contract'
 import { ProfileContractContext } from '../../contexts/ProfileContract'
 import { ProductContractContext } from '../../contexts/ProductContract'
+import { ProductContractAPIContext } from '../../contexts/ProductContractAPI'
 import getAccounts from '../../utils/getAccounts'
 
 const initialState: IFarmerProductInitial = {
@@ -20,6 +21,7 @@ const initialState: IFarmerProductInitial = {
 const Farmer: FC = () => {
   const { accounts } = useContext(ProfileContractContext)
   const { productContract } = useContext(ProductContractContext)
+  const { createProduct } = useContext(ProductContractAPIContext)
 
   const [data, setData] = useState<IFarmerProductInitial>(initialState)
   const [farmDate, setFarmDate] = useState<string>('')
@@ -119,6 +121,7 @@ const Farmer: FC = () => {
     }
 
     try {
+      // Call createProduct on the product contract
       const _accounts = await getAccounts(accounts)
       const createProductResp = await productContract?.methods
         .createProduct(
@@ -130,12 +133,25 @@ const Farmer: FC = () => {
         .send({ from: _accounts[0] })
 
       if (createProductResp) {
-        // CALL AN API AND DONE!
+        const { productId, productLocation } =
+          createProductResp.events.Harvested.returnValues
+
+        const productName = payload.productName
+
+        const apiPayload = {
+          productId,
+          productName,
+          productLocation,
+          farmDate: farmDateType,
+          harvestDate: harvestDateType,
+        }
+
+        const product = await createProduct(apiPayload)
+
+        console.log('PRODUCT', product)
 
         // TODO: Clear Values after submission
         setData(initialState)
-        setFarmDate('')
-        setHarvestDate('')
 
         // Unset the error message if any
         setError(false)

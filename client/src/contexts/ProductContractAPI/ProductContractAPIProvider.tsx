@@ -1,9 +1,13 @@
 import React, { FC, createContext } from 'react'
 import api from '../../api'
-import { IProductContractAPI } from '../../interfaces/contract'
+import {
+  ICreateProductPayload,
+  IProductContractAPI,
+} from '../../interfaces/contract'
 
 const contextDefaultValues: IProductContractAPI = {
   recallProduct: (productId: number) => {},
+  createProduct: () => {},
 }
 
 export const ProductContractAPIContext =
@@ -20,10 +24,21 @@ const ProductContractAPIProvider: FC = ({ children }): any => {
     }
   }
 
+  const createProduct = async (product: ICreateProductPayload) => {
+    try {
+      const resp = await api.post(`/v1/products`, product)
+
+      return resp.data.product
+    } catch (err) {
+      return false
+    }
+  }
+
   return (
     <ProductContractAPIContext.Provider
       value={{
         recallProduct,
+        createProduct,
       }}
     >
       {children}

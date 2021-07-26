@@ -93,6 +93,7 @@ export interface IProductContract {
 
 export interface IProductContractAPI {
   recallProduct: any
+  createProduct: any
 }
 
 export interface IDocumentContract {
@@ -162,4 +163,12 @@ export interface ISendProductDetails {
   receiverAddress: string
   logisticsAddress: string
   trackNumber: string
+}
+
+export interface ICreateProductPayload {
+  productId: number | string
+  productName: string
+  productLocation: string
+  farmDate: Date | string
+  harvestDate: Date | string
 }
