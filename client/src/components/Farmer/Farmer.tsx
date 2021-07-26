@@ -5,7 +5,6 @@ import 'bulma-calendar/dist/css/bulma-calendar.min.css'
 import bulmaCalendar from 'bulma-calendar/dist/js/bulma-calendar.min.js'
 import './farmer.css'
 import {
-  ICreateProductPayload,
   IFarmerProductDetails,
   IFarmerProductInitial,
 } from '../../interfaces/contract'
@@ -13,7 +12,6 @@ import { ProfileContractContext } from '../../contexts/ProfileContract'
 import { ProductContractContext } from '../../contexts/ProductContract'
 import { ProductContractAPIContext } from '../../contexts/ProductContractAPI'
 import getAccounts from '../../utils/getAccounts'
-import { ProductCategory } from '../../enums/contract'
 
 const initialState: IFarmerProductInitial = {
   productName: '',
@@ -39,15 +37,6 @@ const Farmer: FC = () => {
   const [error, setError] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>('')
   const [success, setSuccess] = useState<boolean>(false)
-  const [successProductDetails, setSuccessProductDetails] =
-    useState<ICreateProductPayload>({
-      productId: -1,
-      productName: '',
-      productLocation: '',
-      farmDate: '',
-      harvestDate: '',
-      status: -1,
-    })
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
   useEffect(() => {
@@ -161,11 +150,9 @@ const Farmer: FC = () => {
           harvestDate: harvestDateType,
         }
 
-        const product = await createProduct(apiPayload)
-
-        // Set Success Message and set product object
+        await createProduct(apiPayload)
+        // Set Success Message
         setSuccess(true)
-        setSuccessProductDetails(product)
 
         // TODO: Clear Values after submission
         setData(initialState)
@@ -195,34 +182,8 @@ const Farmer: FC = () => {
       ) : null}
 
       {success && !error ? (
-        <div className="is-success is-light mb-5">
-          <div className="title is-6">
-            <strong>Product Information</strong>
-          </div>
-
-          <table className="table is-striped table-style">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Location</th>
-                <th>Farm Date</th>
-                <th>Harvest Date</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              <tr>
-                <td>{successProductDetails.productId}</td>
-                <td>{successProductDetails.productName}</td>
-                <td>{successProductDetails.productLocation}</td>
-                <td>{successProductDetails.farmDate}</td>
-                <td>{successProductDetails.harvestDate}</td>
-                <td>{ProductCategory[successProductDetails.status!]}</td>
-              </tr>
-            </tbody>
-          </table>
+        <div className="notification is-success is-light mb-5">
+          Product has been added successfully
         </div>
       ) : null}
 
