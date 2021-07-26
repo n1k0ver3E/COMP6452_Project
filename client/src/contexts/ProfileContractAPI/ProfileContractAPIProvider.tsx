@@ -7,14 +7,15 @@ import {
 import { AccountStatus } from '../../enums/contract'
 
 const contextDefaultValues: IProfileContractAPI = {
-  registerParticipant: () => { },
+  registerParticipant: () => {},
   registeredAccounts: [],
   registrationError: false,
   pendingAccounts: [],
   approvedAccounts: [],
   rejectedAccounts: [],
-  updateAccountStatus: () => { },
-  getAllParticipants: () => { },
+  updateAccountStatus: () => {},
+  getAllParticipants: () => {},
+  getParticipantByAddress: () => {},
 }
 
 export const ProfileContractAPIContext =
@@ -104,11 +105,8 @@ const ProfileContractAPIProvider: FC = ({ children }): any => {
     updatedAccountStatus: number
   ) => {
     try {
-      console.log('address', address)
-      console.log('updatedAcountStatus', updatedAccountStatus)
-
       const resp = await api.patch(`/v1/participants/${address}`, {
-        accountStatus: updatedAccountStatus
+        accountStatus: updatedAccountStatus,
       })
 
       switch (updatedAccountStatus) {
@@ -131,6 +129,16 @@ const ProfileContractAPIProvider: FC = ({ children }): any => {
     }
   }
 
+  const getParticipantByAddress = async (address: string) => {
+    try {
+      const resp = await api.get(`/v1/participants/${address}`)
+
+      return resp.data.participant[0]
+    } catch {
+      return false
+    }
+  }
+
   return (
     <ProfileContractAPIContext.Provider
       value={{
@@ -142,6 +150,7 @@ const ProfileContractAPIProvider: FC = ({ children }): any => {
         rejectedAccounts,
         updateAccountStatus,
         getAllParticipants,
+        getParticipantByAddress,
       }}
     >
       {children}
