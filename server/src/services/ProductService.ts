@@ -6,7 +6,8 @@ const createProduct = async (productDetails: IProduct) => {
   const product = await ProductRepository.createProduct(productDetails)
 
   return {
-    id: product.productId,
+    id: product._id,
+    productId: product.productId,
     productName: product.productName,
     productLocation: product.productLocation,
     farmDate: product.farmDate,

@@ -13,8 +13,7 @@ import { ProfileContractContext } from '../../contexts/ProfileContract'
 import { ProductContractContext } from '../../contexts/ProductContract'
 import { ProductContractAPIContext } from '../../contexts/ProductContractAPI'
 import getAccounts from '../../utils/getAccounts'
-import { titleCase } from '../../helpers'
-import { SendProductStatus } from '../../enums/contract'
+import { ProductCategory } from '../../enums/contract'
 
 const initialState: IFarmerProductInitial = {
   productName: '',
@@ -42,7 +41,7 @@ const Farmer: FC = () => {
   const [success, setSuccess] = useState<boolean>(false)
   const [successProductDetails, setSuccessProductDetails] =
     useState<ICreateProductPayload>({
-      id: -1,
+      productId: -1,
       productName: '',
       productLocation: '',
       farmDate: '',
@@ -217,12 +216,12 @@ const Farmer: FC = () => {
 
             <tbody>
               <tr>
-                <td>{successProductDetails.id}</td>
+                <td>{successProductDetails.productId}</td>
                 <td>{successProductDetails.productName}</td>
                 <td>{successProductDetails.productLocation}</td>
                 <td>{successProductDetails.farmDate}</td>
                 <td>{successProductDetails.harvestDate}</td>
-                <td>{SendProductStatus[successProductDetails.status!]}</td>
+                <td>{ProductCategory[successProductDetails.status!]}</td>
               </tr>
             </tbody>
           </table>

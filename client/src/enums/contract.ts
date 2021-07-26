@@ -34,9 +34,3 @@ export enum ProductCategory {
   PURCHASING,
   RECALLING,
 }
-
-export enum SendProductStatus {
-  PENDING,
-  APPROVED,
-  REJECTED,
-}
