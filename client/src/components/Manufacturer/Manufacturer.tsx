@@ -140,7 +140,9 @@ const Manufacturer: FC = () => {
                 <th>Location</th>
                 <th>Farm Date</th>
                 <th>Harvest Date</th>
-                <th>Processing Type</th>
+                {productDetails.processingType !== '' && (
+                  <th>Processing Type</th>
+                )}{' '}
                 <th>Status</th>
               </tr>
             </thead>
@@ -156,7 +158,9 @@ const Manufacturer: FC = () => {
                 <td>
                   {format(new Date(productDetails.harvestDate), 'dd MMM yyy')}
                 </td>
-                <td>{productDetails.processingType}</td>
+                {productDetails.processingType !== '' && (
+                  <td>{productDetails.processingType}</td>
+                )}
                 <td>{ProductCategory[productDetails.status]}</td>
               </tr>
             </tbody>
