@@ -3,6 +3,7 @@
 // test
 pragma solidity ^0.8.0;
 
+//import "../Profile.sol";
 import "./Profile.sol";
 import "./Trace.sol";
 
