@@ -6,7 +6,8 @@ const createProduct = async (productDetails: IProduct) => {
   const product = await ProductRepository.createProduct(productDetails)
 
   return {
-    id: product.productId,
+    id: product._id,
+    productId: product.productId,
     productName: product.productName,
     productLocation: product.productLocation,
     farmDate: product.farmDate,
@@ -61,9 +62,19 @@ const purchasingProductInfo = async (productDetails: IProduct) => {
   }
 }
 
+const getFarmingAndManufacturingProducts = () => {
+  return ProductRepository.getFarmingAndManufacturingProducts()
+}
+
+const getProductById = (productId: number) => {
+  return ProductRepository.getProductById(productId)
+}
+
 export default {
   createProduct,
   manuProductInfo,
   retailProductInfo,
   purchasingProductInfo,
+  getFarmingAndManufacturingProducts,
+  getProductById,
 }

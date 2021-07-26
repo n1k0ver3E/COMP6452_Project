@@ -1,5 +1,6 @@
 import { ProductModel } from '../models'
 import { IProduct } from '../interfaces/product'
+import { ProductStatus } from '../enums/productContract'
 
 const createProduct = (productDetails: IProduct): Promise<IProduct> => {
   return ProductModel.create(productDetails)
@@ -60,9 +61,21 @@ const purchasingProductInfo = async (
   )
 }
 
+const getFarmingAndManufacturingProducts = () => {
+  return ProductModel.find({
+    status: { $in: [ProductStatus.FARMING, ProductStatus.MANUFACTURING] },
+  })
+}
+
+const getProductById = (productId: number) => {
+  return ProductModel.find({ productId })
+}
+
 export default {
   createProduct,
   retailProductInfo,
   purchasingProductInfo,
   manuProductInfo,
+  getFarmingAndManufacturingProducts,
+  getProductById,
 }

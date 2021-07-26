@@ -44,6 +44,26 @@ const purchasingProductInfo = catchAsync(
   }
 )
 
+const getFarmingAndManufacturingProducts = catchAsync(
+  async (_req: Request, res: Response, _next: NextFunction) => {
+    const products = await ProductService.getFarmingAndManufacturingProducts()
+    return res.status(httpStatus.OK).json({
+      success: true,
+      products,
+    })
+  }
+)
+
+const getProductById = catchAsync(
+  async (req: Request, res: Response, _next: NextFunction) => {
+    const product = await ProductService.getProductById(parseInt(req.params.id))
+    return res.status(httpStatus.OK).json({
+      success: true,
+      product,
+    })
+  }
+)
+
 // const recallProduct = catchAsync(
 //   async (req: Request, res: Response, _next: NextFunction) => {
 //     const { productId: productId } = req.body
@@ -64,4 +84,6 @@ export default {
   manuProductInfo,
   retailProductInfo,
   purchasingProductInfo,
+  getFarmingAndManufacturingProducts,
+  getProductById,
 }

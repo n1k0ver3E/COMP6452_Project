@@ -1,12 +1,12 @@
-import React, { ChangeEvent, FC, useEffect, useState } from 'react'
-import 'bulma-calendar/dist/css/bulma-calendar.min.css'
-// @ts-ignore
-import bulmaCalendar from 'bulma-calendar/dist/js/bulma-calendar.min.js'
+import React, { ChangeEvent, FC, useState, useContext, useEffect } from 'react'
 import './manufacturer.css'
 import {
+  ICreateProductPayload,
   IManufacturerProcessDetails,
   ISendProductDetails,
 } from '../../interfaces/contract'
+import { ProductContractAPIContext } from '../../contexts/ProductContractAPI'
+import { ProductCategory } from '../../enums/contract'
 
 const initialState: IManufacturerProcessDetails = {
   productId: -1,
@@ -20,6 +20,10 @@ const sendProductInitialState: ISendProductDetails = {
 }
 
 const Manufacturer: FC = () => {
+  const { getFarmingAndManufacturingProducts, getProductById } = useContext(
+    ProductContractAPIContext
+  )
+
   const [data, setData] = useState<IManufacturerProcessDetails>(initialState)
   const [sendProductData, setSendProductData] = useState<ISendProductDetails>(
     sendProductInitialState
@@ -32,14 +36,39 @@ const Manufacturer: FC = () => {
     useState<boolean>(false)
   const [isTrackNumberFieldValid, setIsTrackNumberFieldValid] =
     useState<boolean>(false)
-  // TESTING ONLY
-  const [showPayload, setShowPayload] = useState<boolean>(false)
-  const [payload, setPayload] = useState('')
+  const [products, setProducts] = useState<ICreateProductPayload[]>([])
+  const [productDetails, setProductDetails] = useState({
+    productId: -1,
+    productName: '',
+    productLocation: '',
+    farmDate: '',
+    harvestDate: '',
+    processingType: '',
+    status: -1,
+  })
+  const [showTable, setShowTable] = useState<boolean>(false)
 
-  const handleChange = (
+  useEffect(() => {
+    const getProducts = async () => {
+      const products = await getFarmingAndManufacturingProducts()
+
+      setProducts(products)
+    }
+
+    getProducts()
+  }, [])
+
+  const handleChange = async (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target
+
+    if (name === 'productId') {
+      const product = await getProductById(parseInt(value))
+
+      setProductDetails(product)
+      setShowTable(true)
+    }
 
     if (name === 'processingType') {
       if (value === '') {
@@ -86,24 +115,50 @@ const Manufacturer: FC = () => {
 
   const handleSubmission = (e: any) => {
     e.preventDefault()
-
-    // TESTING ONLY TO BE REMOVED AND REPLACED WITH REAL API CALLS
-    // @ts-ignore
-    setPayload(data)
-    setShowPayload(true)
   }
 
   const handleSubmissionSendProduct = (e: any) => {
     e.preventDefault()
-
-    // TESTING ONLY TO BE REMOVED AND REPLACED WITH REAL API CALLS
-    // @ts-ignore
-    setPayload(sendProductData)
-    setShowPayload(true)
   }
+
+  console.log('productDetails', productDetails)
 
   return (
     <section className="container">
+      {showTable && (
+        <div className="is-success is-light mb-5">
+          <div className="title is-6">
+            <strong>Product Information</strong>
+          </div>
+
+          <table className="table is-striped table-style">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Location</th>
+                <th>Farm Date</th>
+                <th>Harvest Date</th>
+                <th>Processing Type</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr>
+                <td>{productDetails.productId}</td>
+                <td>{productDetails.productName}</td>
+                <td>{productDetails.productLocation}</td>
+                <td>{productDetails.farmDate}</td>
+                <td>{productDetails.harvestDate}</td>
+                <td>{productDetails.processingType}</td>
+                <td>{ProductCategory[productDetails.status]}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      )}
+
       <div className="columns">
         <div className="column is-half">
           <img
@@ -132,8 +187,15 @@ const Manufacturer: FC = () => {
                     <option value={'DEFAULT'} disabled>
                       Select Product
                     </option>
-                    <option value="1">Sample Product 1</option>
-                    <option value="2">Sample Product 2</option>
+                    {products?.map((product: any, idx: number) => (
+                      <option key={idx} value={product.productId}>
+                        {product.productName} ({product.productLocation})
+                      </option>
+                    ))}
+
+                    {!products.length && (
+                      <option disabled>Product Selection Unavailable</option>
+                    )}
                   </select>
                 </div>
               </div>
@@ -220,14 +282,6 @@ const Manufacturer: FC = () => {
           </>
         </div>
       </div>
-
-      {/*TESTING ONLY TO BE REMOVED AND REPLACED WITH REAL API CALLS*/}
-      {showPayload && (
-        <div>
-          <h1>SENDING PAYLOAD TO API</h1>
-          <h1>{JSON.stringify(payload)}</h1>
-        </div>
-      )}
     </section>
   )
 }
