@@ -353,6 +353,29 @@ contract ProductSC {
         selfdestruct(regulator_address);
     }
 
+    event ShowOneLineTrack(
+        address FarmerId,
+        address manufacturerId,
+        address distributorId,
+        address retailerId,
+        address ConsumerId
+    );
+
+    function showOneLineTrack(uint256 _productId)
+        public
+        isProductIdExist(_productId)
+    {
+        Product storage existProduct = products[_productId];
+        //empty address : 0x0000000000000000000000000000000000000000
+        emit ShowOneLineTrack(
+            existProduct.FarmerId,
+            existProduct.manufacturerId,
+            existProduct.distributorId,
+            existProduct.retailerId,
+            existProduct.ConsumerId
+        );
+    }
+
     // Validation parts
     // modifiers
     modifier onlyRegulator {
