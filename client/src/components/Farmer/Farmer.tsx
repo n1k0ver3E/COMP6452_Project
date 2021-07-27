@@ -148,12 +148,6 @@ const Farmer: FC = () => {
         .send({ from: _accounts[0] })
 
       if (createProductResp) {
-        // const { productId, productLocation } =
-        //   createProductResp.events.Harvested.returnValues
-
-        // const { productId, productStatus } =
-        //   createProductResp.events.Harvested.returnValues
-
         const { productId, productStatus } =
           createProductResp.events.CurrentProductStatus.returnValues
 
@@ -164,10 +158,10 @@ const Farmer: FC = () => {
         const apiPayload = {
           productId,
           productName,
-          //productLocation,
           productLocation,
           farmDate: farmDateType,
           harvestDate: harvestDateType,
+          productStatus
         }
 
         const product = await createProduct(apiPayload)
