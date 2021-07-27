@@ -134,6 +134,8 @@ const Manufacturer: FC = () => {
         setShowTable(false)
       }
       setIsManufacturingLoading(false)
+      setError(true)
+      setErrorMessage('Something went wrong. Please try again shortly.')
       console.log(e.message)
     }
   }

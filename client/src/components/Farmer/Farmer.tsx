@@ -187,6 +187,8 @@ const Farmer: FC = () => {
         )
         setIsLoading(false)
       }
+      setError(true)
+      setErrorMessage('Something went wrong. Please try again shortly.')
       setIsLoading(false)
       console.log(e.message)
     }
