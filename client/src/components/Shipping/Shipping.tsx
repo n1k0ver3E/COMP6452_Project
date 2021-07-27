@@ -13,7 +13,7 @@ const sendProductInitialState: ISendProductDetails = {
 
 const Shipping: FC = () => {
 
-  const { getProductsByStatus, getProductById } = useContext(ProductContractAPIContext)
+  const { getProductsByStatus, getProductById, shippingProductInfo } = useContext(ProductContractAPIContext)
 
   const [sendProductData, setSendProductData] = useState<ISendProductDetails>(
     sendProductInitialState
@@ -34,7 +34,8 @@ const Shipping: FC = () => {
     processingType: '',
     status: -1,
   })
-  const [showTable, setShowTable] = useState<boolean>(true)
+  const [showTable, setShowTable] = useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   useEffect(() => {
     const getProducts = async () => {
@@ -88,8 +89,11 @@ const Shipping: FC = () => {
 
   const handleSubmissionSendProduct = (e: any) => {
     e.preventDefault()
+    setIsLoading(true)
 
-    console.log('sendProductData', sendProductData)
+    // TODO: DO THE ON-CHAIN CALL
+
+
   }
 
   return (
@@ -212,7 +216,9 @@ const Shipping: FC = () => {
               </div>
 
               <button
-                className="button is-block is-link is-fullwidth mt-3"
+                className={
+                  isLoading ? 'button is-block is-link is-fullwidth mt-3 is-loading' : 'button is-block is-link is-fullwidth mt-3'
+                }
                 disabled={
                   !isReceiverAddressFieldValid ||
                   !isLogisticsAddressFieldValid ||

@@ -31,7 +31,7 @@ const shippingProductInfo = async (productDetails: any) => {
     {
       $set: {
         receiverAddress: productDetails.receiverAddress,
-        logisticsAddressAddress: productDetails.logisticsAddressAddress,
+        logisticsAddress: productDetails.logisticsAddress,
         trackNumber: productDetails.trackNumber,
         status: productDetails.status,
       },

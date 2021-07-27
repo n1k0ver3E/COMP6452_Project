@@ -2,7 +2,7 @@ import React, { FC, createContext } from 'react'
 import api from '../../api'
 import {
   ICreateProductPayload, IManuProductInfoPayload,
-  IProductContractAPI
+  IProductContractAPI, IShippingProductInfoPayload
 } from '../../interfaces/contract'
 
 const contextDefaultValues: IProductContractAPI = {
@@ -10,7 +10,8 @@ const contextDefaultValues: IProductContractAPI = {
   createProduct: () => {},
   getProductsByStatus: () => {},
   getProductById: () => {},
-  manuProductInfo: () => {}
+  manuProductInfo: () => {},
+  shippingProductInfo: () => {}
 }
 
 export const ProductContractAPIContext =
@@ -68,6 +69,16 @@ const ProductContractAPIProvider: FC = ({ children }): any => {
     }
   }
 
+  const shippingProductInfo = async (payload: IShippingProductInfoPayload) => {
+    try {
+      const resp = await api.patch(`v1/products/shipping-info`, payload)
+
+      return resp.data.product
+    }catch(err) {
+      return false
+    }
+  }
+
   return (
     <ProductContractAPIContext.Provider
       value={{
@@ -75,7 +86,8 @@ const ProductContractAPIProvider: FC = ({ children }): any => {
         createProduct,
         getProductsByStatus,
         getProductById,
-        manuProductInfo
+        manuProductInfo,
+        shippingProductInfo
       }}
     >
       {children}

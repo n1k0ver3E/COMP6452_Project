@@ -97,6 +97,7 @@ export interface IProductContractAPI {
   getProductsByStatus: any
   getProductById: any
   manuProductInfo: any
+  shippingProductInfo: any
 }
 
 export interface IDocumentContract {
@@ -188,4 +189,11 @@ export interface ICreateProductPayload {
 export interface IManuProductInfoPayload {
   productId: number | string
   processingType: string
+}
+
+export interface IShippingProductInfoPayload {
+  productId: number | string
+  receiverAddress: string
+  logisticsAddress: string
+  trackingNumber: string
 }
