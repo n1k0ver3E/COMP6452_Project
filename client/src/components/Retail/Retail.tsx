@@ -1,4 +1,5 @@
 import React, { ChangeEvent, FC, useState, useContext, useEffect } from 'react'
+import format from 'date-fns/format'
 import './retail.css'
 import {
   ICreateProductPayload,
@@ -6,6 +7,7 @@ import {
 } from '../../interfaces/contract'
 import { ProductContractAPIContext } from '../../contexts/ProductContractAPI'
 import { ProductStatus } from '../../enums/contract'
+import { shortenedAddress } from '../../helpers/stringMutations'
 
 const initialState: IRetailProcessDetails = {
   productId: 'DEFAULT',
@@ -22,13 +24,12 @@ const Retail: FC = () => {
     productId: -1,
     productName: '',
     productLocation: '',
-    farmDate: '',
-    harvestDate: '',
+    farmDate: new Date(),
+    harvestDate: new Date(),
     processingType: '',
     receiverAddress: '',
     logisticsAddress: '',
     trackNumber: '',
-    status: -1,
   })
   const [showTable, setShowTable] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -97,7 +98,6 @@ const Retail: FC = () => {
                 <th>Receiver (Address)</th>
                 <th>Logistics (Address)</th>
                 <th>Track Number</th>
-                <th>Status</th>
               </tr>
             </thead>
 
@@ -106,13 +106,24 @@ const Retail: FC = () => {
                 <td>{productDetails.productId}</td>
                 <td>{productDetails.productName}</td>
                 <td>{productDetails.productLocation}</td>
-                <td>{productDetails.farmDate}</td>
-                <td>{productDetails.harvestDate}</td>
+                <td>
+                  {format(new Date(productDetails.farmDate), 'dd MMMM yyy')}
+                </td>
+                <td>
+                  {format(new Date(productDetails.harvestDate), 'dd MMMM yyy')}
+                </td>
                 <td>{productDetails.processingType}</td>
-                <td>{productDetails.receiverAddress}</td>
-                <td>{productDetails.logisticsAddress}</td>
+                <td>
+                  {productDetails.receiverAddress.length > 20
+                    ? shortenedAddress(productDetails.receiverAddress)
+                    : productDetails.receiverAddress}
+                </td>
+                <td>
+                  {productDetails.logisticsAddress.length > 20
+                    ? shortenedAddress(productDetails.logisticsAddress)
+                    : productDetails.logisticsAddress}
+                </td>
                 <td>{productDetails.trackNumber}</td>
-                <td>{ProductStatus[productDetails.status]}</td>
               </tr>
             </tbody>
           </table>
