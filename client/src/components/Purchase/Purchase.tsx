@@ -1,23 +1,62 @@
-import React, { ChangeEvent, FC, useState } from 'react'
+import React, { ChangeEvent, FC, useContext, useState, useEffect } from 'react'
 import './purchase.css'
-import { IPurchaseProcessDetails } from '../../interfaces/contract'
+import {
+  ICreateProductPayload,
+  IPurchaseProcessDetails,
+} from '../../interfaces/contract'
+import { ProductContractAPIContext } from '../../contexts/ProductContractAPI'
+import { ProductStatus } from '../../enums/contract'
 
 const initialState: IPurchaseProcessDetails = {
-  productId: -1,
+  productId: 'DEFAULT',
   price: 0,
 }
 
 const Purchase: FC = () => {
+  const { getProductsByStatus, getProductById } = useContext(
+    ProductContractAPIContext
+  )
+
   const [data, setData] = useState<IPurchaseProcessDetails>(initialState)
   const [isPriceFieldValid, setIsPriceFieldValid] = useState<boolean>(false)
-  // TESTING ONLY
-  const [showPayload, setShowPayload] = useState<boolean>(false)
-  const [payload, setPayload] = useState('')
+  const [products, setProducts] = useState<ICreateProductPayload[]>([])
+  const [productDetails, setProductDetails] = useState({
+    productId: -1,
+    productName: '',
+    productLocation: '',
+    farmDate: '',
+    harvestDate: '',
+    processingType: '',
+    receiverAddress: '',
+    logisticsAddress: '',
+    trackNumber: '',
+    status: -1,
+  })
 
-  const handleChange = (
+  const [showTable, setShowTable] = useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+
+  useEffect(() => {
+    const getProducts = async () => {
+      const products = await getProductsByStatus(ProductStatus.RETAILING)
+
+      setProducts(products)
+    }
+
+    getProducts()
+  }, [])
+
+  const handleChange = async (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target
+
+    if (name === 'productId') {
+      const product = await getProductById(parseInt(value))
+
+      setProductDetails(product)
+      setShowTable(true)
+    }
 
     if (name === 'price') {
       if (value === '') {
@@ -32,15 +71,50 @@ const Purchase: FC = () => {
 
   const handleSubmission = (e: any) => {
     e.preventDefault()
-
-    // TESTING ONLY TO BE REMOVED AND REPLACED WITH REAL API CALLS
-    // @ts-ignore
-    setPayload(data)
-    setShowPayload(true)
   }
 
   return (
     <section className="container">
+      {showTable && (
+        <div className="is-success is-light mb-5">
+          <div className="title is-6">
+            <strong>Product Information</strong>
+          </div>
+
+          <table className="table is-striped table-style">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Location</th>
+                <th>Farm Date</th>
+                <th>Harvest Date</th>
+                <th>Processing Type</th>
+                <th>Receiver (Address)</th>
+                <th>Logistics (Address)</th>
+                <th>Track Number</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr>
+                <td>{productDetails.productId}</td>
+                <td>{productDetails.productName}</td>
+                <td>{productDetails.productLocation}</td>
+                <td>{productDetails.farmDate}</td>
+                <td>{productDetails.harvestDate}</td>
+                <td>{productDetails.processingType}</td>
+                <td>{productDetails.receiverAddress}</td>
+                <td>{productDetails.logisticsAddress}</td>
+                <td>{productDetails.trackNumber}</td>
+                <td>{ProductStatus[productDetails.status]}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      )}
+
       <div className="columns">
         <div className="column is-half">
           <img
@@ -60,14 +134,23 @@ const Purchase: FC = () => {
               <label className="label">Product</label>
               <div className="select is-normal is-fullwidth">
                 <select
-                  defaultValue={'DEFAULT'}
                   name="productId"
                   id="productId"
                   onChange={handleChange}
+                  value={data.productId}
                 >
-                  <option value={'DEFAULT'}>Select Product</option>
-                  <option value="1">Sample Product 1</option>
-                  <option value="2">Sample Product 2</option>
+                  <option value={'DEFAULT'} disabled>
+                    Select Product
+                  </option>
+                  {products?.map((product: any, idx: number) => (
+                    <option key={idx} value={product.productId}>
+                      {product.productName} ({product.productLocation})
+                    </option>
+                  ))}
+
+                  {!products.length && (
+                    <option disabled>No Products To Process</option>
+                  )}
                 </select>
               </div>
             </div>
@@ -81,6 +164,7 @@ const Purchase: FC = () => {
                   name="price"
                   id="price"
                   onChange={handleChange}
+                  value={data.price}
                 />
               </div>
             </div>
@@ -98,13 +182,6 @@ const Purchase: FC = () => {
           </form>
         </div>
       </div>
-      {/*TESTING ONLY TO BE REMOVED AND REPLACED WITH REAL API CALLS*/}
-      {showPayload && (
-        <div>
-          <h1>SENDING PAYLOAD TO API</h1>
-          <h1>{JSON.stringify(payload)}</h1>
-        </div>
-      )}
     </section>
   )
 }
