@@ -15,6 +15,7 @@ const contextDefaultValues: IProductContractAPI = {
   manuProductInfo: () => {},
   shippingProductInfo: () => {},
   retailProductInfo: () => {},
+  purchasingProductInfo: () => {},
 }
 
 export const ProductContractAPIContext =
@@ -91,6 +92,20 @@ const ProductContractAPIProvider: FC = ({ children }): any => {
     }
   }
 
+  const purchasingProductInfo = async (payload: {
+    productId: number
+    productStatus: number
+    price: number
+  }) => {
+    try {
+      const resp = await api.patch(`v1/products/purchasing-info`, payload)
+
+      return resp.data.product
+    } catch (err) {
+      return false
+    }
+  }
+
   return (
     <ProductContractAPIContext.Provider
       value={{
@@ -101,6 +116,7 @@ const ProductContractAPIProvider: FC = ({ children }): any => {
         manuProductInfo,
         shippingProductInfo,
         retailProductInfo,
+        purchasingProductInfo,
       }}
     >
       {children}

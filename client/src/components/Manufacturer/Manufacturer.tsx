@@ -201,7 +201,7 @@ const Manufacturer: FC = () => {
             </div>
             <form className="mt-5">
               <div className="field">
-                <label className="label">Product</label>
+                <label className="label">Product ({products.length})</label>
                 <div className="select is-normal is-fullwidth">
                   <select
                     name="productId"
