@@ -1,4 +1,5 @@
 import React, { ChangeEvent, FC, useState, useContext, useEffect } from 'react'
+import format from 'date-fns/format'
 import {
   ICreateProductPayload,
   ISendProductDetails,
@@ -33,9 +34,8 @@ const Shipping: FC = () => {
     productName: '',
     productLocation: '',
     farmDate: '',
-    harvestDate: '',
-    processingType: '',
-    status: -1,
+    harvestDate: new Date(),
+    processingType: new Date(),
   })
   const [showTable, setShowTable] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -124,10 +124,9 @@ const Shipping: FC = () => {
                 <th>ID</th>
                 <th>Name</th>
                 <th>Location</th>
+                <th>Processing Type</th>
                 <th>Farm Date</th>
                 <th>Harvest Date</th>
-                <th>Processing Type</th>
-                <th>Status</th>
               </tr>
             </thead>
 
@@ -136,10 +135,9 @@ const Shipping: FC = () => {
                 <td>{productDetails.productId}</td>
                 <td>{productDetails.productName}</td>
                 <td>{productDetails.productLocation}</td>
-                <td>{productDetails.farmDate}</td>
-                <td>{productDetails.harvestDate}</td>
                 <td>{productDetails.processingType}</td>
-                <td>{ProductStatus[productDetails.status]}</td>
+                <td>{format(new Date (productDetails.farmDate), 'dd MMMM yyy')}</td>
+                <td>{format(new Date(productDetails.harvestDate), 'dd MMMM yyy')}</td>
               </tr>
             </tbody>
           </table>
