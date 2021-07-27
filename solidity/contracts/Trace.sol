@@ -5,7 +5,7 @@ import "./Profile.sol";
 
 contract Trace {
     // Events
-    event ProductTracking(address indexed logisticAccountAddress, uint productId );
+    event ProductTracking(address indexed logisticAccountAddress, uint productId, string trackingNumber );
     event ProductLocation(uint indexed productId, uint indexed timestamp, int latitude, int longitude);
     event ProductLocationRequest(uint indexed blockNumber, uint indexed productId);
 
@@ -134,7 +134,7 @@ contract Trace {
         _tracks[ productId  ] = t;
 
         // Emit the event for reverse oracle.
-        emit ProductTracking(logisticAccountAddress, productId);
+        emit ProductTracking(logisticAccountAddress, productId, trackingNumber);
     }
 
 
