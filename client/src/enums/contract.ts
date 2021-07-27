@@ -26,7 +26,7 @@ export enum DocumentStatus {
   Rejected,
 }
 
-export enum ProductCategory {
+export enum ProductStatus {
   FARMING,
   MANUFACTURING,
   SHIPPING,

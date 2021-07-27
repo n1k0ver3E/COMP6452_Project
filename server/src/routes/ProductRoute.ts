@@ -9,9 +9,9 @@ router.route('/shipping-info').patch(ProductController.shippingProductInfo)
 router.route('/retailing-info').patch(ProductController.retailProductInfo)
 router.route('/purchasing-info').patch(ProductController.purchasingProductInfo)
 router
-  .route('/farming-man-products')
-  .get(ProductController.getFarmingAndManufacturingProducts)
-router.route('/:id').get(ProductController.getProductById)
+  .route('/status/:status')
+  .get(ProductController.getProductsByStatus)
+router.route('/id/:id').get(ProductController.getProductById)
 
 // router.route('/recall-product').post(ProductController.recallProduct)
 

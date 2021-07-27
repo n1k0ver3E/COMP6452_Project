@@ -3,10 +3,9 @@ import './manufacturer.css'
 import {
   ICreateProductPayload,
   IManufacturerProcessDetails,
-  ISendProductDetails,
 } from '../../interfaces/contract'
 import { ProductContractAPIContext } from '../../contexts/ProductContractAPI'
-import { ProductCategory } from '../../enums/contract'
+import { ProductStatus } from '../../enums/contract'
 
 const initialState: IManufacturerProcessDetails = {
   productId: 'DEFAULT',
@@ -14,7 +13,7 @@ const initialState: IManufacturerProcessDetails = {
 }
 
 const Manufacturer: FC = () => {
-  const { getFarmingAndManufacturingProducts, getProductById, manuProductInfo } = useContext(
+  const { getProductsByStatus, getProductById, manuProductInfo } = useContext(
     ProductContractAPIContext
   )
 
@@ -28,7 +27,6 @@ const Manufacturer: FC = () => {
     productLocation: '',
     farmDate: '',
     harvestDate: '',
-    processingType: '',
     status: -1,
   })
   const [showTable, setShowTable] = useState<boolean>(false)
@@ -36,7 +34,7 @@ const Manufacturer: FC = () => {
 
   useEffect(() => {
     const getProducts = async () => {
-      const products = await getFarmingAndManufacturingProducts()
+      const products = await getProductsByStatus(ProductStatus.FARMING)
 
       setProducts(products)
     }
@@ -71,16 +69,27 @@ const Manufacturer: FC = () => {
     e.preventDefault()
     setIsManufacturingLoading(true)
 
-    // DO THE ON-CHAIN CALL
+    // TODO: DO THE ON-CHAIN CALL
 
     // API CALL
-    const product = await manuProductInfo(data)
+    await manuProductInfo(data)
 
     // SET PRODUCT DETAILS
-    setProductDetails(product)
-    setData(initialState)
-    setIsManufacturingLoading(false)
-    console.log('product', product)
+
+    // Do an API call to get update the dropdown
+    setTimeout(async () => {
+
+      // Resetting the dropdown selection to exclude selection
+      const products =  await getProductsByStatus(ProductStatus.FARMING)
+      setProducts(products)
+
+      // Reset form state, stop loading spinner and hide table
+      setData(initialState)
+      setIsManufacturingLoading(false)
+      setShowTable(false)
+    }, 1000)
+
+
   }
 
   return (
@@ -99,9 +108,6 @@ const Manufacturer: FC = () => {
                 <th>Location</th>
                 <th>Farm Date</th>
                 <th>Harvest Date</th>
-                {productDetails.processingType !== '' && (
-                  <th>Processing Type</th>
-                )}
                 <th>Status</th>
               </tr>
             </thead>
@@ -113,10 +119,7 @@ const Manufacturer: FC = () => {
                 <td>{productDetails.productLocation}</td>
                 <td>{productDetails.farmDate}</td>
                 <td>{productDetails.harvestDate}</td>
-                {productDetails.processingType !== '' && (
-                  <td>{productDetails.processingType}</td>
-                )}
-                <td>{ProductCategory[productDetails.status]}</td>
+                <td>{ProductStatus[productDetails.status]}</td>
               </tr>
             </tbody>
           </table>

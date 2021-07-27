@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react'
-import { ProductCategory } from '../../../enums/contract'
+import { ProductStatus } from '../../../enums/contract'
 import Farmer from '../../../components/Farmer'
 import Manufacturer from '../../../components/Manufacturer'
 import Shipping from '../../../components/Shipping'
@@ -17,35 +17,35 @@ const Product: FC = () => {
 
   const switchTab = (productCategory: number) => {
     switch (productCategory) {
-      case ProductCategory.FARMING:
+      case ProductStatus.FARMING:
         setFarmerActiveClass('is-active')
         setManufacturerActiveClass('')
         setRetailActiveClass('')
         setPurchaseActiveClass('')
         setShippingActiveClass('')
         break
-      case ProductCategory.MANUFACTURING:
+      case ProductStatus.MANUFACTURING:
         setManufacturerActiveClass('is-active')
         setFarmerActiveClass('')
         setRetailActiveClass('')
         setPurchaseActiveClass('')
         setShippingActiveClass('')
         break
-      case ProductCategory.SHIPPING:
+      case ProductStatus.SHIPPING:
         setPurchaseActiveClass('')
         setRetailActiveClass('')
         setManufacturerActiveClass('')
         setFarmerActiveClass('')
         setShippingActiveClass('is-active')
         break
-      case ProductCategory.RETAILING:
+      case ProductStatus.RETAILING:
         setRetailActiveClass('is-active')
         setManufacturerActiveClass('')
         setFarmerActiveClass('')
         setPurchaseActiveClass('')
         setShippingActiveClass('')
         break
-      case ProductCategory.PURCHASING:
+      case ProductStatus.PURCHASING:
         setPurchaseActiveClass('is-active')
         setRetailActiveClass('')
         setManufacturerActiveClass('')
@@ -63,7 +63,7 @@ const Product: FC = () => {
         <ul>
           <li
             className={farmerActiveClass}
-            onClick={() => switchTab(ProductCategory.FARMING)}
+            onClick={() => switchTab(ProductStatus.FARMING)}
           >
             <a>
               <span className="icon is-small">
@@ -74,7 +74,7 @@ const Product: FC = () => {
           </li>
           <li
             className={manufacturerActiveClass}
-            onClick={() => switchTab(ProductCategory.MANUFACTURING)}
+            onClick={() => switchTab(ProductStatus.MANUFACTURING)}
           >
             <a>
               <span className="icon is-small">
@@ -86,7 +86,7 @@ const Product: FC = () => {
 
           <li
             className={shippingActiveClass}
-            onClick={() => switchTab(ProductCategory.SHIPPING)}
+            onClick={() => switchTab(ProductStatus.SHIPPING)}
           >
             <a>
               <span className="icon is-small">
@@ -98,7 +98,7 @@ const Product: FC = () => {
 
           <li
             className={retailActiveClass}
-            onClick={() => switchTab(ProductCategory.RETAILING)}
+            onClick={() => switchTab(ProductStatus.RETAILING)}
           >
             <a>
               <span className="icon is-small">
@@ -109,7 +109,7 @@ const Product: FC = () => {
           </li>
           <li
             className={purchaseActiveClass}
-            onClick={() => switchTab(ProductCategory.PURCHASING)}
+            onClick={() => switchTab(ProductStatus.PURCHASING)}
           >
             <a>
               <span className="icon is-small">

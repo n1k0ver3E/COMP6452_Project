@@ -76,9 +76,9 @@ const purchasingProductInfo = (
   )
 }
 
-const getFarmingAndManufacturingProducts = () => {
+const getProductsByStatus = (productStatus: number) => {
   return ProductModel.find({
-    status: { $in: [ProductStatus.FARMING, ProductStatus.MANUFACTURING] },
+    status: productStatus,
   })
 }
 
@@ -92,6 +92,6 @@ export default {
   purchasingProductInfo,
   manuProductInfo,
   shippingProductInfo,
-  getFarmingAndManufacturingProducts,
+  getProductsByStatus,
   getProductById,
 }

@@ -8,7 +8,7 @@ import {
 const contextDefaultValues: IProductContractAPI = {
   recallProduct: (productId: number) => {},
   createProduct: () => {},
-  getFarmingAndManufacturingProducts: () => {},
+  getProductsByStatus: () => {},
   getProductById: () => {},
   manuProductInfo: () => {}
 }
@@ -37,9 +37,9 @@ const ProductContractAPIProvider: FC = ({ children }): any => {
     }
   }
 
-  const getFarmingAndManufacturingProducts = async () => {
+  const getProductsByStatus = async (productStatus: number) => {
     try {
-      const resp = await api.get(`/v1/products/farming-man-products`)
+      const resp = await api.get(`/v1/products/status/${productStatus}`)
 
       return resp.data.products
     } catch (err) {
@@ -48,8 +48,11 @@ const ProductContractAPIProvider: FC = ({ children }): any => {
   }
 
   const getProductById = async (productNumber: number) => {
+
     try {
-      const resp = await api.get(`/v1/products/${productNumber}`)
+      const resp = await api.get(`/v1/products/id/${productNumber}`)
+
+      console.log('what is product', resp)
 
       return resp.data.product[0]
     } catch (err) {
@@ -72,7 +75,7 @@ const ProductContractAPIProvider: FC = ({ children }): any => {
       value={{
         recallProduct,
         createProduct,
-        getFarmingAndManufacturingProducts,
+        getProductsByStatus,
         getProductById,
         manuProductInfo
       }}
