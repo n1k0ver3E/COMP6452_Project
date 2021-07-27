@@ -28,6 +28,7 @@ contract Trace {
     address public profileAddress;
     // The address of the product contract
     address public productContractAddress;
+    address public regulator;
 
     // All the track information. Indexed by the productId
     mapping (uint => ProductTrack) _tracks;
@@ -63,6 +64,7 @@ contract Trace {
     constructor(address _profileAddress) {
         profileAddress = _profileAddress;
         owner = payable(msg.sender);
+        regulator = Profile(_profileAddress).getRegulatorAddress();
     }
 
     /// Modifer to check for the owner
@@ -246,7 +248,8 @@ contract Trace {
     }
 
     /// Self destroy
-    function destroyContract() public onlyOwner {
+    function destroyContract() public {
+        require( msg.sender == regulator, "Must be regulator");
         selfdestruct( owner );
     }
 
