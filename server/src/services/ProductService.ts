@@ -25,7 +25,12 @@ const manuProductInfo = async (productDetails: IProduct) => {
   const product = await ProductRepository.manuProductInfo(newProductDetails)
 
   return {
-    id: product.productId,
+    id: product._id,
+    productId: product.productId,
+    productName: product.productName,
+    productLocation: product.productLocation,
+    farmDate: product.farmDate,
+    harvestDate: product.harvestDate,
     processingType: product.processingType,
     status: product.status,
   }
