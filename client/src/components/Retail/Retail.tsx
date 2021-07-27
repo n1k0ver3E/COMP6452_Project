@@ -1,5 +1,6 @@
 import React, { ChangeEvent, FC, useState, useContext, useEffect } from 'react'
 import format from 'date-fns/format'
+import ReactTooltip from 'react-tooltip'
 import './retail.css'
 import {
   ICreateProductPayload,
@@ -27,7 +28,6 @@ const Retail: FC = () => {
     farmDate: new Date(),
     harvestDate: new Date(),
     processingType: '',
-    receiverAddress: '',
     logisticsAddress: '',
     trackNumber: '',
   })
@@ -95,7 +95,6 @@ const Retail: FC = () => {
                 <th>Farm Date</th>
                 <th>Harvest Date</th>
                 <th>Processing Type</th>
-                <th>Receiver (Address)</th>
                 <th>Logistics (Address)</th>
                 <th>Track Number</th>
               </tr>
@@ -113,15 +112,11 @@ const Retail: FC = () => {
                   {format(new Date(productDetails.harvestDate), 'dd MMMM yyy')}
                 </td>
                 <td>{productDetails.processingType}</td>
-                <td>
-                  {productDetails.receiverAddress.length > 20
-                    ? shortenedAddress(productDetails.receiverAddress)
-                    : productDetails.receiverAddress}
-                </td>
-                <td>
+                <td data-tip={productDetails.logisticsAddress}>
                   {productDetails.logisticsAddress.length > 20
                     ? shortenedAddress(productDetails.logisticsAddress)
                     : productDetails.logisticsAddress}
+                  <ReactTooltip />
                 </td>
                 <td>{productDetails.trackNumber}</td>
               </tr>
