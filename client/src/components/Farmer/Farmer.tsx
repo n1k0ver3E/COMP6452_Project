@@ -186,11 +186,12 @@ const Farmer: FC = () => {
           'This function can only be executed by the farmer. Please also ensure that your account has been approved by the regulator before proceeding.'
         )
         setIsLoading(false)
+      }else {
+        setError(true)
+        setErrorMessage('Something went wrong. Please try again shortly.')
+        setIsLoading(false)
+        console.log(e.message)
       }
-      setError(true)
-      setErrorMessage('Something went wrong. Please try again shortly.')
-      setIsLoading(false)
-      console.log(e.message)
     }
   }
 

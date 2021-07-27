@@ -155,13 +155,41 @@ const Shipping: FC = () => {
         )
         setIsLoading(false)
         setShowTable(false)
+      }else if(e.message.includes('not the logistic address')) {
+        setError(true)
+        setErrorMessage('The logistics address you entered is invalid')
+        setIsLoading(false)
+        setShowTable(false)
+      }else if(e.message.includes('not the retailer address')) {
+        setError(true)
+        setErrorMessage('The retailer address you entered is invalid')
+        setIsLoading(false)
+        setShowTable(false)
+      }else {
+        setError(true)
+        setErrorMessage('Something went wrong. Please try again shortly.')
+        setIsLoading(false)
+        console.log(e.message)
       }
-      setError(true)
-      setErrorMessage('Something went wrong. Please try again shortly.')
-      setIsLoading(false)
-      console.log(e.message)
     }
   }
+
+  // require(
+  //   profile.isLogisticOrOracle(logistic) == true,
+  //   "It is not the logistic address."
+  // );
+  // require(
+  //   profile.isRetailer(receiver) == true,
+  //   "The receiver is not the retailer address."
+  // );
+  // require(
+  //   products[_pid].statusType == status.MANUFACTURING,
+  //   "The current status of product should be MANUFACTURING."
+  // );
+  // require(
+  //   bytes(trackingNumber).length != 0,
+  //   "The tracking number cannot be empty."
+  // );
 
   return (
     <section className="container">
