@@ -96,6 +96,7 @@ export interface IProductContractAPI {
   createProduct: any
   getFarmingAndManufacturingProducts: any
   getProductById: any
+  manuProductInfo: any
 }
 
 export interface IDocumentContract {
@@ -181,4 +182,9 @@ export interface ICreateProductPayload {
   farmDate: Date | string
   harvestDate: Date | string
   status?: number
+}
+
+export interface IManuProductInfoPayload {
+  productId: number | string
+  processingType: string
 }
