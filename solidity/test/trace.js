@@ -50,10 +50,11 @@ contract('Trace', (accounts) => {
 
 
         // Crate a product.
-        productAId = await product.createProduct.call("Product A", { from: farmer });
-        await product.createProduct("Product A", { from: farmer });
+        productAId = await product.createProduct.call("Product A", 1, 2, "Location", { from: farmer });
+        await product.createProduct("Product A", 1, 2, "Location", { from: farmer });
 
-        await product.addProductFarmingInfo(productAId.toNumber(), 1, 2, "Location", {from: farmer });
+        // Set it as manufactured.
+        product.manuProductInfo(productAId.toNumber(), "Process Type", {from: manufacturer } );
     });
 
     it('should accept log from logistic', async () => {
@@ -106,18 +107,18 @@ contract('Trace', (accounts) => {
 
             var logResult = await trace.logLocation(productAId.toNumber(), 11, 11, 12, { from: manufacturer });
 
-            // truffleAssert.prettyPrintEmittedEvents( logResult );
-
-            truffleAssert.eventNotEmitted(logResult, "ProductLocation", function(ev) {
-                return ev.productId == productAId.toNumber() &&
-                    ev.timestamp == 11 &&
-                    ev.latitude == 11 &&
-                    ev.longitude == 12;
-            });
+            assert(false, "An exception should occurred");
         } catch (error) {
             assert(error, "Expect an error");
             assert(error.message.includes("Incorrect logistic account"), "Expected error message to contains 'Incorrect logistic account'. Got " + error.message);
         }
+
+        truffleAssert.eventNotEmitted(logResult, "ProductLocation", function(ev) {
+            return ev.productId == productAId.toNumber() &&
+                ev.timestamp == 11 &&
+                ev.latitude == 11 &&
+                ev.longitude == 12;
+        });
     });
 
     it('should be able to request for location', async () => {
@@ -137,5 +138,43 @@ contract('Trace', (accounts) => {
         requestResult = await trace.requestForLocation.call(999);
 
         assert.equal(requestResult, false);
+    });
+    
+    it('should not be able to send product from another product contract', async () => {
+        let product2 = await ProductSC.new(trace.address, profile.address, { from: regulator });
+
+        // Crate a product.
+        let productAId = await product2.createProduct.call("Product A", 1, 2, "Location", { from: farmer });
+        await product2.createProduct("Product A", 1, 2, "Location", { from: farmer });
+
+        // Set it as manufactured.
+        product2.manuProductInfo(productAId.toNumber(), "Process Type", {from: manufacturer } );
+
+        try {
+            var sendResult = await product.sendProduct(productAId.toNumber(), retailer, oracle, "test2", { from: manufacturer });
+
+            assert(false, "An exception should occurred");
+        } catch (error) {
+            assert(error, "Expect an error");
+            assert(error.message.includes("Incorrect product contract"), "Expected error message to contains 'Incorrect product contract'. Got " + error.message);
+        }
+    });
+
+    it('should not accept tracking with empty trackingNumber', async () => {
+        // Crate another product.
+        let productBId = await product.createProduct.call("Product B", 1, 2, "Location", { from: farmer });
+        await product.createProduct("Product B", 1, 2, "Location", { from: farmer });
+
+        // Set it as manufactured.
+        product.manuProductInfo(productBId.toNumber(), "Process Type", {from: manufacturer } );
+
+        try {
+            var sendResult = await product.sendProduct(productBId.toNumber(), retailer, oracle, "", { from: manufacturer });
+
+            assert(false, "An exception should occurred");
+        } catch (error) {
+            assert(error, "Expect an error");
+            assert(error.message.includes("trackingNumber is required"), "Expected error message to contains 'trackingNumber is required'. Got " + error.message);
+        }
     });
 });

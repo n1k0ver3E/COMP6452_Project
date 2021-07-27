@@ -47,7 +47,7 @@ Mongoose().initialiseMongoConnection().then(function(mongo) {
                     });
 
                     return doc.save().then(() => {
-                        console.log(arguments);
+                        // console.log(arguments);
                     });
                 }
             });
@@ -71,7 +71,7 @@ Mongoose().initialiseMongoConnection().then(function(mongo) {
                     });
 
                     return doc.save().then(() => {
-                        console.log(arguments);
+                        // console.log(arguments);
                     });
                 }
             });
@@ -97,7 +97,7 @@ Mongoose().initialiseMongoConnection().then(function(mongo) {
                     });
 
                     return doc.save().then(() => {
-                        console.log(arguments);
+                        // console.log(arguments);
                     });
                 }
             });

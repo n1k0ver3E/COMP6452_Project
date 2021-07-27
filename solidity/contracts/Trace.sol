@@ -23,7 +23,7 @@ contract Trace {
     }
 
     // The owner of this contract
-    address public owner;
+    address payable public owner;
     // The address of the profile contract
     address public profileAddress;
     // The address of the product contract
@@ -31,6 +31,8 @@ contract Trace {
 
     // All the track information. Indexed by the productId
     mapping (uint => ProductTrack) _tracks;
+
+    bool public isInEmergencyMode;
 
     /// View of the track information
     /// @param productId The productId
@@ -60,7 +62,7 @@ contract Trace {
     /// @param _profileAddress The address of the profile contract.
     constructor(address _profileAddress) {
         profileAddress = _profileAddress;
-        owner = msg.sender;
+        owner = payable(msg.sender);
     }
 
     /// Modifer to check for the owner
@@ -69,9 +71,21 @@ contract Trace {
         _;
     }
 
+    /// Allow some function only when not in emergency mode.
+    modifier notInEmergencyMode() {
+        require( !isInEmergencyMode, "This contract is currently in emergency mode." );
+        _;
+    }
+
     /// Modifer to check if the product contract address is setted or not. Error if not setted.
     modifier productContractSetted() {
         require( productContractAddress != address(0), "Product contract is not setted." );
+        _;
+    }
+
+    /// Modifier to check if the sender is product contract or not.
+    modifier allowedProductContract() {
+        require( msg.sender == productContractAddress, "Incorrect product contract" );
         _;
     }
 
@@ -90,7 +104,10 @@ contract Trace {
     /// @param trackingNumber The tracking number.
     function addProduct(uint productId, address logisticAccountAddress, string memory trackingNumber)
     public
-    productContractSetted {
+    productContractSetted 
+    allowedProductContract {
+
+        require( bytes(trackingNumber).length != 0, "trackingNumber is required" );
 
         // Check with  the profile contract weather the logisticAccountAddress is a logistic account or an oracle account or not.
         Profile pf = Profile( profileAddress );
@@ -128,6 +145,7 @@ contract Trace {
     function logLocation(uint productId, uint timestamp, int latitude, int longitude)
     public
     productContractSetted
+    notInEmergencyMode
     returns(bool success) {
         // Retrieve the product.
         ProductTrack storage t = _tracks[ productId ];
@@ -152,9 +170,7 @@ contract Trace {
             // Set the requesting to false.
             t.isRequestingForLocation = false;
 
-            // TODO:: Insert callback code here
-
-            // Returns true to indicate success log.
+            // Returns true to indicate the successful.
             return true;
         } else {
             // Only update the location if the timestamp of the new log is newer.
@@ -165,9 +181,7 @@ contract Trace {
             // Save the latest location
             saveProductLocation(t, productId, timestamp, latitude, longitude);
 
-            // TODO:: Insert callback code here
-
-            // Returns true to indicate success log.
+            // Returns true to indicate the successful.
             return true;
         }
     }
@@ -175,7 +189,11 @@ contract Trace {
     /// Manually request for the location
     /// @param productId The product Id
     /// @return The request is success or not.
-    function requestForLocation(uint productId) public productContractSetted returns (bool) {
+    function requestForLocation(uint productId) 
+    public 
+    productContractSetted 
+    notInEmergencyMode
+    returns (bool) {
 
         // Retrieve the tracking information
         ProductTrack storage t = _tracks[ productId ];
@@ -225,5 +243,22 @@ contract Trace {
 
         // Emit the event for the reverse oracle and to store it on the blockchain.
         emit ProductLocation( productId, timestamp, latitude, longitude);
+    }
+
+    /// Self destroy
+    function destroyContract() public onlyOwner {
+        selfdestruct( owner );
+    }
+
+    /// Set the emergerncy mode on.
+    function enterEmergencyMode() public onlyOwner {
+        require( !isInEmergencyMode, "The contract already in the emergency mode." );
+        isInEmergencyMode = true;
+    }
+
+    /// Set the emergerncy mode off.
+    function exitEmergencyMode() public onlyOwner {
+        require( isInEmergencyMode, "The contract already in the emergency mode." );
+        isInEmergencyMode = false;
     }
 }

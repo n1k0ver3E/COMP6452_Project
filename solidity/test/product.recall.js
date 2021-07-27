@@ -51,14 +51,14 @@ contract('ProductSC', (accounts) => {
 
 
         // Create a product.
-        productAId = await product.createProduct.call("Product A", { from: farmer });
-        await product.createProduct("Product A", { from: farmer });
+        productAId = await product.createProduct.call("Product A", 1, 2, "Location", { from: farmer });
+        await product.createProduct("Product A", 1, 2, "Location", { from: farmer });
     });
 
-    it('should not have 6 as default status', async () => {
+    it('should not have 5 as default status', async () => {
         const result = await product.products.call(productAId.toNumber(), {from: farmer});
 
-        assert.notEqual(result.statusType.toNumber(), 6, "status is 6 for a new product");
+        assert.notEqual(result.statusType.toNumber(), 5, "status is 5 for a new product");
     });
 
     it('should set status to 6 when recall the product', async () => {
@@ -70,6 +70,6 @@ contract('ProductSC', (accounts) => {
 
         const result = await product.products.call(productAId.toNumber(), {from: farmer});
 
-        assert.equal(result.statusType.toNumber(), 6, 'Status should be 6 after the recall');
+        assert.equal(result.statusType.toNumber(), 5, 'Status should be 5 after the recall');
     });
 });
