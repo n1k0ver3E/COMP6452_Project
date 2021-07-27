@@ -107,18 +107,18 @@ contract('Trace', (accounts) => {
 
             var logResult = await trace.logLocation(productAId.toNumber(), 11, 11, 12, { from: manufacturer });
 
+            truffleAssert.eventNotEmitted(logResult, "ProductLocation", function(ev) {
+                return ev.productId == productAId.toNumber() &&
+                    ev.timestamp == 11 &&
+                    ev.latitude == 11 &&
+                    ev.longitude == 12;
+            });
+
             assert(false, "An exception should occurred");
         } catch (error) {
             assert(error, "Expect an error");
             assert(error.message.includes("Incorrect logistic account"), "Expected error message to contains 'Incorrect logistic account'. Got " + error.message);
         }
-
-        truffleAssert.eventNotEmitted(logResult, "ProductLocation", function(ev) {
-            return ev.productId == productAId.toNumber() &&
-                ev.timestamp == 11 &&
-                ev.latitude == 11 &&
-                ev.longitude == 12;
-        });
     });
 
     it('should be able to request for location', async () => {
@@ -151,7 +151,7 @@ contract('Trace', (accounts) => {
         product2.manuProductInfo(productAId.toNumber(), "Process Type", {from: manufacturer } );
 
         try {
-            var sendResult = await product.sendProduct(productAId.toNumber(), retailer, oracle, "test2", { from: manufacturer });
+            var sendResult = await product2.sendProduct(productAId.toNumber(), retailer, oracle, "test2", { from: manufacturer });
 
             assert(false, "An exception should occurred");
         } catch (error) {
@@ -175,6 +175,29 @@ contract('Trace', (accounts) => {
         } catch (error) {
             assert(error, "Expect an error");
             assert(error.message.includes("trackingNumber is required"), "Expected error message to contains 'trackingNumber is required'. Got " + error.message);
+        }
+    });
+
+    it('should be able to desctruct by the regulator', async () => {
+        try {
+            var result = await trace.destroyContract({from: regulator});
+        } catch (error) {
+            assert(false, "An exception shouldn't occurred");
+        }
+
+
+        // Crate another product.
+        let productBId = await product.createProduct.call("Product B", 1, 2, "Location", { from: farmer });
+        await product.createProduct("Product B", 1, 2, "Location", { from: farmer });
+
+        // Set it as manufactured.
+        product.manuProductInfo(productBId.toNumber(), "Process Type", {from: manufacturer } );
+
+        try {
+            var sendResult = await product.sendProduct(productBId.toNumber(), retailer, oracle, "", { from: manufacturer });
+        } catch (error) {
+            assert(error, "Expect an error");
+            assert(error.message.includes("revert"), "Expected error message to contains 'revert'. Got " + error.message);
         }
     });
 });
