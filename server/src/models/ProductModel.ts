@@ -32,6 +32,18 @@ const ProductSchema: Schema = new Schema(
       type: Number,
       default: '',
     },
+    receiverAddress: {
+      type: String,
+      default: ''
+    },
+    logisticsAddress: {
+      type: String,
+      default: ''
+    },
+    trackNumber: {
+      type: String,
+      default: ''
+    },
     status: {
       type: Number,
       enum: Object.values(ProductStatus),
