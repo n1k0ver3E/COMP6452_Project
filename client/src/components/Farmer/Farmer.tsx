@@ -148,12 +148,6 @@ const Farmer: FC = () => {
         .send({ from: _accounts[0] })
 
       if (createProductResp) {
-        // const { productId, productLocation } =
-        //   createProductResp.events.Harvested.returnValues
-
-        // const { productId, productStatus } =
-        //   createProductResp.events.Harvested.returnValues
-
         const { productId, productStatus } =
           createProductResp.events.CurrentProductStatus.returnValues
 
@@ -164,10 +158,10 @@ const Farmer: FC = () => {
         const apiPayload = {
           productId,
           productName,
-          //productLocation,
           productLocation,
           farmDate: farmDateType,
           harvestDate: harvestDateType,
+          productStatus,
         }
 
         const product = await createProduct(apiPayload)
@@ -176,7 +170,6 @@ const Farmer: FC = () => {
         setSuccess(true)
         setSuccessProductDetails(product)
 
-        // TODO: Clear Values after submission
         setData(initialState)
 
         // Unset the error message if any and loading state back to false
@@ -194,6 +187,7 @@ const Farmer: FC = () => {
         )
         setIsLoading(false)
       }
+      setIsLoading(false)
       console.log(e.message)
     }
   }
@@ -205,34 +199,12 @@ const Farmer: FC = () => {
       ) : null}
 
       {success && !error ? (
-        <div className="is-success is-light mb-5">
-          <div className="title is-6">
-            <strong>Product Information</strong>
+        <div className="notification is-success is-light mb-5">
+          <div>
+            <strong>{successProductDetails.productName}</strong> of{' '}
+            <strong>{successProductDetails.productLocation}</strong> has been created and
+            successfully transferred to the manufacturing process.
           </div>
-
-          <table className="table is-striped table-style">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Location</th>
-                <th>Farm Date</th>
-                <th>Harvest Date</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              <tr>
-                <td>{successProductDetails.productId}</td>
-                <td>{successProductDetails.productName}</td>
-                <td>{successProductDetails.productLocation}</td>
-                <td>{successProductDetails.farmDate}</td>
-                <td>{successProductDetails.harvestDate}</td>
-                <td>{ProductStatus[successProductDetails.status!]}</td>
-              </tr>
-            </tbody>
-          </table>
         </div>
       ) : null}
 

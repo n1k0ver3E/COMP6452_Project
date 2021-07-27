@@ -99,6 +99,7 @@ export interface IProductContractAPI {
   manuProductInfo: any
   shippingProductInfo: any
   retailProductInfo: any
+  purchasingProductInfo: any
 }
 
 export interface IDocumentContract {

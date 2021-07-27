@@ -132,6 +132,8 @@ const RegisterAccount: FC = () => {
       ) {
         customErrorMsg =
           "The tx doesn't have the correct nonce. account has a nonce of: 0 tx has nonce of: 9"
+      } else if(error.message.includes('address account must be the same as sender')) {
+        customErrorMsg = "account address must be the same as the sender's address"
       } else {
         customErrorMsg = 'Something went wrong. Please try again shortly.'
       }
