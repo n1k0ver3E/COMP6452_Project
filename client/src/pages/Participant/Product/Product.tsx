@@ -10,6 +10,7 @@ const Product: FC = () => {
     useState<string>('is-active')
   const [manufacturerActiveClass, setManufacturerActiveClass] =
     useState<string>('')
+  const [shippingActiveClass, setShippingActiveClass] = useState<string>('')
   const [retailActiveClass, setRetailActiveClass] = useState<string>('')
   const [purchaseActiveClass, setPurchaseActiveClass] = useState<string>('')
 
@@ -20,24 +21,35 @@ const Product: FC = () => {
         setManufacturerActiveClass('')
         setRetailActiveClass('')
         setPurchaseActiveClass('')
+        setShippingActiveClass('')
         break
       case ProductCategory.MANUFACTURING:
         setManufacturerActiveClass('is-active')
         setFarmerActiveClass('')
         setRetailActiveClass('')
         setPurchaseActiveClass('')
+        setShippingActiveClass('')
+        break
+      case ProductCategory.SHIPPING:
+        setPurchaseActiveClass('')
+        setRetailActiveClass('')
+        setManufacturerActiveClass('')
+        setFarmerActiveClass('')
+        setShippingActiveClass('is-active')
         break
       case ProductCategory.RETAILING:
         setRetailActiveClass('is-active')
         setManufacturerActiveClass('')
         setFarmerActiveClass('')
         setPurchaseActiveClass('')
+        setShippingActiveClass('')
         break
       case ProductCategory.PURCHASING:
         setPurchaseActiveClass('is-active')
         setRetailActiveClass('')
         setManufacturerActiveClass('')
         setFarmerActiveClass('')
+        setShippingActiveClass('')
         break
       default:
         break
@@ -70,6 +82,19 @@ const Product: FC = () => {
               <span>Manufacturer</span>
             </a>
           </li>
+
+          <li
+            className={shippingActiveClass}
+            onClick={() => switchTab(ProductCategory.SHIPPING)}
+          >
+            <a>
+              <span className="icon is-small">
+                <i className="fas fa-ship" aria-hidden="true" />
+              </span>
+              <span>Shipping</span>
+            </a>
+          </li>
+
           <li
             className={retailActiveClass}
             onClick={() => switchTab(ProductCategory.RETAILING)}
