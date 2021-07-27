@@ -34,8 +34,17 @@ contract Profile {
         Oracle
     }
 
+    // Enable = the participants can register their Accounts.
+    // Disable = the participants cannot register their Accounts.
+    // Both stages the regulator can still verify the participants' Accounts.
+    enum RegisState {
+        Enable,
+        Disable
+    }
+
     address private regulatorAddress;
     uint256 public lastAccountId;
+    RegisState private regisState;
 
     struct Account {
         address accountAddress;
@@ -88,8 +97,12 @@ contract Profile {
         address _accountAddress,
         string memory _accountName,
         uint256 _accountTypeValue
-    ) public checkDuplicateAddress(_accountAddress) {
+    ) public checkDuplicateAddress(_accountAddress) onlyActiveRegisState {
         require(_accountTypeValue != 0, "Cannot register as the regulator.");
+        require(
+            msg.sender == _accountAddress,
+            "The account address must be the same as the sender's address"
+        );
         uint256 tmpNewId = lastAccountId + 1;
         Account memory newAcc = Account(
             _accountAddress,
@@ -272,7 +285,35 @@ contract Profile {
     }
 
     function getRegulatorAddress() public view returns (address) {
-        return regulatorAddress;
+        address _regulatorAddress = regulatorAddress;
+        return _regulatorAddress;
+    }
+
+    function getRegisState() public view returns (uint256) {
+        uint256 _regisState = uint256(regisState);
+        return _regisState;
+    }
+
+    /// @notice Enable registration fn
+    function setEnableRegisState() public onlyRegulator returns (uint256) {
+        // Disable registration
+        regisState = RegisState.Enable;
+        return uint256(regisState);
+    }
+
+    /// @notice Disable registration fn
+    function setDisableRegisState() public onlyRegulator returns (uint256) {
+        // Disable registration
+        regisState = RegisState.Disable;
+        return uint256(regisState);
+    }
+
+    /// @notice Destroy Profile Contract
+    function destroyContract() public payable onlyRegulator {
+        // Disable registration
+        regisState = RegisState.Disable;
+        address payable regulator_address = payable(address(regulatorAddress));
+        selfdestruct(regulator_address);
     }
 
     // private functions
@@ -300,6 +341,13 @@ contract Profile {
         require(
             isExisAccount(_accountAddress) == false,
             "Cannot register the duplicate account."
+        );
+        _;
+    }
+    modifier onlyActiveRegisState {
+        require(
+            regisState == RegisState.Enable,
+            "The registration function is not enable."
         );
         _;
     }
