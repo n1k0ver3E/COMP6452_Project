@@ -9,7 +9,7 @@ import { ProductContractAPIContext } from '../../contexts/ProductContractAPI'
 import { ProductCategory } from '../../enums/contract'
 
 const initialState: IManufacturerProcessDetails = {
-  productId: -1,
+  productId: 'DEFAULT',
   processingType: '',
 }
 
@@ -20,7 +20,7 @@ const sendProductInitialState: ISendProductDetails = {
 }
 
 const Manufacturer: FC = () => {
-  const { getFarmingAndManufacturingProducts, getProductById } = useContext(
+  const { getFarmingAndManufacturingProducts, getProductById, manuProductInfo } = useContext(
     ProductContractAPIContext
   )
 
@@ -113,15 +113,26 @@ const Manufacturer: FC = () => {
     setSendProductData({ ...sendProductData, [name]: value })
   }
 
-  const handleSubmission = (e: any) => {
+  const handleSubmission = async (e: any) => {
     e.preventDefault()
+
+    // DO THE ON-CHAIN CALL
+
+    // API CALL
+    const product = await manuProductInfo(data)
+
+    // SET PRODUCT DETAILS
+    setProductDetails(product)
+    setData(initialState)
+
+    console.log('product', product)
+
+
   }
 
   const handleSubmissionSendProduct = (e: any) => {
     e.preventDefault()
   }
-
-  console.log('productDetails', productDetails)
 
   return (
     <section className="container">
@@ -141,7 +152,7 @@ const Manufacturer: FC = () => {
                 <th>Harvest Date</th>
                 {productDetails.processingType !== '' && (
                   <th>Processing Type</th>
-                )}{' '}
+                )}
                 <th>Status</th>
               </tr>
             </thead>
@@ -183,10 +194,10 @@ const Manufacturer: FC = () => {
                 <label className="label">Product</label>
                 <div className="select is-normal is-fullwidth">
                   <select
-                    defaultValue={'DEFAULT'}
                     name="productId"
                     id="productId"
                     onChange={handleChange}
+                    value={data.productId}
                   >
                     <option value={'DEFAULT'} disabled>
                       Select Product
@@ -213,6 +224,7 @@ const Manufacturer: FC = () => {
                     name="processingType"
                     id="processingType"
                     onChange={handleChange}
+                    value={data.processingType}
                   />
                 </div>
               </div>

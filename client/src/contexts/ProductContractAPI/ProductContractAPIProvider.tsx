@@ -59,9 +59,9 @@ const ProductContractAPIProvider: FC = ({ children }): any => {
 
   const manuProductInfo = async (payload: IManuProductInfoPayload) => {
     try {
-      const resp = api.patch(`/v1/products/manu-info`, payload)
+      const resp = await api.patch(`/v1/products/manu-info`, payload)
 
-      console.log(resp)
+      return resp.data.product
     }catch(err) {
       return false
     }
