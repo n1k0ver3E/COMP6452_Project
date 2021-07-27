@@ -5,6 +5,7 @@ import SideNavBar from '../../components/SideNavBar'
 import Dashboard from './Dashboard'
 import ReviewAccounts from './ReviewAccounts'
 import VerifyDocument from './VerifyDocument'
+import CurrentActiveUser from '../../components/CurrentActiveUser'
 
 const Regulator: FC = () => {
   const { path } = useRouteMatch()
@@ -12,6 +13,7 @@ const Regulator: FC = () => {
   return (
     <>
       <HomeNavbar type={'regulator'} />
+      <CurrentActiveUser />
       <div className="container mt-5">
         <div className="columns">
           <div className="column is-3">

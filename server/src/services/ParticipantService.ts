@@ -78,10 +78,15 @@ const updateAccountStatusByAddress = async (
   }
 }
 
+const getAccountTypeByAddress = (address: string) => {
+  return ParticipantRepository.getAccountTypeByAddress(address)
+}
+
 export default {
   register,
   isAccountAlreadyRegistered,
   getParticipantsByStatus,
   getAllParticipants,
   updateAccountStatusByAddress,
+  getAccountTypeByAddress,
 }

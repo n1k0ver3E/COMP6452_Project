@@ -7,14 +7,14 @@ import {
 import { AccountStatus } from '../../enums/contract'
 
 const contextDefaultValues: IProfileContractAPI = {
-  registerParticipant: () => { },
+  registerParticipant: () => {},
   registeredAccounts: [],
   registrationError: false,
   pendingAccounts: [],
   approvedAccounts: [],
   rejectedAccounts: [],
-  updateAccountStatus: () => { },
-  getAllParticipants: () => { },
+  updateAccountStatus: () => {},
+  getAllParticipants: () => {},
 }
 
 export const ProfileContractAPIContext =
@@ -104,11 +104,8 @@ const ProfileContractAPIProvider: FC = ({ children }): any => {
     updatedAccountStatus: number
   ) => {
     try {
-      console.log('address', address)
-      console.log('updatedAcountStatus', updatedAccountStatus)
-
       const resp = await api.patch(`/v1/participants/${address}`, {
-        accountStatus: updatedAccountStatus
+        accountStatus: updatedAccountStatus,
       })
 
       switch (updatedAccountStatus) {

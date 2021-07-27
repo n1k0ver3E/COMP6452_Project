@@ -9,6 +9,7 @@ import AddDocument from './AddDocument'
 import Product from './Product'
 import Tracking from './Tracking'
 import Recall from './Recall'
+import CurrentActiveUser from '../../components/CurrentActiveUser'
 
 const Participant: FC = () => {
   const { path } = useRouteMatch()
@@ -16,6 +17,7 @@ const Participant: FC = () => {
   return (
     <>
       <HomeNavbar type={'participant'} />
+      <CurrentActiveUser />
       <div className="container mt-5">
         <div className="columns">
           <div className="column is-3">

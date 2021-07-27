@@ -1,5 +1,4 @@
 import React, { ChangeEvent, FC, useState, useContext, useEffect } from 'react'
-import format from 'date-fns/format'
 import './manufacturer.css'
 import {
   ICreateProductPayload,
@@ -152,12 +151,8 @@ const Manufacturer: FC = () => {
                 <td>{productDetails.productId}</td>
                 <td>{productDetails.productName}</td>
                 <td>{productDetails.productLocation}</td>
-                <td>
-                  {productDetails.farmDate}
-                </td>
-                <td>
-                  {productDetails.harvestDate}
-                </td>
+                <td>{productDetails.farmDate}</td>
+                <td>{productDetails.harvestDate}</td>
                 {productDetails.processingType !== '' && (
                   <td>{productDetails.processingType}</td>
                 )}
