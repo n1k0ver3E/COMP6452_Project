@@ -18,7 +18,17 @@ contract Document {
         Rejected
     }
 
+    // Enable = the participants can add their accounts' documents.
+    // Disable = the participants cannot their accounts' documents.
+    // Both stages the regulator can still verify the participants' documents.
+    enum AddDocState {
+        Enable,
+        Disable
+    }
+
     Profile profile;
+
+    AddDocState private addDocState;
 
     address public regulatorAddress;
 
@@ -37,6 +47,7 @@ contract Document {
     // @notice To create document contract and have an association relationship with Profile contract
     constructor(address _profileAddress) {
         profile = Profile(_profileAddress);
+
         regulatorAddress = profile.getRegulatorAddress();
     }
 
@@ -63,7 +74,7 @@ contract Document {
         uint256 _accountId,
         string memory _documentName,
         string memory _hashContent
-    ) public onlyDocumentOwner(_accountId) {
+    ) public onlyDocumentOwner(_accountId) onlyActiveAddDocState {
         require(
             bytes(_documentName).length != 0,
             "Document name cannot be empty"
@@ -119,6 +130,33 @@ contract Document {
         );
     }
 
+    function getAddDocState() public view returns (uint256) {
+        uint256 _addDocState = uint256(addDocState);
+        return _addDocState;
+    }
+
+    /// @notice Enable add doc. fn
+    function setEnableAddDocState() public onlyRegulator returns (uint256) {
+        // Disable add doc. fn
+        addDocState = AddDocState.Enable;
+        return uint256(addDocState);
+    }
+
+    /// @notice Disable  add doc. fn
+    function setDisableAddDocState() public onlyRegulator returns (uint256) {
+        // Disable  add doc. fn
+        addDocState = AddDocState.Disable;
+        return uint256(addDocState);
+    }
+
+    /// @notice Destroy Document Contract
+    function destroyContract() public payable onlyRegulator {
+        // Disable add doc. fn
+        addDocState = AddDocState.Disable;
+        address payable regulator_address = payable(address(regulatorAddress));
+        selfdestruct(regulator_address);
+    }
+
     // modifier
     modifier onlyDocumentOwner(uint256 _accountId) {
         require(
@@ -133,6 +171,13 @@ contract Document {
         require(
             msg.sender == regulatorAddress,
             "This function can only be executed by the regulator."
+        );
+        _;
+    }
+    modifier onlyActiveAddDocState {
+        require(
+            addDocState == AddDocState.Enable,
+            "The registration function is not enable."
         );
         _;
     }
