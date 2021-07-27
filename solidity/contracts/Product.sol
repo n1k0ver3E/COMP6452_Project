@@ -178,9 +178,9 @@ contract ProductSC {
         string memory trackingNumber
     )
         public
+        isProductIdExist(_pid)
         OnlyProductReadyToSend(_pid)
         isManufacturerOnly
-        isProductIdExist(_pid)
         onlyActivatedMachineState
     {
         require(
