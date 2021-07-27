@@ -4,7 +4,7 @@ const Product = artifacts.require('ProductSC');
 const Profile = artifacts.require('Profile');
 const Trace = artifacts.require('Trace');
 
-contract('ProductSC', (accounts) => {
+contract('ProfileSC', (accounts) => {
     const regulator = accounts[0];
     const acc1 = accounts[1];
     const acc2 = accounts[2];
