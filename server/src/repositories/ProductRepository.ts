@@ -30,7 +30,9 @@ const shippingProductInfo = async (productDetails: any) => {
     },
     {
       $set: {
-        processingType: productDetails.processingType,
+        receiverAddress: productDetails.receiverAddress,
+        logisticsAddressAddress: productDetails.logisticsAddressAddress,
+        trackNumber: productDetails.trackNumber,
         status: productDetails.status,
       },
     },
@@ -89,6 +91,7 @@ export default {
   retailProductInfo,
   purchasingProductInfo,
   manuProductInfo,
+  shippingProductInfo,
   getFarmingAndManufacturingProducts,
   getProductById,
 }

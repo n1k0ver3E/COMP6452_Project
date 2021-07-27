@@ -5,6 +5,7 @@ const router = express.Router()
 
 router.route('/').post(ProductController.createProduct)
 router.route('/manu-info').patch(ProductController.manuProductInfo)
+router.route('/shipping-info').patch(ProductController.shippingProductInfo)
 router.route('/retailing-info').patch(ProductController.retailProductInfo)
 router.route('/purchasing-info').patch(ProductController.purchasingProductInfo)
 router

@@ -24,6 +24,18 @@ const manuProductInfo = catchAsync(
   }
 )
 
+const shippingProductInfo = catchAsync(
+  async (req: Request, res: Response, _next: NextFunction) => {
+    const product = await ProductService.shippingProductInfo(req.body)
+
+    return res.status(httpStatus.OK).json({
+      success: true,
+      product,
+    })
+  }
+)
+
+
 const retailProductInfo = catchAsync(
   async (req: Request, res: Response, _next: NextFunction) => {
     const product = await ProductService.retailProductInfo(req.body)
@@ -82,6 +94,7 @@ const getProductById = catchAsync(
 export default {
   createProduct,
   manuProductInfo,
+  shippingProductInfo,
   retailProductInfo,
   purchasingProductInfo,
   getFarmingAndManufacturingProducts,
