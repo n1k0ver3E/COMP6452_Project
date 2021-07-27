@@ -5,22 +5,13 @@ import multer = require('multer')
 const upload = multer({ dest: 'uploads/' })
 const router = express.Router()
 
+router.route('/').post(DocumentController.uploadDocument)
 router
-  .route('/')
-  .post(DocumentController.uploadDocument)
-
-router.route('/hash').post(upload.single('document'), DocumentController.getDocumentHash);
-
-router.route('/status').get(DocumentController.getDocumentsByStatus);
-
-
-
+  .route('/hash')
+  .post(upload.single('document'), DocumentController.getDocumentHash)
+router.route('/status').get(DocumentController.getDocumentsByStatus)
 router
   .route('/verify/')
   .patch(DocumentController.updateDocStatusByAccIdSubDocId)
-
-// router
-//   .route('/:address')
-//   .patch(DocumentController.uploadDocument)
 
 export default router

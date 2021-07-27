@@ -31,7 +31,7 @@ const shippingProductInfo = async (productDetails: any) => {
     {
       $set: {
         receiverAddress: productDetails.receiverAddress,
-        logisticsAddressAddress: productDetails.logisticsAddressAddress,
+        logisticsAddress: productDetails.logisticsAddress,
         trackNumber: productDetails.trackNumber,
         status: productDetails.status,
       },
@@ -76,9 +76,9 @@ const purchasingProductInfo = (
   )
 }
 
-const getFarmingAndManufacturingProducts = () => {
+const getProductsByStatus = (productStatus: number) => {
   return ProductModel.find({
-    status: { $in: [ProductStatus.FARMING, ProductStatus.MANUFACTURING] },
+    status: productStatus,
   })
 }
 
@@ -104,7 +104,7 @@ export default {
   purchasingProductInfo,
   manuProductInfo,
   shippingProductInfo,
-  getFarmingAndManufacturingProducts,
+  getProductsByStatus,
   getProductById,
   recallProduct,
 }

@@ -1,24 +1,31 @@
 import React, { ChangeEvent, FC, useState, useContext, useEffect } from 'react'
-import './manufacturer.css'
 import {
   ICreateProductPayload,
-  IManufacturerProcessDetails,
+  ISendProductDetails,
 } from '../../interfaces/contract'
-import { ProductContractAPIContext } from '../../contexts/ProductContractAPI'
+import './shipping.css'
 import { ProductStatus } from '../../enums/contract'
+import { ProductContractAPIContext } from '../../contexts/ProductContractAPI'
 
-const initialState: IManufacturerProcessDetails = {
+const sendProductInitialState: ISendProductDetails = {
   productId: 'DEFAULT',
-  processingType: '',
+  receiverAddress: '',
+  logisticsAddress: '',
+  trackNumber: '',
 }
 
-const Manufacturer: FC = () => {
-  const { getProductsByStatus, getProductById, manuProductInfo } = useContext(
-    ProductContractAPIContext
-  )
+const Shipping: FC = () => {
+  const { getProductsByStatus, getProductById, shippingProductInfo } =
+    useContext(ProductContractAPIContext)
 
-  const [data, setData] = useState<IManufacturerProcessDetails>(initialState)
-  const [isProcessingTypeFieldValid, setIsProcessingTypeFieldValid] =
+  const [sendProductData, setSendProductData] = useState<ISendProductDetails>(
+    sendProductInitialState
+  )
+  const [isReceiverAddressFieldValid, setIsReceiverAddressFieldValid] =
+    useState<boolean>(false)
+  const [isLogisticsAddressFieldValid, setIsLogisticsAddressFieldValid] =
+    useState<boolean>(false)
+  const [isTrackNumberFieldValid, setIsTrackNumberFieldValid] =
     useState<boolean>(false)
   const [products, setProducts] = useState<ICreateProductPayload[]>([])
   const [productDetails, setProductDetails] = useState({
@@ -27,15 +34,15 @@ const Manufacturer: FC = () => {
     productLocation: '',
     farmDate: '',
     harvestDate: '',
+    processingType: '',
     status: -1,
   })
   const [showTable, setShowTable] = useState<boolean>(false)
-  const [isManufacturingLoading, setIsManufacturingLoading] =
-    useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   useEffect(() => {
     const getProducts = async () => {
-      const products = await getProductsByStatus(ProductStatus.FARMING)
+      const products = await getProductsByStatus(ProductStatus.MANUFACTURING)
 
       setProducts(products)
     }
@@ -43,7 +50,7 @@ const Manufacturer: FC = () => {
     getProducts()
   }, [])
 
-  const handleChange = async (
+  const handleChangeSendProduct = async (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target
@@ -55,35 +62,50 @@ const Manufacturer: FC = () => {
       setShowTable(true)
     }
 
-    if (name === 'processingType') {
+    if (name === 'receiverAddress') {
       if (value === '') {
-        setIsProcessingTypeFieldValid(false)
+        setIsReceiverAddressFieldValid(false)
       } else {
-        setIsProcessingTypeFieldValid(true)
+        setIsReceiverAddressFieldValid(true)
       }
     }
 
-    setData({ ...data, [name]: value })
+    if (name === 'logisticsAddress') {
+      if (value === '') {
+        setIsLogisticsAddressFieldValid(false)
+      } else {
+        setIsLogisticsAddressFieldValid(true)
+      }
+    }
+
+    if (name === 'trackNumber') {
+      if (value === '') {
+        setIsTrackNumberFieldValid(false)
+      } else {
+        setIsTrackNumberFieldValid(true)
+      }
+    }
+
+    setSendProductData({ ...sendProductData, [name]: value })
   }
 
-  const handleSubmission = async (e: any) => {
+  const handleSubmissionSendProduct = async (e: any) => {
     e.preventDefault()
-    setIsManufacturingLoading(true)
+    setIsLoading(true)
 
     // TODO: DO THE ON-CHAIN CALL
 
     // API CALL
-    await manuProductInfo(data)
+    await shippingProductInfo(sendProductData)
 
     // Do an API call to get update for the dropdown
     setTimeout(async () => {
-      // Resetting the dropdown selection to exclude selection
-      const products = await getProductsByStatus(ProductStatus.FARMING)
+      const products = await getProductsByStatus(ProductStatus.MANUFACTURING)
       setProducts(products)
 
       // Reset form state, stop loading spinner and hide table
-      setData(initialState)
-      setIsManufacturingLoading(false)
+      setSendProductData(sendProductInitialState)
+      setIsLoading(false)
       setShowTable(false)
     }, 1000)
   }
@@ -104,6 +126,7 @@ const Manufacturer: FC = () => {
                 <th>Location</th>
                 <th>Farm Date</th>
                 <th>Harvest Date</th>
+                <th>Processing Type</th>
                 <th>Status</th>
               </tr>
             </thead>
@@ -115,6 +138,7 @@ const Manufacturer: FC = () => {
                 <td>{productDetails.productLocation}</td>
                 <td>{productDetails.farmDate}</td>
                 <td>{productDetails.harvestDate}</td>
+                <td>{productDetails.processingType}</td>
                 <td>{ProductStatus[productDetails.status]}</td>
               </tr>
             </tbody>
@@ -126,26 +150,27 @@ const Manufacturer: FC = () => {
         <div className="column is-half">
           <img
             src={
-              'https://images.unsplash.com/photo-1518253042715-a2534e1b0a7b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80'
+              'https://images.unsplash.com/photo-1494412685616-a5d310fbb07d?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80'
             }
             alt="farm"
             className="product-image"
           />
         </div>
         <div className="column is-half farmer-form has-background-white-bis">
-          <>
-            <div className="product-title mt-6">
-              <h1 className="title is-4">Manufacturer Process</h1>
+          <div className="product-title">
+            <div className="product-title">
+              <h1 className="title is-4">Shipping Process</h1>
             </div>
-            <form className="mt-5">
+
+            <form className="mt-5 shipping-form">
               <div className="field">
                 <label className="label">Product</label>
                 <div className="select is-normal is-fullwidth">
                   <select
                     name="productId"
                     id="productId"
-                    onChange={handleChange}
-                    value={data.productId}
+                    onChange={handleChangeSendProduct}
+                    value={sendProductData.productId}
                   >
                     <option value={'DEFAULT'} disabled>
                       Select Product
@@ -164,39 +189,70 @@ const Manufacturer: FC = () => {
               </div>
 
               <div className="field">
-                <label className="label">Processing Type</label>
+                <label className="label">Receiver (Address)</label>
                 <div className="control">
                   <input
                     className="input"
                     type="text"
-                    name="processingType"
-                    id="processingType"
-                    onChange={handleChange}
-                    value={data.processingType}
+                    name="receiverAddress"
+                    id="receiverAddress"
+                    onChange={handleChangeSendProduct}
+                    value={sendProductData.receiverAddress}
+                  />
+                </div>
+              </div>
+
+              <div className="field">
+                <label className="label">Logistics (Address)</label>
+                <div className="control">
+                  <input
+                    className="input"
+                    type="text"
+                    name="logisticsAddress"
+                    id="logisticsAddress"
+                    onChange={handleChangeSendProduct}
+                    value={sendProductData.logisticsAddress}
+                  />
+                </div>
+              </div>
+
+              <div className="field">
+                <label className="label">Track Number</label>
+                <div className="control">
+                  <input
+                    className="input"
+                    type="text"
+                    name="trackNumber"
+                    id="trackNumber"
+                    onChange={handleChangeSendProduct}
+                    value={sendProductData.trackNumber}
                   />
                 </div>
               </div>
 
               <button
                 className={
-                  isManufacturingLoading
+                  isLoading
                     ? 'button is-block is-link is-fullwidth mt-3 is-loading'
                     : 'button is-block is-link is-fullwidth mt-3'
                 }
                 disabled={
-                  !isProcessingTypeFieldValid || data.productId === 'DEFAULT'
+                  !isReceiverAddressFieldValid ||
+                  !isLogisticsAddressFieldValid ||
+                  !isTrackNumberFieldValid ||
+                  sendProductData.productId === 'DEFAULT'
                 }
-                onClick={(e) => handleSubmission(e)}
+                onClick={(e) => handleSubmissionSendProduct(e)}
               >
-                Add
+                Send
               </button>
               <br />
             </form>
-          </>
+          </div>
         </div>
       </div>
     </section>
   )
 }
 
-export default Manufacturer
+export default Shipping

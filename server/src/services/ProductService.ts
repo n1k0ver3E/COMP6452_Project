@@ -18,7 +18,7 @@ const manuProductInfo = (productDetails: IProduct) => {
 const shippingProductInfo = (productDetails: IProduct) => {
   const newProductDetails = {
     ...productDetails,
-    status: ProductStatus.SHIPPING
+    status: ProductStatus.SHIPPING,
   }
 
   return ProductRepository.shippingProductInfo(newProductDetails)
@@ -30,7 +30,7 @@ const retailProductInfo = async (productDetails: IProduct) => {
     status: ProductStatus.RETAILING,
   }
 
- return ProductRepository.retailProductInfo(newProductDetails)
+  return ProductRepository.retailProductInfo(newProductDetails)
 }
 
 const purchasingProductInfo = (productDetails: IProduct) => {
@@ -39,13 +39,11 @@ const purchasingProductInfo = (productDetails: IProduct) => {
     status: ProductStatus.PURCHASING,
   }
 
-  return  ProductRepository.purchasingProductInfo(
-    newProductDetails
-  )
+  return ProductRepository.purchasingProductInfo(newProductDetails)
 }
 
-const getFarmingAndManufacturingProducts = () => {
-  return ProductRepository.getFarmingAndManufacturingProducts()
+const getProductsByStatus = (productStatus: number) => {
+  return ProductRepository.getProductsByStatus(productStatus)
 }
 
 const getProductById = (productId: number) => {
@@ -64,7 +62,7 @@ export default {
   shippingProductInfo,
   retailProductInfo,
   purchasingProductInfo,
-  getFarmingAndManufacturingProducts,
+  getProductsByStatus,
   getProductById,
   recallProduct,
 }

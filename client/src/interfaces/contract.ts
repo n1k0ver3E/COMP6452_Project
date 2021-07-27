@@ -94,9 +94,11 @@ export interface IProductContract {
 export interface IProductContractAPI {
   recallProduct: any
   createProduct: any
-  getFarmingAndManufacturingProducts: any
+  getProductsByStatus: any
   getProductById: any
   manuProductInfo: any
+  shippingProductInfo: any
+  retailProductInfo: any
 }
 
 export interface IDocumentContract {
@@ -169,6 +171,7 @@ export interface IPurchaseProcessDetails {
 }
 
 export interface ISendProductDetails {
+  productId: number | string
   receiverAddress: string
   logisticsAddress: string
   trackNumber: string
@@ -187,4 +190,11 @@ export interface ICreateProductPayload {
 export interface IManuProductInfoPayload {
   productId: number | string
   processingType: string
+}
+
+export interface IShippingProductInfoPayload {
+  productId: number | string
+  receiverAddress: string
+  logisticsAddress: string
+  trackingNumber: string
 }
