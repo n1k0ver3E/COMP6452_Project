@@ -7,6 +7,9 @@ import {
   IRetailProcessDetails,
 } from '../../interfaces/contract'
 import { ProductContractAPIContext } from '../../contexts/ProductContractAPI'
+import { ProfileContractContext } from '../../contexts/ProfileContract'
+import { ProductContractContext } from '../../contexts/ProductContract'
+import getAccounts from '../../utils/getAccounts'
 import { ProductStatus } from '../../enums/contract'
 import { shortenedAddress } from '../../helpers/stringMutations'
 
@@ -18,6 +21,9 @@ const Retail: FC = () => {
   const { getProductsByStatus, getProductById, retailProductInfo } = useContext(
     ProductContractAPIContext
   )
+
+  const { accounts } = useContext(ProfileContractContext)
+  const { productContract } = useContext(ProductContractContext)
 
   const [data, setData] = useState<IRetailProcessDetails>(initialState)
   const [products, setProducts] = useState<ICreateProductPayload[]>([])
@@ -33,6 +39,9 @@ const Retail: FC = () => {
   })
   const [showTable, setShowTable] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [error, setError] = useState<boolean>(false)
+  const [errorMessage, setErrorMessage] = useState<string>('')
+  const [success, setSuccess] = useState<boolean>(false)
 
   useEffect(() => {
     const getProducts = async () => {
@@ -52,6 +61,8 @@ const Retail: FC = () => {
 
       setProductDetails(product)
       setShowTable(true)
+      setError(false)
+      setSuccess(false)
     }
 
     setData({ ...data, [name]: value })
@@ -61,25 +72,76 @@ const Retail: FC = () => {
     e.preventDefault()
     setIsLoading(true)
 
-    // TODO: DO THE ON-CHAIN CALL
+    try {
+      // ON-CHAIN INTERACTION
+      const _accounts = await getAccounts(accounts)
+      const retailProductResp = await productContract?.methods
+        .retailProductInfo(data.productId)
+        .send({ from: _accounts[0] })
 
-    // API CALL
-    await retailProductInfo(data)
+      if (retailProductResp) {
+        // Get event
+        const { productId, productStatus } =
+          retailProductResp.events.CurrentProductStatus.returnValues
 
-    // Do an API call to get update for the dropdown
-    setTimeout(async () => {
-      const products = await getProductsByStatus(ProductStatus.SHIPPING)
-      setProducts(products)
+        const apiPayload = {
+          productId,
+          productStatus,
+        }
 
-      // Reset form state, stop loading spinner and hide table
-      setData(initialState)
+        // API CALL
+        await retailProductInfo(apiPayload)
+
+        // Do an API call to get update for the dropdown
+        setTimeout(async () => {
+          // Resetting the dropdown selection to exclude selection
+          const products = await getProductsByStatus(ProductStatus.SHIPPING)
+          setProducts(products)
+
+          // Reset form state, stop loading spinner and hide table
+          setData(initialState)
+          setIsLoading(false)
+          setShowTable(false)
+          setError(false)
+
+          // show success message
+          setSuccess(true)
+        }, 1000)
+      }
+    } catch (e) {
+      if (
+        e.message.includes(
+          'This function can only be executed by the retailer'
+        )
+      ) {
+        setError(true)
+        setErrorMessage(
+          'This function can only be executed by the retailer. Please also ensure that your account has been approved by the regulator before proceeding.'
+        )
+        setIsLoading(false)
+        setShowTable(false)
+      }
       setIsLoading(false)
-      setShowTable(false)
-    }, 1000)
+      console.log(e.message)
+    }
   }
 
   return (
     <section className="container">
+      {error ? (
+        <div className="notification is-danger is-light">{errorMessage}</div>
+      ) : null}
+
+      {success ? (
+        <div className="notification is-success is-light mb-5">
+          <div>
+            <strong>{productDetails.productName}</strong> of{' '}
+            <strong>{productDetails.productLocation}</strong> has been processed
+            and successfully transferred to the purchase process.
+          </div>
+        </div>
+      ) : null}
+
       {showTable && (
         <div className="is-success is-light mb-5">
           <div className="title is-6">
@@ -95,7 +157,7 @@ const Retail: FC = () => {
                 <th>Farm Date</th>
                 <th>Harvest Date</th>
                 <th>Processing Type</th>
-                <th>Logistics (Address)</th>
+                <th>Logistics Address</th>
                 <th>Track Number</th>
               </tr>
             </thead>

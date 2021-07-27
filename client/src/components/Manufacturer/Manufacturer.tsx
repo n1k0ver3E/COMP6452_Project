@@ -133,6 +133,7 @@ const Manufacturer: FC = () => {
         setIsManufacturingLoading(false)
         setShowTable(false)
       }
+      setIsManufacturingLoading(false)
       console.log(e.message)
     }
   }

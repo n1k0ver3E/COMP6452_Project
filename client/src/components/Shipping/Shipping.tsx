@@ -255,7 +255,7 @@ const Shipping: FC = () => {
               </div>
 
               <div className="field">
-                <label className="label">Receiver (Address)</label>
+                <label className="label">Receiver Address</label>
                 <div className="control">
                   <input
                     className="input"
@@ -269,7 +269,7 @@ const Shipping: FC = () => {
               </div>
 
               <div className="field">
-                <label className="label">Logistics (Address)</label>
+                <label className="label">Logistics Address</label>
                 <div className="control">
                   <input
                     className="input"
