@@ -220,16 +220,10 @@ const Farmer: FC = () => {
                 <td>{successProductDetails.productName}</td>
                 <td>{successProductDetails.productLocation}</td>
                 <td>
-                  {format(
-                    new Date(successProductDetails.farmDate),
-                    'dd MMM yyy'
-                  )}
+                  {successProductDetails.farmDate}
                 </td>
                 <td>
-                  {format(
-                    new Date(successProductDetails.harvestDate),
-                    'dd MMM yyy'
-                  )}
+                  {successProductDetails.harvestDate}
                 </td>
                 <td>{ProductCategory[successProductDetails.status!]}</td>
               </tr>
