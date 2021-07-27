@@ -148,14 +148,23 @@ const Farmer: FC = () => {
         .send({ from: _accounts[0] })
 
       if (createProductResp) {
-        const { productId, productLocation } =
-          createProductResp.events.Harvested.returnValues
+        // const { productId, productLocation } =
+        //   createProductResp.events.Harvested.returnValues
+
+        // const { productId, productStatus } =
+        //   createProductResp.events.Harvested.returnValues
+
+        const { productId, productStatus } =
+          createProductResp.events.CurrentProductStatus.returnValues
 
         const productName = payload.productName
+
+        const productLocation = payload.productLocation
 
         const apiPayload = {
           productId,
           productName,
+          //productLocation,
           productLocation,
           farmDate: farmDateType,
           harvestDate: harvestDateType,
