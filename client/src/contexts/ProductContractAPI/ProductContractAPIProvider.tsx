@@ -1,8 +1,10 @@
 import React, { FC, createContext } from 'react'
 import api from '../../api'
 import {
-  ICreateProductPayload, IManuProductInfoPayload,
-  IProductContractAPI, IShippingProductInfoPayload
+  ICreateProductPayload,
+  IManuProductInfoPayload,
+  IProductContractAPI,
+  IShippingProductInfoPayload,
 } from '../../interfaces/contract'
 
 const contextDefaultValues: IProductContractAPI = {
@@ -11,7 +13,8 @@ const contextDefaultValues: IProductContractAPI = {
   getProductsByStatus: () => {},
   getProductById: () => {},
   manuProductInfo: () => {},
-  shippingProductInfo: () => {}
+  shippingProductInfo: () => {},
+  retailProductInfo: () => {},
 }
 
 export const ProductContractAPIContext =
@@ -49,7 +52,6 @@ const ProductContractAPIProvider: FC = ({ children }): any => {
   }
 
   const getProductById = async (productNumber: number) => {
-
     try {
       const resp = await api.get(`/v1/products/id/${productNumber}`)
 
@@ -64,7 +66,7 @@ const ProductContractAPIProvider: FC = ({ children }): any => {
       const resp = await api.patch(`/v1/products/manu-info`, payload)
 
       return resp.data.product
-    }catch(err) {
+    } catch (err) {
       return false
     }
   }
@@ -74,7 +76,17 @@ const ProductContractAPIProvider: FC = ({ children }): any => {
       const resp = await api.patch(`v1/products/shipping-info`, payload)
 
       return resp.data.product
-    }catch(err) {
+    } catch (err) {
+      return false
+    }
+  }
+
+  const retailProductInfo = async (productId: number) => {
+    try {
+      const resp = await api.patch(`v1/products/retailing-info`, productId)
+
+      return resp.data.product
+    } catch (err) {
       return false
     }
   }
@@ -87,7 +99,8 @@ const ProductContractAPIProvider: FC = ({ children }): any => {
         getProductsByStatus,
         getProductById,
         manuProductInfo,
-        shippingProductInfo
+        shippingProductInfo,
+        retailProductInfo,
       }}
     >
       {children}

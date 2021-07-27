@@ -98,6 +98,7 @@ export interface IProductContractAPI {
   getProductById: any
   manuProductInfo: any
   shippingProductInfo: any
+  retailProductInfo: any
 }
 
 export interface IDocumentContract {
