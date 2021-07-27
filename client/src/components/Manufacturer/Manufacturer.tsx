@@ -88,8 +88,6 @@ const Manufacturer: FC = () => {
       setIsManufacturingLoading(false)
       setShowTable(false)
     }, 1000)
-
-
   }
 
   return (
@@ -161,7 +159,7 @@ const Manufacturer: FC = () => {
                     ))}
 
                     {!products.length && (
-                      <option disabled>Product Selection Unavailable</option>
+                      <option disabled>No Products To Process</option>
                     )}
                   </select>
                 </div>
@@ -183,7 +181,7 @@ const Manufacturer: FC = () => {
 
               <button
                 className={isManufacturingLoading ? 'button is-block is-link is-fullwidth mt-3 is-loading' : 'button is-block is-link is-fullwidth mt-3'}
-                disabled={!isProcessingTypeFieldValid || data.productId === -1}
+                disabled={!isProcessingTypeFieldValid || data.productId === 'DEFAULT'}
                 onClick={(e) => handleSubmission(e)}
               >
                 Add

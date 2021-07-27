@@ -169,6 +169,7 @@ export interface IPurchaseProcessDetails {
 }
 
 export interface ISendProductDetails {
+  productId: number | string
   receiverAddress: string
   logisticsAddress: string
   trackNumber: string

@@ -1,14 +1,19 @@
-import React, { ChangeEvent, FC, useState } from 'react'
-import { ISendProductDetails } from '../../interfaces/contract'
+import React, { ChangeEvent, FC, useState, useContext, useEffect } from 'react'
+import { ICreateProductPayload, ISendProductDetails } from '../../interfaces/contract'
 import './shipping.css'
+import { ProductStatus } from '../../enums/contract'
+import { ProductContractAPIContext } from '../../contexts/ProductContractAPI'
 
 const sendProductInitialState: ISendProductDetails = {
+  productId: 'DEFAULT',
   receiverAddress: '',
   logisticsAddress: '',
   trackNumber: '',
 }
 
 const Shipping: FC = () => {
+
+  const { getProductsByStatus, getProductById } = useContext(ProductContractAPIContext)
 
   const [sendProductData, setSendProductData] = useState<ISendProductDetails>(
     sendProductInitialState
@@ -19,12 +24,40 @@ const Shipping: FC = () => {
     useState<boolean>(false)
   const [isTrackNumberFieldValid, setIsTrackNumberFieldValid] =
     useState<boolean>(false)
+  const [products, setProducts] = useState<ICreateProductPayload[]>([])
+  const [productDetails, setProductDetails] = useState({
+    productId: -1,
+    productName: '',
+    productLocation: '',
+    farmDate: '',
+    harvestDate: '',
+    processingType: '',
+    status: -1,
+  })
+  const [showTable, setShowTable] = useState<boolean>(true)
+
+  useEffect(() => {
+    const getProducts = async () => {
+      const products = await getProductsByStatus(ProductStatus.MANUFACTURING)
+
+      setProducts(products)
+    }
+
+    getProducts()
+  }, [])
 
 
-  const handleChangeSendProduct = (
+  const handleChangeSendProduct = async (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target
+
+    if (name === 'productId') {
+      const product = await getProductById(parseInt(value))
+
+      setProductDetails(product)
+      setShowTable(true)
+    }
 
     if (name === 'receiverAddress') {
       if (value === '') {
@@ -55,10 +88,47 @@ const Shipping: FC = () => {
 
   const handleSubmissionSendProduct = (e: any) => {
     e.preventDefault()
+
+    console.log('sendProductData', sendProductData)
   }
 
   return (
     <section className="container">
+      {showTable && (
+        <div className="is-success is-light mb-5">
+          <div className="title is-6">
+            <strong>Product Information</strong>
+          </div>
+
+          <table className="table is-striped table-style">
+            <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Location</th>
+              <th>Farm Date</th>
+              <th>Harvest Date</th>
+              <th>Processing Type</th>
+              <th>Status</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr>
+              <td>{productDetails.productId}</td>
+              <td>{productDetails.productName}</td>
+              <td>{productDetails.productLocation}</td>
+              <td>{productDetails.farmDate}</td>
+              <td>{productDetails.harvestDate}</td>
+              <td>{productDetails.processingType}</td>
+              <td>{ProductStatus[productDetails.status]}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      )}
+
+
       <div className="columns">
         <div className="column is-half">
           <img
@@ -72,10 +142,33 @@ const Shipping: FC = () => {
         <div className="column is-half farmer-form has-background-white-bis">
           <div className="product-title">
             <div className="product-title">
-              <h1 className="title is-4">Send Product</h1>
+              <h1 className="title is-4">Shipping Process</h1>
             </div>
 
             <form className="mt-5 shipping-form">
+              <div className="field">
+                <label className="label">Product</label>
+                <div className="select is-normal is-fullwidth">
+                  <select
+                    name="productId"
+                    id="productId"
+                    onChange={handleChangeSendProduct}
+                    value={sendProductData.productId}
+                  >
+                    <option value={'DEFAULT'} disabled>Select Product</option>
+                    {products?.map((product: any, idx: number) => (
+                      <option key={idx} value={product.productId}>
+                        {product.productName} ({product.productLocation})
+                      </option>
+                    ))}
+
+                    {!products.length && (
+                      <option disabled>No Products To Process</option>
+                    )}
+                  </select>
+                </div>
+              </div>
+
               <div className="field">
                 <label className="label">Receiver (Address)</label>
                 <div className="control">
@@ -85,6 +178,7 @@ const Shipping: FC = () => {
                     name="receiverAddress"
                     id="receiverAddress"
                     onChange={handleChangeSendProduct}
+                    value={sendProductData.receiverAddress}
                   />
                 </div>
               </div>
@@ -98,6 +192,7 @@ const Shipping: FC = () => {
                     name="logisticsAddress"
                     id="logisticsAddress"
                     onChange={handleChangeSendProduct}
+                    value={sendProductData.logisticsAddress}
                   />
                 </div>
               </div>
@@ -111,6 +206,7 @@ const Shipping: FC = () => {
                     name="trackNumber"
                     id="trackNumber"
                     onChange={handleChangeSendProduct}
+                    value={sendProductData.trackNumber}
                   />
                 </div>
               </div>
@@ -120,7 +216,7 @@ const Shipping: FC = () => {
                 disabled={
                   !isReceiverAddressFieldValid ||
                   !isLogisticsAddressFieldValid ||
-                  !isTrackNumberFieldValid
+                  !isTrackNumberFieldValid || sendProductData.productId === 'DEFAULT'
                 }
                 onClick={(e) => handleSubmissionSendProduct(e)}
               >

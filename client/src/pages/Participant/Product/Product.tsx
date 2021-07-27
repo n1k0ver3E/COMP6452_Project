@@ -2,6 +2,7 @@ import React, { FC, useState } from 'react'
 import { ProductStatus } from '../../../enums/contract'
 import Farmer from '../../../components/Farmer'
 import Manufacturer from '../../../components/Manufacturer'
+// @ts-ignore
 import Shipping from '../../../components/Shipping'
 import Retail from '../../../components/Retail'
 import Purchase from '../../../components/Purchase'

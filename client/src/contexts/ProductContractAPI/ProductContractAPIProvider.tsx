@@ -52,8 +52,6 @@ const ProductContractAPIProvider: FC = ({ children }): any => {
     try {
       const resp = await api.get(`/v1/products/id/${productNumber}`)
 
-      console.log('what is product', resp)
-
       return resp.data.product[0]
     } catch (err) {
       return false
