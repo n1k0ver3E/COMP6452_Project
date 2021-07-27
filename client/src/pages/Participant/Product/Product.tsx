@@ -1,7 +1,9 @@
 import React, { FC, useState } from 'react'
-import { ProductCategory } from '../../../enums/contract'
+import { ProductStatus } from '../../../enums/contract'
 import Farmer from '../../../components/Farmer'
 import Manufacturer from '../../../components/Manufacturer'
+// @ts-ignore
+import Shipping from '../../../components/Shipping'
 import Retail from '../../../components/Retail'
 import Purchase from '../../../components/Purchase'
 
@@ -10,34 +12,46 @@ const Product: FC = () => {
     useState<string>('is-active')
   const [manufacturerActiveClass, setManufacturerActiveClass] =
     useState<string>('')
+  const [shippingActiveClass, setShippingActiveClass] = useState<string>('')
   const [retailActiveClass, setRetailActiveClass] = useState<string>('')
   const [purchaseActiveClass, setPurchaseActiveClass] = useState<string>('')
 
   const switchTab = (productCategory: number) => {
     switch (productCategory) {
-      case ProductCategory.FARMING:
+      case ProductStatus.FARMING:
         setFarmerActiveClass('is-active')
         setManufacturerActiveClass('')
         setRetailActiveClass('')
         setPurchaseActiveClass('')
+        setShippingActiveClass('')
         break
-      case ProductCategory.MANUFACTURING:
+      case ProductStatus.MANUFACTURING:
         setManufacturerActiveClass('is-active')
         setFarmerActiveClass('')
         setRetailActiveClass('')
         setPurchaseActiveClass('')
+        setShippingActiveClass('')
         break
-      case ProductCategory.RETAILING:
+      case ProductStatus.SHIPPING:
+        setPurchaseActiveClass('')
+        setRetailActiveClass('')
+        setManufacturerActiveClass('')
+        setFarmerActiveClass('')
+        setShippingActiveClass('is-active')
+        break
+      case ProductStatus.RETAILING:
         setRetailActiveClass('is-active')
         setManufacturerActiveClass('')
         setFarmerActiveClass('')
         setPurchaseActiveClass('')
+        setShippingActiveClass('')
         break
-      case ProductCategory.PURCHASING:
+      case ProductStatus.PURCHASING:
         setPurchaseActiveClass('is-active')
         setRetailActiveClass('')
         setManufacturerActiveClass('')
         setFarmerActiveClass('')
+        setShippingActiveClass('')
         break
       default:
         break
@@ -50,7 +64,7 @@ const Product: FC = () => {
         <ul>
           <li
             className={farmerActiveClass}
-            onClick={() => switchTab(ProductCategory.FARMING)}
+            onClick={() => switchTab(ProductStatus.FARMING)}
           >
             <a>
               <span className="icon is-small">
@@ -61,7 +75,7 @@ const Product: FC = () => {
           </li>
           <li
             className={manufacturerActiveClass}
-            onClick={() => switchTab(ProductCategory.MANUFACTURING)}
+            onClick={() => switchTab(ProductStatus.MANUFACTURING)}
           >
             <a>
               <span className="icon is-small">
@@ -70,9 +84,22 @@ const Product: FC = () => {
               <span>Manufacturer</span>
             </a>
           </li>
+
+          <li
+            className={shippingActiveClass}
+            onClick={() => switchTab(ProductStatus.SHIPPING)}
+          >
+            <a>
+              <span className="icon is-small">
+                <i className="fas fa-ship" aria-hidden="true" />
+              </span>
+              <span>Shipping</span>
+            </a>
+          </li>
+
           <li
             className={retailActiveClass}
-            onClick={() => switchTab(ProductCategory.RETAILING)}
+            onClick={() => switchTab(ProductStatus.RETAILING)}
           >
             <a>
               <span className="icon is-small">
@@ -83,7 +110,7 @@ const Product: FC = () => {
           </li>
           <li
             className={purchaseActiveClass}
-            onClick={() => switchTab(ProductCategory.PURCHASING)}
+            onClick={() => switchTab(ProductStatus.PURCHASING)}
           >
             <a>
               <span className="icon is-small">
@@ -97,6 +124,7 @@ const Product: FC = () => {
 
       {farmerActiveClass && <Farmer />}
       {manufacturerActiveClass && <Manufacturer />}
+      {shippingActiveClass && <Shipping />}
       {retailActiveClass && <Retail />}
       {purchaseActiveClass && <Purchase />}
     </>

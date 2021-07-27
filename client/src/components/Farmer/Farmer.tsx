@@ -13,7 +13,7 @@ import { ProfileContractContext } from '../../contexts/ProfileContract'
 import { ProductContractContext } from '../../contexts/ProductContract'
 import { ProductContractAPIContext } from '../../contexts/ProductContractAPI'
 import getAccounts from '../../utils/getAccounts'
-import { ProductCategory } from '../../enums/contract'
+import { ProductStatus } from '../../enums/contract'
 
 const initialState: IFarmerProductInitial = {
   productName: '',
@@ -220,7 +220,7 @@ const Farmer: FC = () => {
                 <td>{successProductDetails.productLocation}</td>
                 <td>{successProductDetails.farmDate}</td>
                 <td>{successProductDetails.harvestDate}</td>
-                <td>{ProductCategory[successProductDetails.status!]}</td>
+                <td>{ProductStatus[successProductDetails.status!]}</td>
               </tr>
             </tbody>
           </table>
