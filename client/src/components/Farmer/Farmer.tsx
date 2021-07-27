@@ -187,6 +187,7 @@ const Farmer: FC = () => {
         )
         setIsLoading(false)
       }
+      setIsLoading(false)
       console.log(e.message)
     }
   }

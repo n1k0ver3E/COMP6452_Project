@@ -1,4 +1,6 @@
 import React, { ChangeEvent, FC, useContext, useState, useEffect } from 'react'
+import format from 'date-fns/format'
+import ReactTooltip from 'react-tooltip'
 import './purchase.css'
 import {
   ICreateProductPayload,
@@ -6,6 +8,7 @@ import {
 } from '../../interfaces/contract'
 import { ProductContractAPIContext } from '../../contexts/ProductContractAPI'
 import { ProductStatus } from '../../enums/contract'
+import { shortenedAddress } from '../../helpers/stringMutations'
 
 const initialState: IPurchaseProcessDetails = {
   productId: 'DEFAULT',
@@ -24,11 +27,10 @@ const Purchase: FC = () => {
     productId: -1,
     productName: '',
     productLocation: '',
-    farmDate: '',
-    harvestDate: '',
+    farmDate: new Date(),
+    harvestDate: new Date(),
     processingType: '',
     receiverAddress: '',
-    logisticsAddress: '',
     trackNumber: '',
     status: -1,
   })
@@ -90,8 +92,7 @@ const Purchase: FC = () => {
                 <th>Farm Date</th>
                 <th>Harvest Date</th>
                 <th>Processing Type</th>
-                <th>Receiver (Address)</th>
-                <th>Logistics (Address)</th>
+                <th>Receiver Address</th>
                 <th>Track Number</th>
                 <th>Status</th>
               </tr>
@@ -102,11 +103,19 @@ const Purchase: FC = () => {
                 <td>{productDetails.productId}</td>
                 <td>{productDetails.productName}</td>
                 <td>{productDetails.productLocation}</td>
-                <td>{productDetails.farmDate}</td>
-                <td>{productDetails.harvestDate}</td>
+                <td>
+                  {format(new Date(productDetails.farmDate), 'dd MMMM yyy')}
+                </td>
+                <td>
+                  {format(new Date(productDetails.harvestDate), 'dd MMMM yyy')}
+                </td>
                 <td>{productDetails.processingType}</td>
-                <td>{productDetails.receiverAddress}</td>
-                <td>{productDetails.logisticsAddress}</td>
+                <td data-tip={productDetails.receiverAddress}>
+                  {productDetails.receiverAddress.length > 20
+                    ? shortenedAddress(productDetails.receiverAddress)
+                    : productDetails.receiverAddress}
+                  <ReactTooltip />
+                </td>{' '}
                 <td>{productDetails.trackNumber}</td>
                 <td>{ProductStatus[productDetails.status]}</td>
               </tr>
@@ -170,7 +179,11 @@ const Purchase: FC = () => {
             </div>
 
             <button
-              className="button is-block is-link is-fullwidth mt-3"
+              className={
+                isLoading
+                  ? 'button is-block is-link is-fullwidth mt-3 is-loading'
+                  : 'button is-block is-link is-fullwidth mt-3'
+              }
               disabled={
                 !isPriceFieldValid || data.productId === -1 || data.price === 0
               }

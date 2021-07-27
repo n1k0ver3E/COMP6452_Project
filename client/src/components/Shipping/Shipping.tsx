@@ -156,6 +156,7 @@ const Shipping: FC = () => {
         setIsLoading(false)
         setShowTable(false)
       }
+      setIsLoading(false)
       console.log(e.message)
     }
   }
