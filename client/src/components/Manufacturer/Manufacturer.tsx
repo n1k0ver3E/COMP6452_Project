@@ -47,6 +47,7 @@ const Manufacturer: FC = () => {
     status: -1,
   })
   const [showTable, setShowTable] = useState<boolean>(false)
+  const [isManufacturingLoading, setIsManufacturingLoading] = useState<boolean>(false)
 
   useEffect(() => {
     const getProducts = async () => {
@@ -115,6 +116,7 @@ const Manufacturer: FC = () => {
 
   const handleSubmission = async (e: any) => {
     e.preventDefault()
+    setIsManufacturingLoading(true)
 
     // DO THE ON-CHAIN CALL
 
@@ -124,10 +126,8 @@ const Manufacturer: FC = () => {
     // SET PRODUCT DETAILS
     setProductDetails(product)
     setData(initialState)
-
+    setIsManufacturingLoading(false)
     console.log('product', product)
-
-
   }
 
   const handleSubmissionSendProduct = (e: any) => {
@@ -230,7 +230,7 @@ const Manufacturer: FC = () => {
               </div>
 
               <button
-                className="button is-block is-link is-fullwidth mt-3"
+                className={isManufacturingLoading ? 'button is-block is-link is-fullwidth mt-3 is-loading' : 'button is-block is-link is-fullwidth mt-3'}
                 disabled={!isProcessingTypeFieldValid || data.productId === -1}
                 onClick={(e) => handleSubmission(e)}
               >
