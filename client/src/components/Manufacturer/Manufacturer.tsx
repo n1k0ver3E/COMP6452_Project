@@ -30,7 +30,8 @@ const Manufacturer: FC = () => {
     status: -1,
   })
   const [showTable, setShowTable] = useState<boolean>(false)
-  const [isManufacturingLoading, setIsManufacturingLoading] = useState<boolean>(false)
+  const [isManufacturingLoading, setIsManufacturingLoading] =
+    useState<boolean>(false)
 
   useEffect(() => {
     const getProducts = async () => {
@@ -74,13 +75,10 @@ const Manufacturer: FC = () => {
     // API CALL
     await manuProductInfo(data)
 
-    // SET PRODUCT DETAILS
-
-    // Do an API call to get update the dropdown
+    // Do an API call to get update for the dropdown
     setTimeout(async () => {
-
       // Resetting the dropdown selection to exclude selection
-      const products =  await getProductsByStatus(ProductStatus.FARMING)
+      const products = await getProductsByStatus(ProductStatus.FARMING)
       setProducts(products)
 
       // Reset form state, stop loading spinner and hide table
@@ -180,8 +178,14 @@ const Manufacturer: FC = () => {
               </div>
 
               <button
-                className={isManufacturingLoading ? 'button is-block is-link is-fullwidth mt-3 is-loading' : 'button is-block is-link is-fullwidth mt-3'}
-                disabled={!isProcessingTypeFieldValid || data.productId === 'DEFAULT'}
+                className={
+                  isManufacturingLoading
+                    ? 'button is-block is-link is-fullwidth mt-3 is-loading'
+                    : 'button is-block is-link is-fullwidth mt-3'
+                }
+                disabled={
+                  !isProcessingTypeFieldValid || data.productId === 'DEFAULT'
+                }
                 onClick={(e) => handleSubmission(e)}
               >
                 Add

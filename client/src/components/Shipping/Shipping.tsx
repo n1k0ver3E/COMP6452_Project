@@ -1,5 +1,8 @@
 import React, { ChangeEvent, FC, useState, useContext, useEffect } from 'react'
-import { ICreateProductPayload, ISendProductDetails } from '../../interfaces/contract'
+import {
+  ICreateProductPayload,
+  ISendProductDetails,
+} from '../../interfaces/contract'
 import './shipping.css'
 import { ProductStatus } from '../../enums/contract'
 import { ProductContractAPIContext } from '../../contexts/ProductContractAPI'
@@ -12,8 +15,8 @@ const sendProductInitialState: ISendProductDetails = {
 }
 
 const Shipping: FC = () => {
-
-  const { getProductsByStatus, getProductById, shippingProductInfo } = useContext(ProductContractAPIContext)
+  const { getProductsByStatus, getProductById, shippingProductInfo } =
+    useContext(ProductContractAPIContext)
 
   const [sendProductData, setSendProductData] = useState<ISendProductDetails>(
     sendProductInitialState
@@ -46,7 +49,6 @@ const Shipping: FC = () => {
 
     getProducts()
   }, [])
-
 
   const handleChangeSendProduct = async (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -87,13 +89,25 @@ const Shipping: FC = () => {
     setSendProductData({ ...sendProductData, [name]: value })
   }
 
-  const handleSubmissionSendProduct = (e: any) => {
+  const handleSubmissionSendProduct = async (e: any) => {
     e.preventDefault()
     setIsLoading(true)
 
     // TODO: DO THE ON-CHAIN CALL
 
+    // API CALL
+    await shippingProductInfo(sendProductData)
 
+    // Do an API call to get update for the dropdown
+    setTimeout(async () => {
+      const products = await getProductsByStatus(ProductStatus.MANUFACTURING)
+      setProducts(products)
+
+      // Reset form state, stop loading spinner and hide table
+      setSendProductData(sendProductInitialState)
+      setIsLoading(false)
+      setShowTable(false)
+    }, 1000)
   }
 
   return (
@@ -106,32 +120,31 @@ const Shipping: FC = () => {
 
           <table className="table is-striped table-style">
             <thead>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Location</th>
-              <th>Farm Date</th>
-              <th>Harvest Date</th>
-              <th>Processing Type</th>
-              <th>Status</th>
-            </tr>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Location</th>
+                <th>Farm Date</th>
+                <th>Harvest Date</th>
+                <th>Processing Type</th>
+                <th>Status</th>
+              </tr>
             </thead>
 
             <tbody>
-            <tr>
-              <td>{productDetails.productId}</td>
-              <td>{productDetails.productName}</td>
-              <td>{productDetails.productLocation}</td>
-              <td>{productDetails.farmDate}</td>
-              <td>{productDetails.harvestDate}</td>
-              <td>{productDetails.processingType}</td>
-              <td>{ProductStatus[productDetails.status]}</td>
-            </tr>
+              <tr>
+                <td>{productDetails.productId}</td>
+                <td>{productDetails.productName}</td>
+                <td>{productDetails.productLocation}</td>
+                <td>{productDetails.farmDate}</td>
+                <td>{productDetails.harvestDate}</td>
+                <td>{productDetails.processingType}</td>
+                <td>{ProductStatus[productDetails.status]}</td>
+              </tr>
             </tbody>
           </table>
         </div>
       )}
-
 
       <div className="columns">
         <div className="column is-half">
@@ -159,7 +172,9 @@ const Shipping: FC = () => {
                     onChange={handleChangeSendProduct}
                     value={sendProductData.productId}
                   >
-                    <option value={'DEFAULT'} disabled>Select Product</option>
+                    <option value={'DEFAULT'} disabled>
+                      Select Product
+                    </option>
                     {products?.map((product: any, idx: number) => (
                       <option key={idx} value={product.productId}>
                         {product.productName} ({product.productLocation})
@@ -217,12 +232,15 @@ const Shipping: FC = () => {
 
               <button
                 className={
-                  isLoading ? 'button is-block is-link is-fullwidth mt-3 is-loading' : 'button is-block is-link is-fullwidth mt-3'
+                  isLoading
+                    ? 'button is-block is-link is-fullwidth mt-3 is-loading'
+                    : 'button is-block is-link is-fullwidth mt-3'
                 }
                 disabled={
                   !isReceiverAddressFieldValid ||
                   !isLogisticsAddressFieldValid ||
-                  !isTrackNumberFieldValid || sendProductData.productId === 'DEFAULT'
+                  !isTrackNumberFieldValid ||
+                  sendProductData.productId === 'DEFAULT'
                 }
                 onClick={(e) => handleSubmissionSendProduct(e)}
               >
