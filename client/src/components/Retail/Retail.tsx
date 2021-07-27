@@ -1,16 +1,18 @@
-import React, { ChangeEvent, FC, useState } from 'react'
+import React, { ChangeEvent, FC, useState, useContext, useEffect } from 'react'
 import './retail.css'
 import { IRetailProcessDetails } from '../../interfaces/contract'
+import { ProductContractAPIContext } from '../../contexts/ProductContractAPI'
 
 const initialState: IRetailProcessDetails = {
-  productId: -1,
+  productId: 'DEFAULT',
 }
 
 const Retail: FC = () => {
+  const { getProductsByStatus, getProductById } = useContext(
+    ProductContractAPIContext
+  )
+
   const [data, setData] = useState<IRetailProcessDetails>(initialState)
-  // TESTING ONLY
-  const [showPayload, setShowPayload] = useState<boolean>(false)
-  const [payload, setPayload] = useState<string>('')
 
   const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -20,11 +22,6 @@ const Retail: FC = () => {
 
   const handleSubmission = (e: any) => {
     e.preventDefault()
-
-    // TESTING ONLY TO BE REMOVED AND REPLACED WITH REAL API CALLS
-    // @ts-ignore
-    setPayload(data)
-    setShowPayload(true)
   }
 
   return (
@@ -61,7 +58,7 @@ const Retail: FC = () => {
             </div>
             <button
               className="button is-block is-link is-fullwidth mt-3"
-              disabled={data.productId === -1}
+              disabled={data.productId === 'DEFAULT'}
               onClick={(e) => handleSubmission(e)}
             >
               Submit
@@ -70,14 +67,6 @@ const Retail: FC = () => {
           </form>
         </div>
       </div>
-
-      {/*TESTING ONLY TO BE REMOVED AND REPLACED WITH REAL API CALLS*/}
-      {showPayload && (
-        <div>
-          <h1>SENDING PAYLOAD TO API</h1>
-          <h1>{JSON.stringify(payload)}</h1>
-        </div>
-      )}
     </section>
   )
 }
