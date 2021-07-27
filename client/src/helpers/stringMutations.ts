@@ -4,4 +4,12 @@ const titleCase = (str: string): string => {
   })
 }
 
-export { titleCase }
+const shortenedAddress = (str: string): string | undefined => {
+  if (str === '') {
+    return
+  }
+
+  return `${str.slice(0, 10)}...${str.slice(str.length - 10)}`
+}
+
+export { shortenedAddress, titleCase }

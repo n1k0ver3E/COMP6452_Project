@@ -21,17 +21,17 @@ module.exports = async function(deployer, networks, addresses) {
   const product = await ProductSC.deployed();
   const trace = await Trace.deployed();
 
-  await profile.registerAccount(farmer, "Farmer", 1, { from: farmer });
-  await profile.approveAccount(farmer, 1, { from: regulator });
+  // await profile.registerAccount(farmer, "Farmer", 1, { from: farmer });
+  // await profile.approveAccount(farmer, 1, { from: regulator });
 
-  await profile.registerAccount(manufacturer, "Manufacturer", 2, { from: manufacturer });
-  await profile.approveAccount(manufacturer, 1, { from: regulator });
+  // await profile.registerAccount(manufacturer, "Manufacturer", 2, { from: manufacturer });
+  // await profile.approveAccount(manufacturer, 1, { from: regulator });
 
-  await profile.registerAccount(retailer, "Retailer", 3, { from: retailer });
-  await profile.approveAccount(retailer, 1, { from: regulator });
+  // await profile.registerAccount(retailer, "Retailer", 3, { from: retailer });
+  // await profile.approveAccount(retailer, 1, { from: regulator });
 
-  await profile.registerAccount(consumer, "Consumer", 4, { from: consumer });
-  await profile.approveAccount(consumer, 1, { from: regulator });
+  // await profile.registerAccount(consumer, "Consumer", 4, { from: consumer });
+  // await profile.approveAccount(consumer, 1, { from: regulator });
 
   await profile.registerAccount(logistic, "Logistic", 5, { from: logistic });
   await profile.approveAccount(logistic, 1, { from: regulator });
@@ -39,9 +39,9 @@ module.exports = async function(deployer, networks, addresses) {
   await profile.registerAccount(oracle, "Oracle", 6, { from: oracle });
   await profile.approveAccount(oracle, 1, { from: regulator });
 
-  var productAId = await product.createProduct.call("Product A", { from: farmer });
+  // var productAId = await product.createProduct.call("Product A", { from: farmer });
 
-  await product.addProductFarmingInfo(productAId, 1, 2);
+  // await product.addProductFarmingInfo(productAId, 1, 2);
 
-  await trace.setProductContractAddress( product.address, {from: creator} );
+  await trace.setProductContractAddress( product.address, {from: regulator} );
 };

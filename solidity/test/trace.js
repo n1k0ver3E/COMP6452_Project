@@ -5,6 +5,7 @@ const Profile = artifacts.require('Profile');
 const ProductSC = artifacts.require('ProductSC');
 
 contract('Trace', (accounts) => {
+    // The accounts
     const regulator = accounts[0];
     const creator = accounts[1];
     const farmer = accounts[2];
@@ -13,17 +14,22 @@ contract('Trace', (accounts) => {
     const logistic = accounts[5];
     const consumer = accounts[6];
     const oracle = accounts[7];
+
+    // The contract and product
     let profile;
     let product;
     let trace;
     let productAId;
 
-
     beforeEach(async () => {
-        profile = await Profile.new(regulator, "Regulator", { from: creator });
-        trace = await Trace.new(profile.address, { from: creator });
-        product = await ProductSC.new(trace.address, { from: creator });
+        // Create contracts
+        profile = await Profile.new(regulator, "Regulator", { from: regulator });
+        trace = await Trace.new(profile.address, { from: regulator });
+        product = await ProductSC.new(trace.address, profile.address, { from: regulator });
 
+        await trace.setProductContractAddress( product.address, { from: regulator });
+
+        // Set up the accounts
         await profile.registerAccount(farmer, "Farmer", 1, { from: farmer });
         await profile.approveAccount(farmer, 1, { from: regulator });
 
@@ -43,28 +49,21 @@ contract('Trace', (accounts) => {
         await profile.approveAccount(oracle, 1, { from: regulator });
 
 
-        productAId = await product.createProduct.call("Product A", { from: farmer });
-        await product.createProduct("Product A", { from: farmer });
+        // Crate a product.
+        productAId = await product.createProduct.call("Product A", 1, 2, "Location", { from: farmer });
+        await product.createProduct("Product A", 1, 2, "Location", { from: farmer });
 
-        await product.addProductFarmingInfo(productAId.toNumber(), 1, 2);
+        // Set it as manufactured.
+        product.manuProductInfo(productAId.toNumber(), "Process Type", {from: manufacturer } );
     });
 
-    // it('should has 0 as default status', async () => {
-    //     var sendResult = await product.sendProduct( productAId.toNumber(), retailer, logistic, "test" );
-
-    //     truffleAssert.prettyPrintEmittedEvents( sendResult );
-    // });
-
     it('should accept log from logistic', async () => {
-        var sendResult = await product.sendProduct(productAId.toNumber(), retailer, logistic, "test", { from: farmer });
-
-        //console.log( sendResult );
+        var sendResult = await product.sendProduct(productAId.toNumber(), retailer, logistic, "test", { from: manufacturer });
 
         // truffleAssert.prettyPrintEmittedEvents( sendResult );
 
         var logResult = await trace.logLocation(productAId.toNumber(), 9, -1, -2, { from: logistic });
 
-        //truffleAssert.prettyPrintEmittedEvents( logResult );
         truffleAssert.eventEmitted(logResult, "ProductLocation", function(ev) {
             return ev.productId == productAId.toNumber() &&
                 ev.timestamp == 9 &&
@@ -81,15 +80,11 @@ contract('Trace', (accounts) => {
     });
 
     it('should accept log from oracle', async () => {
-        var sendResult = await product.sendProduct(productAId.toNumber(), retailer, oracle, "test2", { from: farmer });
-
-        //console.log( sendResult );
+        var sendResult = await product.sendProduct(productAId.toNumber(), retailer, oracle, "test2", { from: manufacturer });
 
         // truffleAssert.prettyPrintEmittedEvents( sendResult );
 
         var logResult = await trace.logLocation(productAId.toNumber(), 10, 1, 2, { from: oracle });
-
-        // truffleAssert.prettyPrintEmittedEvents( logResult );
 
         truffleAssert.eventEmitted(logResult, "ProductLocation", function(ev) {
             return ev.productId == productAId.toNumber() &&
@@ -106,13 +101,11 @@ contract('Trace', (accounts) => {
         assert.equal(lastLocation.isRequestingForLocation, false);
     });
 
-    it('should not accept log from manufacturer', async () => {
+    it('should not accept log from incorrect account', async () => {
         try {
-            var sendResult = await product.sendProduct(productAId.toNumber(), retailer, manufacturer, "test3", { from: farmer });
+            var sendResult = await product.sendProduct(productAId.toNumber(), retailer, logistic, "test3", { from: manufacturer });
 
             var logResult = await trace.logLocation(productAId.toNumber(), 11, 11, 12, { from: manufacturer });
-
-            // truffleAssert.prettyPrintEmittedEvents( logResult );
 
             truffleAssert.eventNotEmitted(logResult, "ProductLocation", function(ev) {
                 return ev.productId == productAId.toNumber() &&
@@ -120,14 +113,16 @@ contract('Trace', (accounts) => {
                     ev.latitude == 11 &&
                     ev.longitude == 12;
             });
+
+            assert(false, "An exception should occurred");
         } catch (error) {
             assert(error, "Expect an error");
-            assert(error.message.includes("logisticAccountAddress must be a logistic or an oracle"), "error message check");
+            assert(error.message.includes("Incorrect logistic account"), "Expected error message to contains 'Incorrect logistic account'. Got " + error.message);
         }
     });
 
     it('should be able to request for location', async () => {
-        var sendResult = await product.sendProduct(productAId.toNumber(), retailer, oracle, "test4", { from: farmer });
+        var sendResult = await product.sendProduct(productAId.toNumber(), retailer, oracle, "test4", { from: manufacturer });
 
         var requestResult = await trace.requestForLocation.call(productAId.toNumber());
         assert.equal(requestResult, true);
@@ -144,84 +139,65 @@ contract('Trace', (accounts) => {
 
         assert.equal(requestResult, false);
     });
+    
+    it('should not be able to send product from another product contract', async () => {
+        let product2 = await ProductSC.new(trace.address, profile.address, { from: regulator });
 
-    // it('should emit an event when recall', async () => {
-    //     let emit = await product.emitEvent({ from: creator });
+        // Crate a product.
+        let productAId = await product2.createProduct.call("Product A", 1, 2, "Location", { from: farmer });
+        await product2.createProduct("Product A", 1, 2, "Location", { from: farmer });
 
-    //     //truffleAssert.prettyPrintEmittedEvents(emit);
+        // Set it as manufactured.
+        product2.manuProductInfo(productAId.toNumber(), "Process Type", {from: manufacturer } );
 
-    //     truffleAssert.eventEmitted(emit, 'RecallEvent', (ev) => {
-    //         // console.log(ev);
+        try {
+            var sendResult = await product2.sendProduct(productAId.toNumber(), retailer, oracle, "test2", { from: manufacturer });
 
-    //         assert.equal(ev.number, 2, 'Number should be 2');
+            assert(false, "An exception should occurred");
+        } catch (error) {
+            assert(error, "Expect an error");
+            assert(error.message.includes("Incorrect product contract"), "Expected error message to contains 'Incorrect product contract'. Got " + error.message);
+        }
+    });
 
-    //         // Must return true.
-    //         return true;
-    //     });
-    // });
+    it('should not accept tracking with empty trackingNumber', async () => {
+        // Crate another product.
+        let productBId = await product.createProduct.call("Product B", 1, 2, "Location", { from: farmer });
+        await product.createProduct("Product B", 1, 2, "Location", { from: farmer });
 
-    // it('should set status to 2 when recall the product', async () => {
-    //     let recall = await product.recallProduct({ from: creator });
+        // Set it as manufactured.
+        product.manuProductInfo(productBId.toNumber(), "Process Type", {from: manufacturer } );
 
-    //     truffleAssert.eventEmitted(recall, 'RecallEvent', (ev) => {
-    //         // console.log(ev);
+        try {
+            var sendResult = await product.sendProduct(productBId.toNumber(), retailer, oracle, "", { from: manufacturer });
 
-    //         assert.equal(ev.number, 1, 'Number should be 1');
+            assert(false, "An exception should occurred");
+        } catch (error) {
+            assert(error, "Expect an error");
+            assert(error.message.includes("trackingNumber is required"), "Expected error message to contains 'trackingNumber is required'. Got " + error.message);
+        }
+    });
 
-    //         // Must return true.
-    //         return true;
-    //     });
-
-    //     truffleAssert.prettyPrintEmittedEvents(recall);
-
-    //     // truffleAssert.eventEmitted(productRecallContract, 'RecallEvent', (ev) => {
-    //     //     console.log(ev);
-    //     //     console.log(ev.product, product.address, ev.product == product.address);
+    it('should be able to desctruct by the regulator', async () => {
+        try {
+            var result = await trace.destroyContract({from: regulator});
+        } catch (error) {
+            assert(false, "An exception shouldn't occurred");
+        }
 
 
-    //     //     return ev.product == product.address;
-    //     // });
+        // Crate another product.
+        let productBId = await product.createProduct.call("Product B", 1, 2, "Location", { from: farmer });
+        await product.createProduct("Product B", 1, 2, "Location", { from: farmer });
 
-    //     let result = await product.status();
+        // Set it as manufactured.
+        product.manuProductInfo(productBId.toNumber(), "Process Type", {from: manufacturer } );
 
-    //     // console.log( result );
-
-    //     assert.equal(result.toNumber(), 1, 'Status should be 1 after the recall');
-    // });
-
-    // //   it('should put 10000 MetaCoin in the first account', async () => {
-    // //     const metaCoinInstance = await MetaCoin.deployed();
-    // //     const balance = await metaCoinInstance.getBalance.call(accounts[0]);
-
-    // //     assert.equal(balance.valueOf(), 10000, "10000 wasn't in the first account");
-    // //   });
-    // //   it('should call a function that depends on a linked library', async () => {
-    // //     const metaCoinInstance = await MetaCoin.deployed();
-    // //     const metaCoinBalance = (await metaCoinInstance.getBalance.call(accounts[0])).toNumber();
-    // //     const metaCoinEthBalance = (await metaCoinInstance.getBalanceInEth.call(accounts[0])).toNumber();
-
-    // //     assert.equal(metaCoinEthBalance, 2 * metaCoinBalance, 'Library function returned unexpected function, linkage may be broken');
-    // //   });
-    // //   it('should send coin correctly', async () => {
-    // //     const metaCoinInstance = await MetaCoin.deployed();
-
-    // //     // Setup 2 accounts.
-    // //     const accountOne = accounts[0];
-    // //     const accountTwo = accounts[1];
-
-    // //     // Get initial balances of first and second account.
-    // //     const accountOneStartingBalance = (await metaCoinInstance.getBalance.call(accountOne)).toNumber();
-    // //     const accountTwoStartingBalance = (await metaCoinInstance.getBalance.call(accountTwo)).toNumber();
-
-    // //     // Make transaction from first account to second.
-    // //     const amount = 10;
-    // //     await metaCoinInstance.sendCoin(accountTwo, amount, { from: accountOne });
-
-    // //     // Get balances of first and second account after the transactions.
-    // //     const accountOneEndingBalance = (await metaCoinInstance.getBalance.call(accountOne)).toNumber();
-    // //     const accountTwoEndingBalance = (await metaCoinInstance.getBalance.call(accountTwo)).toNumber();
-
-    // //     assert.equal(accountOneEndingBalance, accountOneStartingBalance - amount, "Amount wasn't correctly taken from the sender");
-    // //     assert.equal(accountTwoEndingBalance, accountTwoStartingBalance + amount, "Amount wasn't correctly sent to the receiver");
-    // //   });
+        try {
+            var sendResult = await product.sendProduct(productBId.toNumber(), retailer, oracle, "", { from: manufacturer });
+        } catch (error) {
+            assert(error, "Expect an error");
+            assert(error.message.includes("revert"), "Expected error message to contains 'revert'. Got " + error.message);
+        }
+    });
 });

@@ -1,9 +1,36 @@
 export enum AccountType {
-  REGULATOR = 0,
-  FARMER = 1,
-  MANUFACTURER = 2,
-  RETAILER = 3,
-  CONSUMER = 4,
-  LOGISTICS = 5,
-  ORACLE = 6,
+  REGULATOR,
+  FARMER,
+  MANUFACTURER,
+  RETAILER,
+  CONSUMER,
+  LOGISTICS,
+  ORACLE,
+}
+
+export enum AccountStatus {
+  PENDING,
+  APPROVED,
+  REJECTED,
+}
+
+export enum DocumentType {
+  PROFILE = 1,
+  PRODUCT = 2,
+  TRACEABILITY = 3,
+}
+
+export enum DocumentStatus {
+  Pending,
+  Approved,
+  Rejected,
+}
+
+export enum ProductStatus {
+  FARMING,
+  MANUFACTURING,
+  SHIPPING,
+  RETAILING,
+  PURCHASING,
+  RECALLING,
 }

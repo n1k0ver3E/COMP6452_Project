@@ -26,8 +26,8 @@ const SideNavBar: FC<IUserTypeProps> = ({ type }) => {
 
   const regulatorMenu = [
     {
-      title: 'Approve Account',
-      link: '/regulator/approve-document',
+      title: 'Review Accounts',
+      link: '/regulator/review-accounts',
     },
     {
       title: 'Verify Document',
@@ -47,10 +47,6 @@ const SideNavBar: FC<IUserTypeProps> = ({ type }) => {
     {
       title: 'Add Document',
       link: '/participant/add-document',
-    },
-    {
-      title: 'View Document',
-      link: '/participant/view-document',
     },
     {
       title: 'Product',

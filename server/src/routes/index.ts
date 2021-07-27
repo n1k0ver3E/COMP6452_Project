@@ -1,4 +1,6 @@
+import DocumentRoute from './DocumentRoute'
 import ParticipantRoute from './ParticipantRoute'
 import TraceRoute from './TraceRoute'
+import ProductRoute from './ProductRoute'
 
-export { ParticipantRoute, TraceRoute }
+export { DocumentRoute, ParticipantRoute, TraceRoute, ProductRoute }

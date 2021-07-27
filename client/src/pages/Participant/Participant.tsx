@@ -6,10 +6,10 @@ import Dashboard from './Dashboard'
 import RegisterAccount from './RegisterAccount'
 import ViewAccount from './ViewAccount'
 import AddDocument from './AddDocument'
-import ViewDocument from './ViewDocument'
 import Product from './Product'
 import Tracking from './Tracking'
 import Recall from './Recall'
+import CurrentActiveUser from '../../components/CurrentActiveUser'
 
 const Participant: FC = () => {
   const { path } = useRouteMatch()
@@ -17,6 +17,7 @@ const Participant: FC = () => {
   return (
     <>
       <HomeNavbar type={'participant'} />
+      <CurrentActiveUser />
       <div className="container mt-5">
         <div className="columns">
           <div className="column is-3">
@@ -41,12 +42,6 @@ const Participant: FC = () => {
                 path={`${path}/add-document`}
                 component={AddDocument}
               />
-              <Route
-                exact
-                path={`${path}/view-document`}
-                component={ViewDocument}
-              />
-
               <Route exact path={`${path}/product`} component={Product} />
               <Route exact path={`${path}/tracking`} component={Tracking} />
               <Route exact path={`${path}/recall`} component={Recall} />

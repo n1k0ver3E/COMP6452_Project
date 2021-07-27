@@ -1,3 +1,5 @@
+import DocumentService from './DocumentService'
 import ParticipantService from './ParticipantService'
+import ProductService from './ProductService'
 
-export { ParticipantService }
+export { DocumentService, ParticipantService, ProductService }

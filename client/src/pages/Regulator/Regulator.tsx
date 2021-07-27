@@ -3,8 +3,9 @@ import { Switch, Route, useRouteMatch } from 'react-router-dom'
 import HomeNavbar from '../../components/HomeNavbar'
 import SideNavBar from '../../components/SideNavBar'
 import Dashboard from './Dashboard'
-import ApproveDocument from './ApproveDocument'
+import ReviewAccounts from './ReviewAccounts'
 import VerifyDocument from './VerifyDocument'
+import CurrentActiveUser from '../../components/CurrentActiveUser'
 
 const Regulator: FC = () => {
   const { path } = useRouteMatch()
@@ -12,6 +13,7 @@ const Regulator: FC = () => {
   return (
     <>
       <HomeNavbar type={'regulator'} />
+      <CurrentActiveUser />
       <div className="container mt-5">
         <div className="columns">
           <div className="column is-3">
@@ -23,8 +25,8 @@ const Regulator: FC = () => {
               <Route exact path={path} component={Dashboard} />
               <Route
                 exact
-                path={`${path}/approve-document`}
-                component={ApproveDocument}
+                path={`${path}/review-accounts`}
+                component={ReviewAccounts}
               />
               <Route
                 exact

@@ -1,117 +1,165 @@
 import Mongoose from '../config/db';
-import fs from 'fs';
-import path from 'path';
-import { Schema, model, connect } from 'mongoose';
-import {ProductLocationRequestModel, ProductTrackingModel} from '../models/TraceModel';
+import { ProductLocationRequestModel, ProductTrackingModel } from '../models/TraceModel';
+import secrets from "../../secrets.json";
 var HDWalletProvider = require("@truffle/hdwallet-provider");
 const Eth: any = require('web3-eth');
 
 var Product = require("./../../../client/src/contracts/Trace.json");
 var addresses = require("./../../../solidity/addresses.json");
 
+
+// Read the tract contract address.
 const contractAddress = addresses.trace;
 console.log("Trace contract address is:", contractAddress);
 
-
-// Please setup the private keys. The addresses are 5 and 7.
-const provider = new HDWalletProvider([
-    "b8abd31cde151ed426c119d02f0b3c79851bbfda64e43daaafbb1c8006e8cb52",
-    "09ae8c83fb214d9647e904d2f01508bd5296ec913b1b70a525818a6005d76d8c"
-], "http://localhost:9545", 0, 2);
+// Setup the wallet
+const provider = new HDWalletProvider({
+    mnemonic: {
+        phrase: secrets.mnemonic
+    },
+    providerOrUrl: "http://localhost:7545"
+});
 
 const eth = new Eth(provider);
 
+// Create a tract contract reference
 const traceContract = new eth.Contract(Product['abi'], contractAddress);
 
+// Dummy setting to simulate the data logging.
+const maxTick = 10
+
+// Dummy function to get the dummy location. Each oracle will have to implement their own approach to retrieve by the trackingNumber.
+function retrieveProductLocaionByTrackingNumber(trackingNumber: string) {
+    // Code for retrieve the product location.
+    // We use random location around -33.91759, 151.23054 to simulate the tracking.
+
+    let latitude = Math.floor(-3391759 + 100 * Math.random());
+    let longitude = Math.floor(15123054 + 100 * Math.random());
+
+    // Return the latitude, longitude.
+    return [latitude, longitude]
+}
+
+// Connect to the database
 Mongoose().initialiseMongoConnection().then(function(mongo) {
+
+    // A wrapping funciton.
     function getLogs() {
-        ProductTrackingModel.find({ trackerAddress: addresses.oracle }).exec().then(function(row) {
-            let promises = row.filter(r => r.tick == null || r.tick <= 200).map((r) => {
+
+        // Retrieve the data from the database. Filter by the address.
+        // This query for products that need to update the location information.
+        ProductTrackingModel.find({ trackerAddress: addresses.oracle, $or: [{ tick: { $exists: false } }, { tick: { $lte: maxTick } }] }).exec().then(function(row) {
+            let promises = row.map((r) => {
                 return new Promise<void>((resolve, reject) => {
-                    r.tick = (r.tick == null ? 0 : r.tick) + 1;
-                    r.save().then(() => {
 
-                        // Location is a random point around (-33.91759, 151.23054).
+                    try {
+                        // Call the function logLocation to log the product location on to the blockchain.
+                        traceContract.methods
+                            .logLocation(r.productId, Date.now(), ...retrieveProductLocaionByTrackingNumber(r.trackingNumber))
+                            .send({ from: addresses.oracle }, function(err: any, result: any) {
 
-                        let latitude = Math.floor(-3391759 + 100 * Math.random());
-                        let longitude = Math.floor(15123054 + 100 * Math.random());
+                                // Increase the tick to simulate the update counter.
+                                // We limit the automatically log to `maxTick`
+                                r.tick = (r.tick == null ? 0 : r.tick) + 1;
 
-                        traceContract.methods.logLocation(r.productId, Date.now(), latitude, longitude).send({ from: addresses.oracle }, function(err: any, result: any) {
-                            console.log(err, result);
-                            resolve();
-                        });
-                    });
+                                // Save the update result to the database.
+                                r.save().then(() => {
+                                    // Log the information to console.
+                                    console.log(`Oracle [ProductTracking] Oracle: productId=${r.productId} tick=${r.tick}`);
+
+                                    // Make as success.
+                                    resolve();
+                                });
+                            });
+                    } catch {
+                        reject();
+                    }
                 });
             });
 
             return Promise.all(promises);
         }).then(() => {
-            return ProductTrackingModel.find({ trackerAddress: addresses.logistic }).exec().then(function(row) {
-                let promises = row.filter(r => r.tick == null || r.tick <= 200).map((r) => {
+            // Retrieve the data from the database. Filter by the address.
+            // This query for products that need to update the location information.
+            return ProductTrackingModel.find({ trackerAddress: addresses.logistic, $or: [{ tick: { $exists: false } }, { tick: { $lte: maxTick } }] }).exec().then(function(row) {
+                let promises = row.map((r) => {
                     return new Promise<void>((resolve, reject) => {
-                        r.tick = (r.tick == null ? 0 : r.tick) + 1;
-                        r.save().then(() => {
-                            let latitude = Math.floor(-3391759 + 100 * Math.random());
-                            let longitude = Math.floor(15123054 + 100 * Math.random());
+                        try {
+                            // Call the function logLocation to log the product location on to the blockchain.
+                            traceContract.methods
+                                .logLocation(r.productId, Date.now(), ...retrieveProductLocaionByTrackingNumber(r.trackingNumber))
+                                .send({ from: addresses.logistic }, function(err: any, result: any) {
 
-                            traceContract.methods.logLocation(r.productId, Date.now(), latitude, longitude).send({ from: addresses.logistic }, function(err: any, result: any) {
-                                console.log(err, result);
-                                resolve();
-                            });
-                        });
+
+                                    // Increase the tick to simulate the update counter.
+                                    // We limit the automatically log to `maxTick`
+                                    r.tick = (r.tick == null ? 0 : r.tick) + 1;
+
+                                    // Save the update result to the database.
+                                    r.save().then(() => {
+
+                                        // Log the information to console.
+                                        console.log(`Oracle [ProductTracking] Logistic: productId=${r.productId} tick=${r.tick}`);
+
+                                        // Make as success.
+                                        resolve();
+                                    });
+                                });
+                        } catch {
+                            reject();
+                        }
                     });
                 });
-
-                console.log(promises);
 
                 return Promise.all(promises);
             });
         }).then(() => {
-            console.log("timeout")
-            setTimeout(getLogs, 1000);
+            // Retrieve the data from the database.
+            // This query for products that requested for the location by user.
+            return ProductLocationRequestModel.find({ isResponded: false }).exec().then(function(requests) {
+                let promises = requests.map((request) => {
+                    return new Promise<void>((resolve, reject) => {
+                        try {
+                            // Retrieve the product information from the database
+                            ProductTrackingModel.findOne({ productId: request.productId }).exec().then(function(product) {
+                                if( product == null ) {
+                                    reject();
+                                    return;
+                                }
+
+                                // Call the function logLocation to log the product location on to the blockchain.
+                                traceContract.methods
+                                    .logLocation(request.productId, Date.now(), ...retrieveProductLocaionByTrackingNumber(product.trackingNumber))
+                                    .send({ from: product?.trackerAddress }, function(err: any, result: any) {
+
+                                        // Update the status request status.
+                                        request.isResponded = true;
+
+                                        // Save
+                                        request.save().then(() => {
+
+                                            // Log the information to console.
+                                            console.log(`Oracle [ProductLocationRequest] productId=${request.productId}`);
+
+                                            // Mark as success.
+                                            resolve();
+                                        });
+                                    });
+                            });
+                        } catch {
+                            reject();
+                        }
+                    });
+                });
+
+                return Promise.all(promises);
+            });
+        }).then(() => {
+            // console.log("timeout")
+            setTimeout(getLogs, 7000);
         });
-
-
-        // traceContract.events.ProductTracking({ fromBlock: fromBlockProductTracking }, function(err: any, ev: any) {
-        //     if( ev === null )
-        //         return;
-
-        //     let data = {
-        //         productId: ev.returnValues.productId,
-        //         trackerAddress: ev.returnValues.logisticAccountAddress
-        //     };
-
-
-
-        //     fromBlockProductTracking = ev.blockNumber;
-        // });
-
-        // traceContract.events.ProductLocationRequest({ fromBlock: fromBlockProductLocationRequest }, function(err: any, ev: any) {
-        //     if( ev === null )
-        //         return;
-
-        //     let data = {
-        //         productId: ev.returnValues.productId,
-        //         blockNumber: ev.blockNumber,
-        //     };
-
-        //     Mongoose().initialiseMongoConnection().then(function(mongo) {
-        //         ProductLocationRequestModel.find(data).exec().then(function(row) {
-        //             if( row.length == 0 ) {
-        //                 let doc = new ProductLocationRequestModel(data);
-
-        //                 return doc.save().then(()=>{
-        //                     console.log(arguments);
-        //                 });
-        //             }
-        //         });
-        //     });
-
-        //     fromBlockProductLocationRequest = ev.blockNumber;
-        // });
-
-
     }
 
+    // Call the wrapping function
     getLogs();
 });

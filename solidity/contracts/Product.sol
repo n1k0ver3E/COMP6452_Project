@@ -9,7 +9,6 @@ import "./Trace.sol";
 contract ProductSC {
     enum status {
         FARMING,
-        HARVESTING,
         MANUFACTURING,
         SHIPPING,
         RETAILING,
@@ -17,14 +16,6 @@ contract ProductSC {
         RECALLING
     }
 
-    //For sendProduct function
-    // based on Original design
-    enum SendProductStatus {
-        pending,
-        approved,
-        rejected
-    }
-    
     struct Product {
         uint256 productId;
         string productName;
@@ -36,12 +27,13 @@ contract ProductSC {
         address retailerId;
         address ConsumerId;
     }
-    
+
     struct Farming {
         uint256 productId;
         uint256 recordBlock;
         uint256 farmingTime;
         uint256 harvestTime;
+        string productLocation;
     }
 
     struct Manufacturing {
@@ -50,101 +42,97 @@ contract ProductSC {
         uint256 recordBlock;
         uint256 timestamp;
     }
-    
-    // relevant to track.sol, 
+
+    // relevant to track.sol,
     // may add new attribute after interact with tracker
     struct Logistics {
         uint256 productId;
         uint256 recordBlock;
         uint256 timeStamp;
+        //To store sender and receiver addresses
+        address sender;
+        address receiver;
     }
-    
+
     struct Retailing {
         uint256 productId;
         uint256 recordBlock;
         uint256 timeStamp;
     }
-    
+
     struct Purchasing {
         uint256 productId;
         uint256 recordBlock;
         uint256 timeStamp;
     }
 
-    struct SendProductItem {
-        uint256 productId;
-        address sender;
-        address receiver;
-        SendProductStatus status;
-        bool isValue; // To check duplicate SendProductItem
-    }
-
-    uint256 public numProducts = 0;
+    // Event for the current product status
+    event CurrentProductStatus(uint256 productId, uint256 productStatus);
+    // maaping parts
     mapping(uint256 => Product) public products;
-    
-    // status updating info
     mapping(uint256 => Farming) public farming_process;
     mapping(uint256 => Manufacturing) public manu_process;
     mapping(uint256 => Logistics) public logi_process;
     mapping(uint256 => Retailing) public retail_process;
     mapping(uint256 => Purchasing) public purchase_process;
-    
-    //For sendProduct function
-    // based on Original design
-    mapping(uint256 => SendProductItem) public sendProducts;
-    mapping(address => Product[]) public receiverProducts;
 
-
-    event Harvested(uint256 productId);
-    event Manufactured(uint256 productId);
-    event Distributed(uint256 productId);
-    event Retailed(uint256 productId);
-    event Purchased(uint256 productId);
-  
+    uint256 public numProducts = 0;
     address public traceAddress;
+    Profile profile;
+    address public regulatorAddress;
 
-    constructor(address _traceAddress) {
+    constructor(address _traceAddress, address _profileAddress) {
         traceAddress = _traceAddress;
+        profile = Profile(_profileAddress);
+        //add regulator address
+        regulatorAddress = profile.getRegulatorAddress();
     }
 
-    function createProduct(string memory name) public returns (uint256) {
-        Product memory p;
-        p.productName = name;
-        numProducts = numProducts + 1;
-        p.productId = numProducts;
-        p.statusType = status.FARMING;
-        products[p.productId] = p;
-        return numProducts;
-    }
-
-    function addProductFarmingInfo(
-        uint256 _pid,
+    //1. For Farming process (The first node of one-line supply chain)
+    function createProduct(
+        string memory name,
         uint256 _farmtime,
-        uint256 _harvtime
-    ) public {
+        uint256 _harvtime,
+        string memory _productLocation
+    ) public isFarmerOnly returns (uint256) {
         require(
             _harvtime > _farmtime,
             "Harvest time should be later than farm time."
         );
 
-        Product storage existProduct = products[_pid];
-        existProduct.FarmerId = msg.sender;
-        existProduct.statusType = status.HARVESTING;
+        numProducts = numProducts + 1;
+        Product memory p;
+        p.productName = name;
+
+        p.productId = numProducts;
+        p.statusType = status.FARMING;
+        p.FarmerId = msg.sender;
+        products[p.productId] = p;
 
         Farming memory f;
-        f.productId = _pid;
+        f.productId = p.productId;
         f.farmingTime = _farmtime;
         f.harvestTime = _harvtime;
         f.recordBlock = block.number;
-        farming_process[_pid] = f;
-        
-        emit Harvested(_pid);
+        f.productLocation = _productLocation;
+        farming_process[p.productId] = f;
+
+        emit CurrentProductStatus(f.productId, uint256(p.statusType));
+
+        return numProducts;
     }
 
-    function manuProductInfo(
-        uint256 _pid, 
-        string memory _processtype
-    ) public {
+    //2. For MANUFACTURING process (The second node of one-line supply chain)
+    function manuProductInfo(uint256 _pid, string memory _processtype)
+        public
+        isManufacturerOnly
+        isProductActive(_pid)
+    {
+        require(
+            products[_pid].statusType == status.FARMING,
+            "The current status of product should be FARMING."
+        );
+
         Product storage existProduct = products[_pid];
         existProduct.manufacturerId = msg.sender;
         existProduct.statusType = status.MANUFACTURING;
@@ -155,138 +143,210 @@ contract ProductSC {
         m.recordBlock = block.number;
         m.timestamp = block.timestamp;
         manu_process[_pid] = m;
-        
-        
-        
-        emit Manufactured(_pid);
+
+        emit CurrentProductStatus(
+            m.productId,
+            uint256(existProduct.statusType)
+        );
     }
-    
-    function logiProductInfo(
-        address sender, uint256 _pid
-    ) public {
+
+    //3. For Logistic process (The third node of one-line supply chain)
+    //**Scope** Manufacturer sends the product to the chosen Logistic or Oracle.
+    // Valiadation
+    // 1. msg.sender account type = manufacturer
+    // 2. receiver = retailerId
+    // 3. logistic = logistic or oracle
+    function sendProduct(
+        uint256 _pid,
+        address receiver,
+        address logistic,
+        string memory trackingNumber
+    ) public OnlyProductReadyToSend(_pid) isManufacturerOnly {
+        require(
+            profile.isLogisticOrOracle(logistic) == true,
+            "It is not the logistic address."
+        );
+        require(
+            profile.isRetailer(receiver) == true,
+            "The receiver is not the retailer address."
+        );
+        require(
+            products[_pid].statusType == status.MANUFACTURING,
+            "The current status of product should be MANUFACTURING."
+        );
+        require(
+            bytes(trackingNumber).length != 0,
+            "The tracking number cannot be empty."
+        );
+
         Product storage existProduct = products[_pid];
-        existProduct.distributorId = sender;
+        existProduct.distributorId = msg.sender;
         existProduct.statusType = status.SHIPPING;
-        
+
         Logistics memory l;
         l.productId = _pid;
         l.recordBlock = block.number;
         l.timeStamp = block.timestamp;
+        l.sender = msg.sender;
+        l.receiver = receiver;
         logi_process[_pid] = l;
-        
-        emit Distributed(_pid);
-        
-    }
-    
-    function retailProductInfo(
-        address sender, uint256 _pid
-    ) public {
-        Product storage existProduct = products[_pid];
-        existProduct.retailerId = sender;
-        existProduct.statusType = status.RETAILING;
-        
-        Retailing memory r;
-        r.productId = block.number;
-        r.timeStamp = block.timestamp;
-        retail_process[_pid] = r;
-        
-        emit Retailed(_pid);
-    }
-    
-    function purchasingProductInfo(
-        address sender,
-        uint256 _pid,
-        uint256 _price
-    ) public {
-        Product storage existProduct = products[_pid];
-        existProduct.ConsumerId = sender;
-        existProduct.statusType = status.PURCHASING;
-        existProduct.productPrice = _price;
-        
-        Purchasing memory p;
-        p.productId = block.number;
-        p.timeStamp = block.timestamp;
-        purchase_process[_pid] = p;
-        
-        emit Purchased(_pid);
-        
-        
-    }
-        
-
-    //For sendProduct function
-    // based on Original design
-    event SendProduct(
-        uint256 indexed productId,
-        address sender,
-        address receiver,
-        uint256 status
-    );
-
-    // enum SendProductStatus {0=pending,1=approved,2=rejected}
-    // to validate the account type must do it off-chain to call profile contract
-    function sendProduct(uint256 productId, address receiver, address logistic, string memory trackingNumber )
-        public
-        checkDuplicateSendProductItem(productId)
-    {
-        SendProductItem memory newSendProductItem = SendProductItem(
-            productId,
-            msg.sender,
-            receiver,
-            SendProductStatus.pending,
-            true
-        );
-
-        sendProducts[productId] = newSendProductItem;
-        //get product item for products
-        Product memory productItem = products[productId];
-        receiverProducts[receiver].push(productItem);
-        emit SendProduct(
-            newSendProductItem.productId,
-            newSendProductItem.sender,
-            newSendProductItem.receiver,
-            uint256(newSendProductItem.status)
-        );
 
         Trace trace = Trace(traceAddress);
-        trace.addProduct(productId, logistic, trackingNumber);
+        // set product contract address
+        trace.addProduct(_pid, logistic, trackingNumber);
+
+        emit CurrentProductStatus(
+            l.productId,
+            uint256(existProduct.statusType)
+        );
     }
 
-    function receiveProduct(uint256 productId, bool receiveStatus) public {
-        if (receiveStatus == true) {
-            sendProducts[productId].status = SendProductStatus.approved;
-        } else {
-            sendProducts[productId].status = SendProductStatus.rejected;
-        }
+    //4. For Retailing process (The fourth node of one-line supply chain)
+    function retailProductInfo(uint256 _pid)
+        public
+        isRetailerOnly
+        isProductActive(_pid)
+    {
+        Product storage existProduct = products[_pid];
+        existProduct.retailerId = msg.sender;
+        existProduct.statusType = status.RETAILING;
+
+        Retailing memory r;
+        r.productId = _pid;
+        r.recordBlock = block.number;
+        r.timeStamp = block.timestamp;
+        retail_process[_pid] = r;
+
+        emit CurrentProductStatus(
+            r.productId,
+            uint256(existProduct.statusType)
+        );
+    }
+
+    //5. For Purchasing process (The last node of one-line supply chain)
+    function purchasingProductInfo(uint256 _pid, uint256 _price)
+        public
+        isConsumerOnly
+        isProductActive(_pid)
+    {
+        require(
+            products[_pid].statusType == status.RETAILING,
+            "The current status of product should be RETAILING."
+        );
+
+        Product storage existProduct = products[_pid];
+        existProduct.ConsumerId = msg.sender;
+        existProduct.statusType = status.PURCHASING;
+        existProduct.productPrice = _price;
+
+        Purchasing memory p;
+        p.productId = _pid;
+        p.recordBlock = block.number;
+        p.timeStamp = block.timestamp;
+        purchase_process[_pid] = p;
+
+        emit CurrentProductStatus(
+            p.productId,
+            uint256(existProduct.statusType)
+        );
+    }
+
+    //event
+    event RecallProduct(uint256 productId);
+
+    //Validation
+    // 1. the sender must be Farmer; manufacturer; distributor; retailer; Consumer in this product
+    // 2. The product status is not RECALLING
+    function recallProduct(uint256 productId)
+        public
+        isProductActive(productId)
+    {
+        require(
+            msg.sender == products[productId].FarmerId ||
+                msg.sender == products[productId].manufacturerId ||
+                msg.sender == products[productId].distributorId ||
+                msg.sender == products[productId].retailerId ||
+                msg.sender == products[productId].ConsumerId,
+            "The address is not farmer,manufacturer, distributor, retailer or consumer in this product."
+        );
+
+        products[productId].statusType = status.RECALLING;
+        emit RecallProduct(productId);
     }
 
     // private functions
     // Does account address exist?
-    function isExistSendProductItem(uint256 productId)
+    function isProductReadyToSend(uint256 productId)
         private
         view
         returns (bool)
     {
-        if (sendProducts[productId].isValue) {
+        if (products[productId].statusType == status.MANUFACTURING) {
             return true;
         }
         return false;
     }
 
-    modifier checkDuplicateSendProductItem(uint256 _productId) {
+    // Validation parts
+    // modifiers
+    modifier onlyRegulator {
         require(
-            isExistSendProductItem(_productId) == false,
-            "Cannot send the duplicate product id."
+            msg.sender == regulatorAddress,
+            "This function can only be executed by the regulator."
+        );
+        _;
+    }
+    modifier OnlyProductReadyToSend(uint256 _productId) {
+        require(
+            isProductReadyToSend(_productId) == true,
+            "Cannot send this product. Because the product is not ready to send or it has already been sent."
+        );
+        _;
+    }
+    modifier isFarmerOnly {
+        require(
+            profile.isFarmer(msg.sender) == true,
+            "This function can only be executed by the farmer."
         );
         _;
     }
 
-    // modifier isFarmer() {
-    //     require(operator[msg.sender].accountType == Profile.AccountType.Farmer, "This function can only be executed by the farmer.");
-    //     _;
-    // }
-    // modifier isApprove() {
-    //     require(operator[msg.sender].accountStatus == Profile.AccountStatus.Approved, "This action need to be approved.");
-    //     _;
-    // }
+    modifier isManufacturerOnly {
+        require(
+            profile.isManufacturer(msg.sender) == true,
+            "This function can only be executed by the manufacturer."
+        );
+        _;
+    }
+
+    modifier isLogisticOrOracleOnly {
+        require(
+            profile.isLogisticOrOracle(msg.sender) == true,
+            "This function can only be executed by the logistic or oracle."
+        );
+        _;
+    }
+
+    modifier isRetailerOnly {
+        require(
+            profile.isRetailer(msg.sender) == true,
+            "This function can only be executed by the retailer."
+        );
+        _;
+    }
+
+    modifier isConsumerOnly {
+        require(
+            profile.isConsumer(msg.sender) == true,
+            "This function can only be executed by the consumer."
+        );
+        _;
+    }
+    modifier isProductActive(uint256 _productId) {
+        require(
+            products[_productId].statusType != status.RECALLING,
+            "This product has already recalled."
+        );
+        _;
+    }
 }

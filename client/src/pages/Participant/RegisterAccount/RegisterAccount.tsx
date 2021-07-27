@@ -1,4 +1,4 @@
-import React, { FC, ChangeEvent, useContext, useState } from 'react'
+import React, { FC, ChangeEvent, useContext, useState, useEffect } from 'react'
 import RegistrationImage from '../../../assets/registration.png'
 import { ProfileContractContext } from '../../../contexts/ProfileContract'
 import { ProfileContractAPIContext } from '../../../contexts/ProfileContractAPI'
@@ -8,6 +8,8 @@ import {
 } from '../../../interfaces/contract'
 import RegisterForm from '../../../components/RegisterForm'
 import RegistrationSuccess from '../../../components/RegistrationSuccess'
+import './registeraccount.css'
+import getAccounts from '../../../utils/getAccounts'
 
 const initialState: IRegisterAccountDetails = {
   accountAddress: '',
@@ -17,9 +19,12 @@ const initialState: IRegisterAccountDetails = {
 
 const RegisterAccount: FC = () => {
   const { profileContract, accounts } = useContext(ProfileContractContext)
-  const { registerParticipant, registrationError } = useContext(
-    ProfileContractAPIContext
-  )
+  const { registerParticipant, registrationError, getAllParticipants } =
+    useContext(ProfileContractAPIContext)
+
+  useEffect(() => {
+    getAllParticipants()
+  }, [])
 
   const [data, setData] = useState<IRegisterAccountDetails>(initialState)
   const [isAccountAddressFieldValid, setIsAccountAddressFieldValid] =
@@ -65,6 +70,10 @@ const RegisterAccount: FC = () => {
     setData({ ...data, [name]: value })
   }
 
+  const backToRegister = () => {
+    setRegistrationSuccess(false)
+  }
+
   const handleRegister = async (e: any) => {
     e.preventDefault()
 
@@ -73,13 +82,13 @@ const RegisterAccount: FC = () => {
     setShowErrorNotice(false)
 
     try {
+      const _accounts = await getAccounts(accounts)
       const registerAccountResp = await profileContract?.methods
         .registerAccount(accountAddress, accountName, accountType)
-        .send({ from: accounts[0], value: 0, gasPrice: 21000 })
+        .send({ from: _accounts[0] })
 
       if (registerAccountResp) {
-        console.log('registered Account', registerAccountResp)
-
+        console.log("On-chain registerAccountResp", registerAccountResp)
         const {
           accountAddress,
           accountId,
@@ -118,6 +127,11 @@ const RegisterAccount: FC = () => {
           'It looks like no contract has been deployed. Please ask the regulator to deploy the contract and try again.'
       } else if (error.message.includes('must provide an Ethereum address')) {
         customErrorMsg = error.message
+      } else if (
+        error.message.includes("The tx doesn't have the correct nonce")
+      ) {
+        customErrorMsg =
+          "The tx doesn't have the correct nonce. account has a nonce of: 0 tx has nonce of: 9"
       } else {
         customErrorMsg = 'Something went wrong. Please try again shortly.'
       }
@@ -140,6 +154,7 @@ const RegisterAccount: FC = () => {
                   accountName={data.accountName}
                   accountType={data.accountType}
                   accountAddress={data.accountAddress}
+                  backToRegister={backToRegister}
                 />
               ) : (
                 <RegisterForm
@@ -156,7 +171,11 @@ const RegisterAccount: FC = () => {
               )}
             </div>
             <div className="column right has-text-centered">
-              <img src={RegistrationImage} alt="registration infographics" />
+              <img
+                src={RegistrationImage}
+                alt="registration infographics"
+                className="side-image"
+              />
             </div>
           </div>
         </div>

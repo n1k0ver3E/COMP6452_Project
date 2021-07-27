@@ -2,15 +2,16 @@ import { Model, model, Schema } from 'mongoose'
 import { IProductLocation } from "../interfaces/trace";
 
 interface ProductTracking {
-    blochNumber: number;
+    blockNumber: number;
     trackerAddress: string;
     productId: number;
+    trackingNumber: string;
     tick?: number;
 }
 
 interface ProductLocationRequest {
     productId: number;
-    blochNumber: number;
+    blockNumber: number;
     isResponded: Boolean;
 }
 
@@ -18,6 +19,7 @@ const productTrackingSchema = new Schema<ProductTracking>({
     blockNumber: { type: Number, required: true },
     trackerAddress: { type: String, required: true },
     productId: { type: Number, required: true },
+    trackingNumber: { type: String, required: true },
     tick: { type: Number, required: false },
 });
 

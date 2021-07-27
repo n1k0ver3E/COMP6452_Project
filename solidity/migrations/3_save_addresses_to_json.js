@@ -7,7 +7,7 @@ const Profile = artifacts.require("Profile");
 const fs = require('fs');
 
 
-module.exports = async function(deployer, networks, addresses) {
+module.exports = async function (deployer, networks, addresses) {
   const regulator = addresses[0];
   const creator = addresses[1];
   const farmer = addresses[2];
@@ -16,13 +16,14 @@ module.exports = async function(deployer, networks, addresses) {
   const logistic = addresses[5];
   const consumer = addresses[6];
   const oracle = addresses[7];
-  
-  await deployer.deploy(Profile, regulator, "Regulator", {from: creator});
-  await deployer.deploy(Trace, Profile.address, {from: creator})
-  await deployer.deploy(ProductSC, Trace.address, {from: creator});
 
-  
-  
+  ///await deployer.deploy(Profile, regulator, "Regulator", {from: creator});
+  await Profile.deployed();
+  await deployer.deploy(Trace, Profile.address, { from: regulator })
+  await deployer.deploy(ProductSC, Trace.address, Profile.address, { from: regulator });
+
+
+
   const data = {
     regulator: regulator,
     creator: creator,

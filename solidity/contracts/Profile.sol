@@ -10,11 +10,13 @@ pragma solidity ^0.8.0;
  * 2. only one regulator address per 1 profile contract
  * Program flow
  * 1. create "Profile contract" by adding regulator's address in its constructor.
- * 2. The participants(1=Farmer,2=Manufacturer,3=Retailer,4=Logistic) use the backend(off-chain) to call function registerAccount(on-chain)
- * 3. Event RegisterAccount is raised and the backend (off-chain) can get error and result from function registerAccount(on-chain). The backend can store the data in database off-chain.
- * 4. The initial of account status is  0=Pending.
- * 5. The regulator uses the off-chain app to pass the parameter of each participant account address and account status to function approveAccount(on-chain).
- * 6. To get accountInfo (struct Account), can directly call mapping accountInfoByAddress[accountAddress]
+ * 2. The regulator activates the contract.
+ * 3. The regulator enables the registration function.
+ * 4. The participants(1=Farmer,2=Manufacturer,3=Retailer,4=Logistic) use the backend(off-chain) to call function registerAccount(on-chain)
+ * 5. Event RegisterAccount is raised and the backend (off-chain) can get error and result from function registerAccount(on-chain). The backend can store the data in database off-chain.
+ * 6. The initial of account status is  0=Pending.
+ * 7. The regulator uses the off-chain app to pass the parameter of each participant account address and account status to function approveAccount(on-chain).
+ * 8. To get accountInfo (struct Account), can directly call mapping accountInfoByAddress[accountAddress]
  */
 contract Profile {
     //AccountStatus: 0=Pending, 1=Approved, 2=Rejected
@@ -34,6 +36,26 @@ contract Profile {
         Oracle
     }
 
+    // state management
+    //1. Machine State for the profile contract
+    // Activated = The participants can register. The regualtor can verify the accounts.
+    // Deactivated = The participants **cannot** register. The regualtor **cannot** verify the accounts.
+    enum MachineState {
+        Activated,
+        Deactivated
+    }
+    // 2. State for registration function
+    // Enable = the participants can register their Accounts.
+    // Disable = the participants cannot register their Accounts.
+    // Both stages the regulator can still verify the participants' Accounts.
+    enum RegisState {
+        Enable,
+        Disable
+    }
+
+    RegisState private regisState;
+    MachineState private machineState;
+
     address private regulatorAddress;
     uint256 public lastAccountId;
 
@@ -44,6 +66,7 @@ contract Profile {
         AccountType accountType;
         AccountStatus accountStatus;
         bool isValue; // To check duplicate account
+        uint256 blockNo;
     }
     // Get account Info. by account address.
     mapping(address => Account) public accountInfoByAddress;
@@ -59,11 +82,17 @@ contract Profile {
             lastAccountId,
             AccountType.Regulator,
             AccountStatus.Approved,
-            true
+            true,
+            block.number
         );
 
         //add regulator acc. address to mapping.
         accountInfoByAddress[_regulatorAddress] = regulatorAcc;
+
+        //Initial regisState
+        regisState = RegisState.Disable;
+        //Initial state StateMachine
+        machineState = MachineState.Deactivated;
     }
 
     // Create events for using in JavaScript API
@@ -86,8 +115,17 @@ contract Profile {
         address _accountAddress,
         string memory _accountName,
         uint256 _accountTypeValue
-    ) public checkDuplicateAddress(_accountAddress) {
+    )
+        public
+        checkDuplicateAddress(_accountAddress)
+        onlyActiveRegisState
+        onlyActivatedMachineState
+    {
         require(_accountTypeValue != 0, "Cannot register as the regulator.");
+        require(
+            msg.sender == _accountAddress,
+            "The account address must be the same as the sender's address"
+        );
         uint256 tmpNewId = lastAccountId + 1;
         Account memory newAcc = Account(
             _accountAddress,
@@ -95,7 +133,8 @@ contract Profile {
             tmpNewId,
             AccountType(_accountTypeValue),
             AccountStatus.Pending,
-            true
+            true,
+            block.number
         );
 
         //add a new acc. address to mapping.
@@ -116,6 +155,7 @@ contract Profile {
     function approveAccount(address _accountAddress, uint256 _accountStatus)
         public
         onlyRegulator
+        onlyActivatedMachineState
     {
         // Get account by accountAddress
         accountInfoByAddress[_accountAddress].accountStatus = AccountStatus(
@@ -132,6 +172,7 @@ contract Profile {
     function getAccountInfoByAddress(address _accountAddress)
         public
         view
+        onlyActivatedMachineState
         returns (
             string memory accountName,
             uint256 accountId,
@@ -146,9 +187,28 @@ contract Profile {
         accountStatusValue = uint256(acc.accountStatus);
     }
 
+    function isAccountOwner(address _accountAddress, uint256 _accountId)
+        public
+        view
+        onlyActivatedMachineState
+        returns (bool)
+    {
+        Account memory acc = accountInfoByAddress[_accountAddress];
+        if (bytes(acc.accountName).length != 0) {
+            if (acc.accountId == _accountId) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
     function isLogisticOrOracle(address _accountAddress)
         public
         view
+        onlyActivatedMachineState
         returns (bool)
     {
         if (
@@ -171,17 +231,194 @@ contract Profile {
         }
     }
 
-    // private functions
+    function isFarmer(address _accountAddress)
+        public
+        view
+        onlyActivatedMachineState
+        returns (bool)
+    {
+        if (
+            bytes(accountInfoByAddress[_accountAddress].accountName).length != 0
+        ) {
+            if (
+                (accountInfoByAddress[_accountAddress].accountType ==
+                    AccountType.Farmer) &&
+                (accountInfoByAddress[_accountAddress].accountStatus ==
+                    AccountStatus.Approved)
+            ) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    function isManufacturer(address _accountAddress)
+        public
+        view
+        onlyActivatedMachineState
+        returns (bool)
+    {
+        if (
+            bytes(accountInfoByAddress[_accountAddress].accountName).length != 0
+        ) {
+            if (
+                (accountInfoByAddress[_accountAddress].accountType ==
+                    AccountType.Manufacturer) &&
+                (accountInfoByAddress[_accountAddress].accountStatus ==
+                    AccountStatus.Approved)
+            ) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    function isRetailer(address _accountAddress)
+        public
+        view
+        onlyActivatedMachineState
+        returns (bool)
+    {
+        if (
+            bytes(accountInfoByAddress[_accountAddress].accountName).length != 0
+        ) {
+            if (
+                (accountInfoByAddress[_accountAddress].accountType ==
+                    AccountType.Retailer) &&
+                (accountInfoByAddress[_accountAddress].accountStatus ==
+                    AccountStatus.Approved)
+            ) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    function isConsumer(address _accountAddress)
+        public
+        view
+        onlyActivatedMachineState
+        returns (bool)
+    {
+        if (
+            bytes(accountInfoByAddress[_accountAddress].accountName).length != 0
+        ) {
+            if (
+                (accountInfoByAddress[_accountAddress].accountType ==
+                    AccountType.Consumer) &&
+                (accountInfoByAddress[_accountAddress].accountStatus ==
+                    AccountStatus.Approved)
+            ) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    function getRegulatorAddress()
+        public
+        view
+        onlyActivatedMachineState
+        returns (address)
+    {
+        address _regulatorAddress = regulatorAddress;
+        return _regulatorAddress;
+    }
+
     // Does account address exist?
     function isExisAccount(address _accountAddress)
         private
         view
+        onlyActivatedMachineState
         returns (bool)
     {
         if (accountInfoByAddress[_accountAddress].isValue) {
             return true;
         }
         return false;
+    }
+
+    // State management
+
+    function getRegisState()
+        public
+        view
+        onlyRegulator
+        onlyActivatedMachineState
+        returns (uint256)
+    {
+        uint256 _regisState = uint256(regisState);
+        return _regisState;
+    }
+
+    /// @notice Enable registration fn
+    function setEnableRegisState()
+        public
+        onlyRegulator
+        onlyActivatedMachineState
+        returns (uint256)
+    {
+        // Enable registration
+        regisState = RegisState.Enable;
+        return uint256(regisState);
+    }
+
+    /// @notice Disable registration fn
+    function setDisableRegisState()
+        public
+        onlyRegulator
+        onlyActivatedMachineState
+        returns (uint256)
+    {
+        // Disable registration
+        regisState = RegisState.Disable;
+        return uint256(regisState);
+    }
+
+    function getMachineState() public view onlyRegulator returns (uint256) {
+        uint256 _machineState = uint256(machineState);
+        return _machineState;
+    }
+
+    /// @notice Enable registration fn
+    function setActivatedMachineState() public onlyRegulator returns (uint256) {
+        // Activate profile contract
+        machineState = MachineState.Activated;
+        regisState = RegisState.Enable;
+        return uint256(machineState);
+    }
+
+    /// @notice Disable registration fn
+    function setDeactivatedMachineState()
+        public
+        onlyRegulator
+        returns (uint256)
+    {
+        // Deactivate profile contract
+        machineState = MachineState.Deactivated;
+        // Disable regis State
+        regisState = RegisState.Disable;
+        return uint256(machineState);
+    }
+
+    /// @notice Destroy Profile Contract
+    function destroyContract() public payable onlyRegulator {
+        // Disable registration
+        regisState = RegisState.Disable;
+        address payable regulator_address = payable(address(regulatorAddress));
+        selfdestruct(regulator_address);
     }
 
     // modifier
@@ -196,6 +433,20 @@ contract Profile {
         require(
             isExisAccount(_accountAddress) == false,
             "Cannot register the duplicate account."
+        );
+        _;
+    }
+    modifier onlyActiveRegisState {
+        require(
+            regisState == RegisState.Enable,
+            "The registration function is not enable."
+        );
+        _;
+    }
+    modifier onlyActivatedMachineState {
+        require(
+            machineState == MachineState.Activated,
+            "This contract is not activated by the regulator."
         );
         _;
     }
