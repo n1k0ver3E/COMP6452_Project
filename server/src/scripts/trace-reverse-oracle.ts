@@ -50,7 +50,7 @@ Mongoose().initialiseMongoConnection().then(function(mongo) {
                     // Save the data to the database.
                     return doc.save().then(() => {
                         // Log the saved record to console.
-                        console.log(`[ProductTracking] blockNumber=${doc.blockNumber} productId=${doc.productId} trackerAddress=${doc.trackerAddress} trackingNumber=${doc.trackingNumber}`);
+                        console.log(`Reverse Oracle [ProductTracking] blockNumber=${doc.blockNumber} productId=${doc.productId} trackerAddress=${doc.trackerAddress} trackingNumber=${doc.trackingNumber}`);
                     });
                 }
             });
@@ -83,7 +83,7 @@ Mongoose().initialiseMongoConnection().then(function(mongo) {
                     // Save the data to database
                     return doc.save().then(() => {
                         // Output the info to the console.
-                        console.log(`[ProductLocationRequest] blockNumber=${doc.blockNumber} productId=${doc.productId}`);
+                        console.log(`Reverse Oracle [ProductLocationRequest] blockNumber=${doc.blockNumber} productId=${doc.productId}`);
                     });
                 }
             });
@@ -118,7 +118,7 @@ Mongoose().initialiseMongoConnection().then(function(mongo) {
                     // Save the data to the database
                     return doc.save().then(() => {
                         // Output the info to the console.
-                        console.log(`[ProductLocation] blockNumber=${doc.blockNumber} productId=${doc.productId} location=${doc.latitude/100000},${doc.longitude/100000}`);
+                        console.log(`Reverse Oracle [ProductLocation] blockNumber=${doc.blockNumber} productId=${doc.productId} location=${doc.latitude/100000},${doc.longitude/100000}`);
                     });
                 }
             });

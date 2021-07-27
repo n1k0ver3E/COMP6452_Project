@@ -21,15 +21,17 @@ module.exports = async function(deployer, networks, addresses) {
   const product = await ProductSC.deployed();
   const trace = await Trace.deployed();
 
-  var productBId = await product.createProduct.call("Product B", { from: farmer });
+  var productBId = await product.createProduct.call("Product B",1,2,"location", { from: farmer });
+  await product.createProduct("Product B",1,2,"location", { from: farmer });
 
-  await product.addProductFarmingInfo(productBId, 2, 3);
+  //await product.addProductFarmingInfo(productBId, 2, 3, { from: farmer });
+  await product.manuProductInfo( productBId, "test", {from: manufacturer})
 
-  await product.sendProduct(2, retailer, oracle, "DummyTrackingNumber2", {from: farmer});
+  await product.sendProduct(2, retailer, oracle, "DummyTrackingNumber2", {from: manufacturer});
 
   await trace.logLocation(2, 1234, 35, 35, {from: oracle});
 
-  await trace.requestForLocation(2, {from:farmer});
+  // await trace.requestForLocation(2, {from:farmer});
 
   await trace.logLocation(2, 1568, 36, 35, {from: oracle});
 };

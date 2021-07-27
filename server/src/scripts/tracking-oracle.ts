@@ -65,7 +65,7 @@ Mongoose().initialiseMongoConnection().then(function(mongo) {
                                 // Save the update result to the database.
                                 r.save().then(() => {
                                     // Log the information to console.
-                                    console.log(`[ProductTracking] Oracle: productId=${r.productId} tick=${r.tick}`);
+                                    console.log(`Oracle [ProductTracking] Oracle: productId=${r.productId} tick=${r.tick}`);
 
                                     // Make as success.
                                     resolve();
@@ -99,7 +99,7 @@ Mongoose().initialiseMongoConnection().then(function(mongo) {
                                     r.save().then(() => {
 
                                         // Log the information to console.
-                                        console.log(`[ProductTracking] Logistic: productId=${r.productId} tick=${r.tick}`);
+                                        console.log(`Oracle [ProductTracking] Logistic: productId=${r.productId} tick=${r.tick}`);
 
                                         // Make as success.
                                         resolve();
@@ -139,7 +139,7 @@ Mongoose().initialiseMongoConnection().then(function(mongo) {
                                         request.save().then(() => {
 
                                             // Log the information to console.
-                                            console.log(`[ProductLocationRequest] productId=${request.productId}`);
+                                            console.log(`Oracle [ProductLocationRequest] productId=${request.productId}`);
 
                                             // Mark as success.
                                             resolve();

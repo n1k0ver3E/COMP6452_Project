@@ -21,11 +21,31 @@ module.exports = async function(deployer, networks, addresses) {
   const product = await ProductSC.deployed();
   const trace = await Trace.deployed();
 
-  await product.sendProduct(1, retailer, logistic, "DummyTrackingNumber", {from: farmer});
+  await profile.registerAccount(farmer, "Farmer", 1, { from: farmer });
+  await profile.approveAccount(farmer, 1, { from: regulator });
 
-  await trace.logLocation(1, 1234, 25, 35, {from: logistic});
+  await profile.registerAccount(manufacturer, "Manufacturer", 2, { from: manufacturer });
+  await profile.approveAccount(manufacturer, 1, { from: regulator });
 
-  await trace.requestForLocation(1, {from:farmer});
+  await profile.registerAccount(retailer, "Retailer", 3, { from: retailer });
+  await profile.approveAccount(retailer, 1, { from: regulator });
 
-  await trace.logLocation(1, 1568, 26, 35, {from: logistic});
+  await profile.registerAccount(consumer, "Consumer", 4, { from: consumer });
+  await profile.approveAccount(consumer, 1, { from: regulator });
+
+  var productAId = await product.createProduct.call("Product A",1,2,"location", { from: farmer });
+  await product.createProduct("Product A",1,2,"location", { from: farmer });
+
+  //await product.addProductFarmingInfo(productAId, 1, 2, {from: farmer });
+  await product.manuProductInfo( productAId, "test", {from: manufacturer})
+
+
+
+  await product.sendProduct(productAId, retailer, logistic, "DummyTrackingNumber", {from: manufacturer});
+
+  await trace.logLocation(productAId, 1234, 25, 35, {from: logistic});
+
+  // await trace.requestForLocation(productAId, {from:farmer});
+
+  await trace.logLocation(productAId, 1568, 26, 35, {from: logistic});
 };
