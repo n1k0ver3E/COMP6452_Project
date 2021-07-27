@@ -7,6 +7,17 @@ import "./Profile.sol";
 import "./Trace.sol";
 
 contract ProductSC {
+    // state management
+    //1. Machine State for the product contract
+    // 1 Activated = The participants can use functions in the product contract.
+    // 0 Deactivated = The participants **cannot** use functions in the product contract.
+    enum MachineState {
+        Deactivated,
+        Activated
+    }
+
+    MachineState private machineState;
+
     enum status {
         FARMING,
         MANUFACTURING,
@@ -86,6 +97,8 @@ contract ProductSC {
         profile = Profile(_profileAddress);
         //add regulator address
         regulatorAddress = profile.getRegulatorAddress();
+        //initial machine state
+        machineState = MachineState.Deactivated;
     }
 
     //1. For Farming process (The first node of one-line supply chain)
@@ -94,7 +107,7 @@ contract ProductSC {
         uint256 _farmtime,
         uint256 _harvtime,
         string memory _productLocation
-    ) public isFarmerOnly returns (uint256) {
+    ) public isFarmerOnly onlyActivatedMachineState returns (uint256) {
         require(
             _harvtime > _farmtime,
             "Harvest time should be later than farm time."
@@ -127,6 +140,8 @@ contract ProductSC {
         public
         isManufacturerOnly
         isProductActive(_pid)
+        isProductIdExist(_pid)
+        onlyActivatedMachineState
     {
         require(
             products[_pid].statusType == status.FARMING,
@@ -161,7 +176,13 @@ contract ProductSC {
         address receiver,
         address logistic,
         string memory trackingNumber
-    ) public OnlyProductReadyToSend(_pid) isManufacturerOnly {
+    )
+        public
+        OnlyProductReadyToSend(_pid)
+        isManufacturerOnly
+        isProductIdExist(_pid)
+        onlyActivatedMachineState
+    {
         require(
             profile.isLogisticOrOracle(logistic) == true,
             "It is not the logistic address."
@@ -193,6 +214,7 @@ contract ProductSC {
 
         Trace trace = Trace(traceAddress);
         // set product contract address
+        //trace.setProductContractAddress(address(this));
         trace.addProduct(_pid, logistic, trackingNumber);
 
         emit CurrentProductStatus(
@@ -206,6 +228,8 @@ contract ProductSC {
         public
         isRetailerOnly
         isProductActive(_pid)
+        isProductIdExist(_pid)
+        onlyActivatedMachineState
     {
         Product storage existProduct = products[_pid];
         existProduct.retailerId = msg.sender;
@@ -228,6 +252,8 @@ contract ProductSC {
         public
         isConsumerOnly
         isProductActive(_pid)
+        isProductIdExist(_pid)
+        onlyActivatedMachineState
     {
         require(
             products[_pid].statusType == status.RETAILING,
@@ -260,6 +286,8 @@ contract ProductSC {
     function recallProduct(uint256 productId)
         public
         isProductActive(productId)
+        isProductIdExist(productId)
+        onlyActivatedMachineState
     {
         require(
             msg.sender == products[productId].FarmerId ||
@@ -279,12 +307,50 @@ contract ProductSC {
     function isProductReadyToSend(uint256 productId)
         private
         view
+        onlyActivatedMachineState
         returns (bool)
     {
         if (products[productId].statusType == status.MANUFACTURING) {
             return true;
         }
         return false;
+    }
+
+    function getMachineState() public view returns (uint256) {
+        uint256 _machineState = uint256(machineState);
+        return _machineState;
+    }
+
+    /// @notice Activate contract
+    function setActivatedMachineState() public onlyRegulator returns (uint256) {
+        //Validation
+        // The profile contract must be active.
+        require(
+            profile.getMachineState() == 1,
+            "The profile contract must be active before activate the product contract."
+        );
+        // Activate profile contract
+        machineState = MachineState.Activated;
+        return uint256(machineState);
+    }
+
+    /// @notice Deactivate contract
+    function setDeactivatedMachineState()
+        public
+        onlyRegulator
+        returns (uint256)
+    {
+        // Deactivate profile contract
+        machineState = MachineState.Deactivated;
+        return uint256(machineState);
+    }
+
+    /// @notice Destroy Profile Contract
+    function destroyContract() public payable onlyRegulator {
+        // Deactivate contract
+        machineState = MachineState.Deactivated;
+        address payable regulator_address = payable(address(regulatorAddress));
+        selfdestruct(regulator_address);
     }
 
     // Validation parts
@@ -346,6 +412,21 @@ contract ProductSC {
         require(
             products[_productId].statusType != status.RECALLING,
             "This product has already recalled."
+        );
+        _;
+    }
+
+    modifier isProductIdExist(uint256 __productId) {
+        require(
+            products[__productId].productId != 0,
+            "This product id does not exist."
+        );
+        _;
+    }
+    modifier onlyActivatedMachineState {
+        require(
+            machineState == MachineState.Activated,
+            "This contract is not activated by the regulator."
         );
         _;
     }

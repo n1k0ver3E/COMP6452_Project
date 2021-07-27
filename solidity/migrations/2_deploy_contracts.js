@@ -17,7 +17,8 @@ module.exports = async function (deployer, network, accounts) {
   await profile.setActivatedMachineState({ from: regulator });
 
   await deployer.deploy(Document, Profile.address);
+  const document = await Document.deployed();
+  //Activate the document contract 
+  await document.setActivatedMachineState({ from: regulator });
 
-
-  //deployer.deploy(Product)
 };
