@@ -13,28 +13,13 @@ const initialState: IManufacturerProcessDetails = {
   processingType: '',
 }
 
-const sendProductInitialState: ISendProductDetails = {
-  receiverAddress: '',
-  logisticsAddress: '',
-  trackNumber: '',
-}
-
 const Manufacturer: FC = () => {
   const { getFarmingAndManufacturingProducts, getProductById, manuProductInfo } = useContext(
     ProductContractAPIContext
   )
 
   const [data, setData] = useState<IManufacturerProcessDetails>(initialState)
-  const [sendProductData, setSendProductData] = useState<ISendProductDetails>(
-    sendProductInitialState
-  )
   const [isProcessingTypeFieldValid, setIsProcessingTypeFieldValid] =
-    useState<boolean>(false)
-  const [isReceiverAddressFieldValid, setIsReceiverAddressFieldValid] =
-    useState<boolean>(false)
-  const [isLogisticsAddressFieldValid, setIsLogisticsAddressFieldValid] =
-    useState<boolean>(false)
-  const [isTrackNumberFieldValid, setIsTrackNumberFieldValid] =
     useState<boolean>(false)
   const [products, setProducts] = useState<ICreateProductPayload[]>([])
   const [productDetails, setProductDetails] = useState({
@@ -82,38 +67,6 @@ const Manufacturer: FC = () => {
     setData({ ...data, [name]: value })
   }
 
-  const handleChangeSendProduct = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target
-
-    if (name === 'receiverAddress') {
-      if (value === '') {
-        setIsReceiverAddressFieldValid(false)
-      } else {
-        setIsReceiverAddressFieldValid(true)
-      }
-    }
-
-    if (name === 'logisticsAddress') {
-      if (value === '') {
-        setIsLogisticsAddressFieldValid(false)
-      } else {
-        setIsLogisticsAddressFieldValid(true)
-      }
-    }
-
-    if (name === 'trackNumber') {
-      if (value === '') {
-        setIsTrackNumberFieldValid(false)
-      } else {
-        setIsTrackNumberFieldValid(true)
-      }
-    }
-
-    setSendProductData({ ...sendProductData, [name]: value })
-  }
-
   const handleSubmission = async (e: any) => {
     e.preventDefault()
     setIsManufacturingLoading(true)
@@ -128,10 +81,6 @@ const Manufacturer: FC = () => {
     setData(initialState)
     setIsManufacturingLoading(false)
     console.log('product', product)
-  }
-
-  const handleSubmissionSendProduct = (e: any) => {
-    e.preventDefault()
   }
 
   return (
@@ -181,12 +130,12 @@ const Manufacturer: FC = () => {
               'https://images.unsplash.com/photo-1518253042715-a2534e1b0a7b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80'
             }
             alt="farm"
-            className="manufacturer-image"
+            className="product-image"
           />
         </div>
-        <div className="column is-half manufacturing-form has-background-white-bis">
+        <div className="column is-half farmer-form has-background-white-bis">
           <>
-            <div className="product-title">
+            <div className="product-title mt-6">
               <h1 className="title is-4">Manufacturer Process</h1>
             </div>
             <form className="mt-5">
@@ -235,63 +184,6 @@ const Manufacturer: FC = () => {
                 onClick={(e) => handleSubmission(e)}
               >
                 Add
-              </button>
-              <br />
-            </form>
-
-            <div className="product-title">
-              <h1 className="title is-4">Send Product</h1>
-            </div>
-            <form className="mt-5">
-              <div className="field">
-                <label className="label">Receiver (Address)</label>
-                <div className="control">
-                  <input
-                    className="input"
-                    type="text"
-                    name="receiverAddress"
-                    id="receiverAddress"
-                    onChange={handleChangeSendProduct}
-                  />
-                </div>
-              </div>
-
-              <div className="field">
-                <label className="label">Logistics (Address)</label>
-                <div className="control">
-                  <input
-                    className="input"
-                    type="text"
-                    name="logisticsAddress"
-                    id="logisticsAddress"
-                    onChange={handleChangeSendProduct}
-                  />
-                </div>
-              </div>
-
-              <div className="field">
-                <label className="label">Track Number</label>
-                <div className="control">
-                  <input
-                    className="input"
-                    type="text"
-                    name="trackNumber"
-                    id="trackNumber"
-                    onChange={handleChangeSendProduct}
-                  />
-                </div>
-              </div>
-
-              <button
-                className="button is-block is-link is-fullwidth mt-3"
-                disabled={
-                  !isReceiverAddressFieldValid ||
-                  !isLogisticsAddressFieldValid ||
-                  !isTrackNumberFieldValid
-                }
-                onClick={(e) => handleSubmissionSendProduct(e)}
-              >
-                Send
               </button>
               <br />
             </form>

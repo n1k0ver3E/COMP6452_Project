@@ -2,6 +2,7 @@ import React, { FC, useState } from 'react'
 import { ProductCategory } from '../../../enums/contract'
 import Farmer from '../../../components/Farmer'
 import Manufacturer from '../../../components/Manufacturer'
+import Shipping from '../../../components/Shipping'
 import Retail from '../../../components/Retail'
 import Purchase from '../../../components/Purchase'
 
@@ -122,6 +123,7 @@ const Product: FC = () => {
 
       {farmerActiveClass && <Farmer />}
       {manufacturerActiveClass && <Manufacturer />}
+      {shippingActiveClass && <Shipping />}
       {retailActiveClass && <Retail />}
       {purchaseActiveClass && <Purchase />}
     </>
