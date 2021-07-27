@@ -6,6 +6,9 @@ import {
 } from '../../interfaces/contract'
 import { ProductContractAPIContext } from '../../contexts/ProductContractAPI'
 import { ProductStatus } from '../../enums/contract'
+import { ProfileContractContext } from '../../contexts/ProfileContract'
+import { ProductContractContext } from '../../contexts/ProductContract'
+import getAccounts from '../../utils/getAccounts'
 
 const initialState: IManufacturerProcessDetails = {
   productId: 'DEFAULT',
@@ -16,6 +19,9 @@ const Manufacturer: FC = () => {
   const { getProductsByStatus, getProductById, manuProductInfo } = useContext(
     ProductContractAPIContext
   )
+
+  const { accounts } = useContext(ProfileContractContext)
+  const { productContract } = useContext(ProductContractContext)
 
   const [data, setData] = useState<IManufacturerProcessDetails>(initialState)
   const [isProcessingTypeFieldValid, setIsProcessingTypeFieldValid] =
@@ -71,21 +77,39 @@ const Manufacturer: FC = () => {
     setIsManufacturingLoading(true)
 
     // TODO: DO THE ON-CHAIN CALL
+    // Bugs:
+    // Cannot catch error from smart contract
+    // cannot exist looping UI
+    const _accounts = await getAccounts(accounts)
+    const manuProductResp = await productContract?.methods
+      .manuProductInfo(
+        data.productId,
+        data.processingType
+      )
+      .send({ from: _accounts[0] })
 
-    // API CALL
-    await manuProductInfo(data)
+    if (manuProductResp) {
+      // Get event
+      const { productId, productStatus } =
+        manuProductResp.events.CurrentProductStatus.returnValues
+      console.log("On-chain manufacturing of ", productId, ", product status is", productStatus)
+      // API CALL
+      await manuProductInfo(data)
 
-    // Do an API call to get update for the dropdown
-    setTimeout(async () => {
-      // Resetting the dropdown selection to exclude selection
-      const products = await getProductsByStatus(ProductStatus.FARMING)
-      setProducts(products)
 
-      // Reset form state, stop loading spinner and hide table
-      setData(initialState)
-      setIsManufacturingLoading(false)
-      setShowTable(false)
-    }, 1000)
+      // Do an API call to get update for the dropdown
+      setTimeout(async () => {
+        // Resetting the dropdown selection to exclude selection
+        const products = await getProductsByStatus(ProductStatus.FARMING)
+        setProducts(products)
+
+        // Reset form state, stop loading spinner and hide table
+        setData(initialState)
+        setIsManufacturingLoading(false)
+        setShowTable(false)
+      }, 1000)
+    }
+
   }
 
   return (
