@@ -44,7 +44,7 @@ contract Trace {
     function tracks(uint productId)
     public
     view
-    returns(string memory trackingNumber, int latitude, int longitude, bool isRequestingForLocation)  {
+    returns(string memory trackingNumber, int latitude, int longitude, bool isRequestingForLocation, uint nextRequestForLocationBlockNumber)  {
 
         // Retrieve the product from map.
         ProductTrack memory t = _tracks[ productId ];
@@ -52,10 +52,10 @@ contract Trace {
         // Check if the product exists or not by check the tracking number.
         if( t.trackingNumber.length == 0 ) {
             // Return `null` data.
-            return ("", 0, 0, false);
+            return ("", 0, 0, false, 0);
         } else {
             // Return the product data.
-            return ( string(t.trackingNumber), t.latitude, t.longitude, t.isRequestingForLocation );
+            return ( string(t.trackingNumber), t.latitude, t.longitude, t.isRequestingForLocation, t.nextRequestForLocationBlockNumber );
         }
     }
 

@@ -36,7 +36,7 @@ const RecallProductSuccess: FC<IRecallProductSuccessProps> = ({
 
       <div className="mt-3">
         <button className="button is-link" onClick={() => backToRecallProduct()}>
-          Back to RecallProduct
+          Recall another product
         </button>
       </div>
     </div>
