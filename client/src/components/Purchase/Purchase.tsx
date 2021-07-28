@@ -1,11 +1,17 @@
 import React, { ChangeEvent, FC, useContext, useState, useEffect } from 'react'
+import format from 'date-fns/format'
+import ReactTooltip from 'react-tooltip'
 import './purchase.css'
 import {
   ICreateProductPayload,
   IPurchaseProcessDetails,
 } from '../../interfaces/contract'
 import { ProductContractAPIContext } from '../../contexts/ProductContractAPI'
+import { ProfileContractContext } from '../../contexts/ProfileContract'
+import { ProductContractContext } from '../../contexts/ProductContract'
 import { ProductStatus } from '../../enums/contract'
+import { shortenedAddress } from '../../helpers/stringMutations'
+import getAccounts from '../../utils/getAccounts'
 
 const initialState: IPurchaseProcessDetails = {
   productId: 'DEFAULT',
@@ -13,9 +19,11 @@ const initialState: IPurchaseProcessDetails = {
 }
 
 const Purchase: FC = () => {
-  const { getProductsByStatus, getProductById } = useContext(
-    ProductContractAPIContext
-  )
+  const { getProductsByStatus, getProductById, purchasingProductInfo } =
+    useContext(ProductContractAPIContext)
+
+  const { accounts } = useContext(ProfileContractContext)
+  const { productContract } = useContext(ProductContractContext)
 
   const [data, setData] = useState<IPurchaseProcessDetails>(initialState)
   const [isPriceFieldValid, setIsPriceFieldValid] = useState<boolean>(false)
@@ -24,17 +32,20 @@ const Purchase: FC = () => {
     productId: -1,
     productName: '',
     productLocation: '',
-    farmDate: '',
-    harvestDate: '',
+    farmDate: new Date(),
+    harvestDate: new Date(),
     processingType: '',
     receiverAddress: '',
-    logisticsAddress: '',
     trackNumber: '',
+    price: 0,
     status: -1,
   })
 
   const [showTable, setShowTable] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [error, setError] = useState<boolean>(false)
+  const [errorMessage, setErrorMessage] = useState<string>('')
+  const [success, setSuccess] = useState<boolean>(false)
 
   useEffect(() => {
     const getProducts = async () => {
@@ -56,6 +67,8 @@ const Purchase: FC = () => {
 
       setProductDetails(product)
       setShowTable(true)
+      setError(false)
+      setSuccess(false)
     }
 
     if (name === 'price') {
@@ -69,12 +82,83 @@ const Purchase: FC = () => {
     setData({ ...data, [name]: value })
   }
 
-  const handleSubmission = (e: any) => {
+  const handleSubmission = async (e: any) => {
     e.preventDefault()
+    setIsLoading(true)
+
+    try {
+      // ON-CHAIN INTERACTION
+      const _accounts = await getAccounts(accounts)
+      const purchaseProductResp = await productContract?.methods
+        .purchasingProductInfo(data.productId, data.price)
+        .send({ from: _accounts[0] })
+
+      if (purchaseProductResp) {
+        // Get event
+        const { productId, productStatus } =
+          purchaseProductResp.events.CurrentProductStatus.returnValues
+        const { price } = data
+
+        const apiPayload = {
+          productId,
+          productStatus,
+          price,
+        }
+
+        // API CALL
+        await purchasingProductInfo(apiPayload)
+
+        // Do an API call to get update for the dropdown
+        setTimeout(async () => {
+          // Resetting the dropdown selection to exclude selection
+          const products = await getProductsByStatus(ProductStatus.RETAILING)
+          setProducts(products)
+
+          // Reset form state, stop loading spinner and hide table
+          setData(initialState)
+          setIsLoading(false)
+          setShowTable(false)
+          setError(false)
+
+          // show success message
+          setSuccess(true)
+        }, 1000)
+      }
+    } catch (e) {
+      if (
+        e.message.includes('This function can only be executed by the consumer')
+      ) {
+        setError(true)
+        setErrorMessage(
+          'This function can only be executed by the consumer. Please also ensure that your account has been approved by the regulator before proceeding.'
+        )
+        setIsLoading(false)
+        setShowTable(false)
+      }else {
+        setError(true)
+        setErrorMessage('Something went wrong. Please try again shortly.')
+        setIsLoading(false)
+        console.log(e.message)
+      }
+    }
   }
 
   return (
     <section className="container">
+      {error ? (
+        <div className="notification is-danger is-light">{errorMessage}</div>
+      ) : null}
+
+      {success ? (
+        <div className="notification is-success is-light mb-5">
+          <div>
+            <strong>{productDetails.productName}</strong> of{' '}
+            <strong>{productDetails.productLocation}</strong> has been
+            purchased.
+          </div>
+        </div>
+      ) : null}
+
       {showTable && (
         <div className="is-success is-light mb-5">
           <div className="title is-6">
@@ -90,10 +174,8 @@ const Purchase: FC = () => {
                 <th>Farm Date</th>
                 <th>Harvest Date</th>
                 <th>Processing Type</th>
-                <th>Receiver (Address)</th>
-                <th>Logistics (Address)</th>
+                <th>Receiver Address</th>
                 <th>Track Number</th>
-                <th>Status</th>
               </tr>
             </thead>
 
@@ -102,13 +184,20 @@ const Purchase: FC = () => {
                 <td>{productDetails.productId}</td>
                 <td>{productDetails.productName}</td>
                 <td>{productDetails.productLocation}</td>
-                <td>{productDetails.farmDate}</td>
-                <td>{productDetails.harvestDate}</td>
+                <td>
+                  {format(new Date(productDetails.farmDate), 'dd MMMM yyy')}
+                </td>
+                <td>
+                  {format(new Date(productDetails.harvestDate), 'dd MMMM yyy')}
+                </td>
                 <td>{productDetails.processingType}</td>
-                <td>{productDetails.receiverAddress}</td>
-                <td>{productDetails.logisticsAddress}</td>
+                <td data-tip={productDetails.receiverAddress}>
+                  {productDetails.receiverAddress.length > 20
+                    ? shortenedAddress(productDetails.receiverAddress)
+                    : productDetails.receiverAddress}
+                  <ReactTooltip />
+                </td>{' '}
                 <td>{productDetails.trackNumber}</td>
-                <td>{ProductStatus[productDetails.status]}</td>
               </tr>
             </tbody>
           </table>
@@ -131,7 +220,7 @@ const Purchase: FC = () => {
           </div>
           <form className="mt-5">
             <div className="field">
-              <label className="label">Product</label>
+              <label className="label">Product ({products.length})</label>
               <div className="select is-normal is-fullwidth">
                 <select
                   name="productId"
@@ -170,7 +259,11 @@ const Purchase: FC = () => {
             </div>
 
             <button
-              className="button is-block is-link is-fullwidth mt-3"
+              className={
+                isLoading
+                  ? 'button is-block is-link is-fullwidth mt-3 is-loading'
+                  : 'button is-block is-link is-fullwidth mt-3'
+              }
               disabled={
                 !isPriceFieldValid || data.productId === -1 || data.price === 0
               }

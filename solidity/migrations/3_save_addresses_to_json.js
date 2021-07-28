@@ -20,8 +20,9 @@ module.exports = async function (deployer, networks, addresses) {
   ///await deployer.deploy(Profile, regulator, "Regulator", {from: creator});
   await Profile.deployed();
   await deployer.deploy(Trace, Profile.address, { from: regulator })
-  await deployer.deploy(ProductSC, Trace.address, Profile.address, { from: regulator });
-
+  const product = await deployer.deploy(ProductSC, Trace.address, Profile.address, { from: regulator });
+  //Activate the product contract 
+  await product.setActivatedMachineState({ from: regulator });
 
 
   const data = {

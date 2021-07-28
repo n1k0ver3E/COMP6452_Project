@@ -148,10 +148,12 @@ const Farmer: FC = () => {
         .send({ from: _accounts[0] })
 
       if (createProductResp) {
-        const { productId, productLocation } =
-          createProductResp.events.Harvested.returnValues
+        const { productId, productStatus } =
+          createProductResp.events.CurrentProductStatus.returnValues
 
         const productName = payload.productName
+
+        const productLocation = payload.productLocation
 
         const apiPayload = {
           productId,
@@ -159,6 +161,7 @@ const Farmer: FC = () => {
           productLocation,
           farmDate: farmDateType,
           harvestDate: harvestDateType,
+          productStatus,
         }
 
         const product = await createProduct(apiPayload)
@@ -167,7 +170,6 @@ const Farmer: FC = () => {
         setSuccess(true)
         setSuccessProductDetails(product)
 
-        // TODO: Clear Values after submission
         setData(initialState)
 
         // Unset the error message if any and loading state back to false
@@ -184,8 +186,12 @@ const Farmer: FC = () => {
           'This function can only be executed by the farmer. Please also ensure that your account has been approved by the regulator before proceeding.'
         )
         setIsLoading(false)
+      }else {
+        setError(true)
+        setErrorMessage('Something went wrong. Please try again shortly.')
+        setIsLoading(false)
+        console.log(e.message)
       }
-      console.log(e.message)
     }
   }
 
@@ -196,34 +202,12 @@ const Farmer: FC = () => {
       ) : null}
 
       {success && !error ? (
-        <div className="is-success is-light mb-5">
-          <div className="title is-6">
-            <strong>Product Information</strong>
+        <div className="notification is-success is-light mb-5">
+          <div>
+            <strong>{successProductDetails.productName}</strong> of{' '}
+            <strong>{successProductDetails.productLocation}</strong> has been created and
+            successfully transferred to the manufacturing process.
           </div>
-
-          <table className="table is-striped table-style">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Location</th>
-                <th>Farm Date</th>
-                <th>Harvest Date</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              <tr>
-                <td>{successProductDetails.productId}</td>
-                <td>{successProductDetails.productName}</td>
-                <td>{successProductDetails.productLocation}</td>
-                <td>{successProductDetails.farmDate}</td>
-                <td>{successProductDetails.harvestDate}</td>
-                <td>{ProductStatus[successProductDetails.status!]}</td>
-              </tr>
-            </tbody>
-          </table>
         </div>
       ) : null}
 

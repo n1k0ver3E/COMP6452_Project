@@ -1,11 +1,17 @@
 import React, { ChangeEvent, FC, useState, useContext, useEffect } from 'react'
+import format from 'date-fns/format'
+import ReactTooltip from 'react-tooltip'
 import './retail.css'
 import {
   ICreateProductPayload,
   IRetailProcessDetails,
 } from '../../interfaces/contract'
 import { ProductContractAPIContext } from '../../contexts/ProductContractAPI'
+import { ProfileContractContext } from '../../contexts/ProfileContract'
+import { ProductContractContext } from '../../contexts/ProductContract'
+import getAccounts from '../../utils/getAccounts'
 import { ProductStatus } from '../../enums/contract'
+import { shortenedAddress } from '../../helpers/stringMutations'
 
 const initialState: IRetailProcessDetails = {
   productId: 'DEFAULT',
@@ -16,22 +22,26 @@ const Retail: FC = () => {
     ProductContractAPIContext
   )
 
+  const { accounts } = useContext(ProfileContractContext)
+  const { productContract } = useContext(ProductContractContext)
+
   const [data, setData] = useState<IRetailProcessDetails>(initialState)
   const [products, setProducts] = useState<ICreateProductPayload[]>([])
   const [productDetails, setProductDetails] = useState({
     productId: -1,
     productName: '',
     productLocation: '',
-    farmDate: '',
-    harvestDate: '',
+    farmDate: new Date(),
+    harvestDate: new Date(),
     processingType: '',
-    receiverAddress: '',
     logisticsAddress: '',
     trackNumber: '',
-    status: -1,
   })
   const [showTable, setShowTable] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [error, setError] = useState<boolean>(false)
+  const [errorMessage, setErrorMessage] = useState<string>('')
+  const [success, setSuccess] = useState<boolean>(false)
 
   useEffect(() => {
     const getProducts = async () => {
@@ -51,6 +61,8 @@ const Retail: FC = () => {
 
       setProductDetails(product)
       setShowTable(true)
+      setError(false)
+      setSuccess(false)
     }
 
     setData({ ...data, [name]: value })
@@ -60,25 +72,79 @@ const Retail: FC = () => {
     e.preventDefault()
     setIsLoading(true)
 
-    // TODO: DO THE ON-CHAIN CALL
+    try {
+      // ON-CHAIN INTERACTION
+      const _accounts = await getAccounts(accounts)
+      const retailProductResp = await productContract?.methods
+        .retailProductInfo(data.productId)
+        .send({ from: _accounts[0] })
 
-    // API CALL
-    await retailProductInfo(data)
+      if (retailProductResp) {
+        // Get event
+        const { productId, productStatus } =
+          retailProductResp.events.CurrentProductStatus.returnValues
 
-    // Do an API call to get update for the dropdown
-    setTimeout(async () => {
-      const products = await getProductsByStatus(ProductStatus.SHIPPING)
-      setProducts(products)
+        const apiPayload = {
+          productId,
+          productStatus,
+        }
 
-      // Reset form state, stop loading spinner and hide table
-      setData(initialState)
-      setIsLoading(false)
-      setShowTable(false)
-    }, 1000)
+        // API CALL
+        await retailProductInfo(apiPayload)
+
+        // Do an API call to get update for the dropdown
+        setTimeout(async () => {
+          // Resetting the dropdown selection to exclude selection
+          const products = await getProductsByStatus(ProductStatus.SHIPPING)
+          setProducts(products)
+
+          // Reset form state, stop loading spinner and hide table
+          setData(initialState)
+          setIsLoading(false)
+          setShowTable(false)
+          setError(false)
+
+          // show success message
+          setSuccess(true)
+        }, 1000)
+      }
+    } catch (e) {
+      if (
+        e.message.includes(
+          'This function can only be executed by the retailer'
+        )
+      ) {
+        setError(true)
+        setErrorMessage(
+          'This function can only be executed by the retailer. Please also ensure that your account has been approved by the regulator before proceeding.'
+        )
+        setIsLoading(false)
+        setShowTable(false)
+      }else {
+        setError(true)
+        setErrorMessage('Something went wrong. Please try again shortly.')
+        setIsLoading(false)
+        console.log(e.message)
+      }
+    }
   }
 
   return (
     <section className="container">
+      {error ? (
+        <div className="notification is-danger is-light">{errorMessage}</div>
+      ) : null}
+
+      {success ? (
+        <div className="notification is-success is-light mb-5">
+          <div>
+            <strong>{productDetails.productName}</strong> of{' '}
+            <strong>{productDetails.productLocation}</strong> has been processed
+            and successfully transferred to the purchase process.
+          </div>
+        </div>
+      ) : null}
+
       {showTable && (
         <div className="is-success is-light mb-5">
           <div className="title is-6">
@@ -94,10 +160,8 @@ const Retail: FC = () => {
                 <th>Farm Date</th>
                 <th>Harvest Date</th>
                 <th>Processing Type</th>
-                <th>Receiver (Address)</th>
-                <th>Logistics (Address)</th>
+                <th>Logistics Address</th>
                 <th>Track Number</th>
-                <th>Status</th>
               </tr>
             </thead>
 
@@ -106,13 +170,20 @@ const Retail: FC = () => {
                 <td>{productDetails.productId}</td>
                 <td>{productDetails.productName}</td>
                 <td>{productDetails.productLocation}</td>
-                <td>{productDetails.farmDate}</td>
-                <td>{productDetails.harvestDate}</td>
+                <td>
+                  {format(new Date(productDetails.farmDate), 'dd MMMM yyy')}
+                </td>
+                <td>
+                  {format(new Date(productDetails.harvestDate), 'dd MMMM yyy')}
+                </td>
                 <td>{productDetails.processingType}</td>
-                <td>{productDetails.receiverAddress}</td>
-                <td>{productDetails.logisticsAddress}</td>
+                <td data-tip={productDetails.logisticsAddress}>
+                  {productDetails.logisticsAddress.length > 20
+                    ? shortenedAddress(productDetails.logisticsAddress)
+                    : productDetails.logisticsAddress}
+                  <ReactTooltip />
+                </td>
                 <td>{productDetails.trackNumber}</td>
-                <td>{ProductStatus[productDetails.status]}</td>
               </tr>
             </tbody>
           </table>
@@ -135,7 +206,7 @@ const Retail: FC = () => {
           </div>
           <form className="mt-5">
             <div className="field">
-              <label className="label">Product</label>
+              <label className="label">Product ({products.length})</label>
               <div className="select is-normal is-fullwidth">
                 <select
                   name="productId"

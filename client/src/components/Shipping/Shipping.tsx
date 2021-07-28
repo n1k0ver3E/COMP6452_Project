@@ -1,4 +1,5 @@
 import React, { ChangeEvent, FC, useState, useContext, useEffect } from 'react'
+import format from 'date-fns/format'
 import {
   ICreateProductPayload,
   ISendProductDetails,
@@ -6,6 +7,9 @@ import {
 import './shipping.css'
 import { ProductStatus } from '../../enums/contract'
 import { ProductContractAPIContext } from '../../contexts/ProductContractAPI'
+import { ProfileContractContext } from '../../contexts/ProfileContract'
+import { ProductContractContext } from '../../contexts/ProductContract'
+import getAccounts from '../../utils/getAccounts'
 
 const sendProductInitialState: ISendProductDetails = {
   productId: 'DEFAULT',
@@ -17,6 +21,8 @@ const sendProductInitialState: ISendProductDetails = {
 const Shipping: FC = () => {
   const { getProductsByStatus, getProductById, shippingProductInfo } =
     useContext(ProductContractAPIContext)
+  const { accounts } = useContext(ProfileContractContext)
+  const { productContract } = useContext(ProductContractContext)
 
   const [sendProductData, setSendProductData] = useState<ISendProductDetails>(
     sendProductInitialState
@@ -33,12 +39,14 @@ const Shipping: FC = () => {
     productName: '',
     productLocation: '',
     farmDate: '',
-    harvestDate: '',
-    processingType: '',
-    status: -1,
+    harvestDate: new Date(),
+    processingType: new Date(),
   })
   const [showTable, setShowTable] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [error, setError] = useState<boolean>(false)
+  const [errorMessage, setErrorMessage] = useState<string>('')
+  const [success, setSuccess] = useState<boolean>(false)
 
   useEffect(() => {
     const getProducts = async () => {
@@ -60,6 +68,8 @@ const Shipping: FC = () => {
 
       setProductDetails(product)
       setShowTable(true)
+      setError(false)
+      setSuccess(false)
     }
 
     if (name === 'receiverAddress') {
@@ -93,25 +103,110 @@ const Shipping: FC = () => {
     e.preventDefault()
     setIsLoading(true)
 
-    // TODO: DO THE ON-CHAIN CALL
+    try {
+      // ON-CHAIN INTERACTION
+      const _accounts = await getAccounts(accounts)
+      const sendProductResp = await productContract?.methods
+        .sendProduct(
+          sendProductData.productId,
+          sendProductData.receiverAddress,
+          sendProductData.logisticsAddress,
+          sendProductData.trackNumber
+        )
+        .send({ from: _accounts[0] })
 
-    // API CALL
-    await shippingProductInfo(sendProductData)
+      if(sendProductResp) {
+        // Get event
+        const { productId, productStatus } =
+          sendProductResp.events.CurrentProductStatus.returnValues
+        const { receiverAddress, logisticsAddress, trackNumber } = sendProductData
 
-    // Do an API call to get update for the dropdown
-    setTimeout(async () => {
-      const products = await getProductsByStatus(ProductStatus.MANUFACTURING)
-      setProducts(products)
+        const apiPayload = {
+          productId,
+          productStatus,
+          receiverAddress,
+          logisticsAddress,
+          trackNumber
+        }
 
-      // Reset form state, stop loading spinner and hide table
-      setSendProductData(sendProductInitialState)
-      setIsLoading(false)
-      setShowTable(false)
-    }, 1000)
+        // API CALL
+        await shippingProductInfo(apiPayload)
+
+        // Do an API call to get update for the dropdown
+        setTimeout(async () => {
+          const products = await getProductsByStatus(ProductStatus.MANUFACTURING)
+          setProducts(products)
+
+          // Reset form state, stop loading spinner and hide table
+          setSendProductData(sendProductInitialState)
+          setIsLoading(false)
+          setShowTable(false)
+          setError(false)
+
+          // show success message
+          setSuccess(true)
+        }, 1000)
+      }
+    } catch (e) {
+      if(e.message.includes('This function can only be executed by the manufacturer')) {
+        setError(true)
+        setErrorMessage(
+          'This function can only be executed by the manufacturer. Please also ensure that your account has been approved by the regulator before proceeding.'
+        )
+        setIsLoading(false)
+        setShowTable(false)
+      }else if(e.message.includes('not the logistic address')) {
+        setError(true)
+        setErrorMessage('The logistics address you entered is invalid')
+        setIsLoading(false)
+        setShowTable(false)
+      }else if(e.message.includes('not the retailer address')) {
+        setError(true)
+        setErrorMessage('The retailer address you entered is invalid')
+        setIsLoading(false)
+        setShowTable(false)
+      }else {
+        setError(true)
+        setErrorMessage('Something went wrong. Please try again shortly.')
+        setIsLoading(false)
+        console.log(e.message)
+      }
+    }
   }
+
+  // require(
+  //   profile.isLogisticOrOracle(logistic) == true,
+  //   "It is not the logistic address."
+  // );
+  // require(
+  //   profile.isRetailer(receiver) == true,
+  //   "The receiver is not the retailer address."
+  // );
+  // require(
+  //   products[_pid].statusType == status.MANUFACTURING,
+  //   "The current status of product should be MANUFACTURING."
+  // );
+  // require(
+  //   bytes(trackingNumber).length != 0,
+  //   "The tracking number cannot be empty."
+  // );
 
   return (
     <section className="container">
+      {error ? (
+        <div className="notification is-danger is-light">{errorMessage}</div>
+      ) : null}
+
+      {success ? (
+        <div className="notification is-success is-light mb-5">
+          <div>
+            <strong>{productDetails.productName}</strong> of{' '}
+            <strong>{productDetails.productLocation}</strong> has been shipped and
+            successfully transferred to the retail process.
+          </div>
+        </div>
+      ) : null}
+
       {showTable && (
         <div className="is-success is-light mb-5">
           <div className="title is-6">
@@ -124,10 +219,9 @@ const Shipping: FC = () => {
                 <th>ID</th>
                 <th>Name</th>
                 <th>Location</th>
+                <th>Processing Type</th>
                 <th>Farm Date</th>
                 <th>Harvest Date</th>
-                <th>Processing Type</th>
-                <th>Status</th>
               </tr>
             </thead>
 
@@ -136,10 +230,13 @@ const Shipping: FC = () => {
                 <td>{productDetails.productId}</td>
                 <td>{productDetails.productName}</td>
                 <td>{productDetails.productLocation}</td>
-                <td>{productDetails.farmDate}</td>
-                <td>{productDetails.harvestDate}</td>
                 <td>{productDetails.processingType}</td>
-                <td>{ProductStatus[productDetails.status]}</td>
+                <td>
+                  {format(new Date(productDetails.farmDate), 'dd MMMM yyy')}
+                </td>
+                <td>
+                  {format(new Date(productDetails.harvestDate), 'dd MMMM yyy')}
+                </td>
               </tr>
             </tbody>
           </table>
@@ -164,7 +261,7 @@ const Shipping: FC = () => {
 
             <form className="mt-5 shipping-form">
               <div className="field">
-                <label className="label">Product</label>
+                <label className="label">Product ({products.length})</label>
                 <div className="select is-normal is-fullwidth">
                   <select
                     name="productId"
@@ -189,7 +286,7 @@ const Shipping: FC = () => {
               </div>
 
               <div className="field">
-                <label className="label">Receiver (Address)</label>
+                <label className="label">Receiver Address</label>
                 <div className="control">
                   <input
                     className="input"
@@ -203,7 +300,7 @@ const Shipping: FC = () => {
               </div>
 
               <div className="field">
-                <label className="label">Logistics (Address)</label>
+                <label className="label">Logistics Address</label>
                 <div className="control">
                   <input
                     className="input"

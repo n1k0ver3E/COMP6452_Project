@@ -2,13 +2,17 @@
 
 pragma solidity ^0.8.0;
 
+// import profile contract
+import "./Product.sol";
+import "./Document.sol";
+
 /**
  * @title Profile Management
  * @dev Implements profile mMnagement.
  * Constraints:
  * 1. Each participant per 1 account address
  * 2. only one regulator address per 1 profile contract
- * Program flow
+ * Program flows
  * 1. create "Profile contract" by adding regulator's address in its constructor.
  * 2. The regulator activates the contract.
  * 3. The regulator enables the registration function.
@@ -38,19 +42,19 @@ contract Profile {
 
     // state management
     //1. Machine State for the profile contract
-    // Activated = The participants can register. The regualtor can verify the accounts.
-    // Deactivated = The participants **cannot** register. The regualtor **cannot** verify the accounts.
+    // 1 Activated  = The participants can register. The regualtor can verify the accounts.
+    // 0 Deactivated = The participants **cannot** register. The regualtor **cannot** verify the accounts.
     enum MachineState {
-        Activated,
-        Deactivated
+        Deactivated,
+        Activated
     }
     // 2. State for registration function
-    // Enable = the participants can register their Accounts.
-    // Disable = the participants cannot register their Accounts.
+    // 1 Enable = the participants can register their Accounts.
+    // 0 Disable = the participants cannot register their Accounts.
     // Both stages the regulator can still verify the participants' Accounts.
     enum RegisState {
-        Enable,
-        Disable
+        Disable,
+        Enable
     }
 
     RegisState private regisState;
@@ -338,7 +342,7 @@ contract Profile {
     }
 
     // Does account address exist?
-    function isExisAccount(address _accountAddress)
+    function isExistAccount(address _accountAddress)
         private
         view
         onlyActivatedMachineState
@@ -387,12 +391,12 @@ contract Profile {
         return uint256(regisState);
     }
 
-    function getMachineState() public view onlyRegulator returns (uint256) {
+    function getMachineState() public view returns (uint256) {
         uint256 _machineState = uint256(machineState);
         return _machineState;
     }
 
-    /// @notice Enable registration fn
+    /// @notice Activate contract
     function setActivatedMachineState() public onlyRegulator returns (uint256) {
         // Activate profile contract
         machineState = MachineState.Activated;
@@ -400,12 +404,21 @@ contract Profile {
         return uint256(machineState);
     }
 
-    /// @notice Disable registration fn
-    function setDeactivatedMachineState()
-        public
-        onlyRegulator
-        returns (uint256)
-    {
+    /// @notice Deactivate contract
+    function setDeactivatedMachineState(
+        address _docContractAddress,
+        address _productAddress
+    ) public onlyRegulator returns (uint256) {
+        //Validate
+        // can Deactivate when the document, product are deactivated
+        require(
+            Document(_docContractAddress).getMachineState() == 0,
+            "The Document contract must be deactive first. Before Deactivate the profile contract."
+        );
+        require(
+            ProductSC(_productAddress).getMachineState() == 0,
+            "The Product contract must be deactive first. Before Deactivate the profile contract."
+        );
         // Deactivate profile contract
         machineState = MachineState.Deactivated;
         // Disable regis State
@@ -414,8 +427,22 @@ contract Profile {
     }
 
     /// @notice Destroy Profile Contract
-    function destroyContract() public payable onlyRegulator {
-        // Disable registration
+    function destroyContract(
+        address _docContractAddress,
+        address _productAddress
+    ) public payable onlyRegulator {
+        //Validate
+        // can destroy when the document, product are deactivated
+        require(
+            Document(_docContractAddress).getMachineState() == 0,
+            "The Document contract must be deactive first. Before Destroy the profile contract."
+        );
+        require(
+            ProductSC(_productAddress).getMachineState() == 0,
+            "The Product contract must be deactive first. Before Destroy the profile contract."
+        );
+        // Deactivate contract
+        machineState = MachineState.Deactivated;
         regisState = RegisState.Disable;
         address payable regulator_address = payable(address(regulatorAddress));
         selfdestruct(regulator_address);
@@ -431,7 +458,7 @@ contract Profile {
     }
     modifier checkDuplicateAddress(address _accountAddress) {
         require(
-            isExisAccount(_accountAddress) == false,
+            isExistAccount(_accountAddress) == false,
             "Cannot register the duplicate account."
         );
         _;
@@ -446,7 +473,7 @@ contract Profile {
     modifier onlyActivatedMachineState {
         require(
             machineState == MachineState.Activated,
-            "This contract is not activated by the regulator."
+            "The profile contract is not activated by the regulator."
         );
         _;
     }

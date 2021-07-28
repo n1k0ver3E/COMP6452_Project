@@ -9,6 +9,8 @@ import "./Profile.sol";
  * @title Document Management
  * @dev Implements document mMnagement.
  * To strore additional documents for account registration in Profile contract
+ * Program Flows
+ *
  */
 contract Document {
     //DocumentStatus: 0=Pending, 1=Approved, 2=Rejected
@@ -18,17 +20,27 @@ contract Document {
         Rejected
     }
 
-    // Enable = the participants can add their accounts' documents.
-    // Disable = the participants cannot their accounts' documents.
+    // state management
+    //1. Machine State for the document contract
+    // 1 Activated = The participants can add documents. The regualtor can verify the documents.
+    // 0 Deactivated = The participants **cannot** add documents. The regualtor **cannot** verify the documents.
+    enum MachineState {
+        Deactivated,
+        Activated
+    }
+    //2. Add document state
+    // 1 Enable = the participants can add their accounts' documents.
+    // 0  Disable = the participants cannot their accounts' documents.
     // Both stages the regulator can still verify the participants' documents.
     enum AddDocState {
-        Enable,
-        Disable
+        Disable,
+        Enable
     }
 
-    Profile profile;
-
     AddDocState private addDocState;
+    MachineState private machineState;
+
+    Profile profile;
 
     address public regulatorAddress;
 
@@ -47,11 +59,15 @@ contract Document {
     // @notice To create document contract and have an association relationship with Profile contract
     constructor(address _profileAddress) {
         profile = Profile(_profileAddress);
-
         regulatorAddress = profile.getRegulatorAddress();
+
+        //Initial state Add document state
+        addDocState = AddDocState.Disable;
+        //Initial state StateMachine
+        machineState = MachineState.Deactivated;
     }
 
-    // Create events for using in JavaScript API
+    // Create events
     // Event 1: AddDocument by Farmer,Manufacturer,Reatiler,Logistic
     event AddDocument(
         uint256 indexed subDocumentId,
@@ -74,7 +90,12 @@ contract Document {
         uint256 _accountId,
         string memory _documentName,
         string memory _hashContent
-    ) public onlyDocumentOwner(_accountId) onlyActiveAddDocState {
+    )
+        public
+        onlyDocumentOwner(_accountId)
+        onlyActiveAddDocState
+        onlyActivatedMachineState
+    {
         require(
             bytes(_documentName).length != 0,
             "Document name cannot be empty"
@@ -109,7 +130,7 @@ contract Document {
         uint256 _accountId,
         uint256 _subDocumentId,
         uint256 _documentStatusValue
-    ) public onlyRegulator {
+    ) public onlyRegulator onlyActivatedMachineState {
         require(
             _subDocumentId > 0 &&
                 _subDocumentId <= documentsByAccId[_accountId].length,
@@ -130,29 +151,78 @@ contract Document {
         );
     }
 
-    function getAddDocState() public view returns (uint256) {
+    function getAddDocState()
+        public
+        view
+        onlyActivatedMachineState
+        returns (uint256)
+    {
         uint256 _addDocState = uint256(addDocState);
         return _addDocState;
     }
 
     /// @notice Enable add doc. fn
-    function setEnableAddDocState() public onlyRegulator returns (uint256) {
+    function setEnableAddDocState()
+        public
+        onlyRegulator
+        onlyActivatedMachineState
+        returns (uint256)
+    {
         // Disable add doc. fn
         addDocState = AddDocState.Enable;
         return uint256(addDocState);
     }
 
     /// @notice Disable  add doc. fn
-    function setDisableAddDocState() public onlyRegulator returns (uint256) {
+    function setDisableAddDocState()
+        public
+        onlyRegulator
+        onlyActivatedMachineState
+        returns (uint256)
+    {
         // Disable  add doc. fn
         addDocState = AddDocState.Disable;
         return uint256(addDocState);
+    }
+
+    function getMachineState() public view returns (uint256) {
+        uint256 _machineState = uint256(machineState);
+        return _machineState;
+    }
+
+    /// @notice Enable add document fn
+    function setActivatedMachineState() public onlyRegulator returns (uint256) {
+        // Validation
+        // The profile contract must be active.
+        require(
+            profile.getMachineState() == 1,
+            "The profile contract must be active before activate the document contract."
+        );
+
+        // Activate document contract
+        machineState = MachineState.Activated;
+        addDocState = AddDocState.Enable;
+        return uint256(machineState);
+    }
+
+    /// @notice Disable add document fn
+    function setDeactivatedMachineState()
+        public
+        onlyRegulator
+        returns (uint256)
+    {
+        // Deactivate document contract
+        machineState = MachineState.Deactivated;
+        // Disable add doc. State
+        addDocState = AddDocState.Disable;
+        return uint256(machineState);
     }
 
     /// @notice Destroy Document Contract
     function destroyContract() public payable onlyRegulator {
         // Disable add doc. fn
         addDocState = AddDocState.Disable;
+        machineState = MachineState.Deactivated;
         address payable regulator_address = payable(address(regulatorAddress));
         selfdestruct(regulator_address);
     }
@@ -178,6 +248,13 @@ contract Document {
         require(
             addDocState == AddDocState.Enable,
             "The registration function is not enable."
+        );
+        _;
+    }
+    modifier onlyActivatedMachineState {
+        require(
+            machineState == MachineState.Activated,
+            "This contract is not activated by the regulator."
         );
         _;
     }
