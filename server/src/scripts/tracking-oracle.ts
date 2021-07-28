@@ -124,13 +124,14 @@ Mongoose().initialiseMongoConnection().then(function(mongo) {
                 let promises = requests.map((request) => {
                     return new Promise<void>((resolve, reject) => {
                         try {
-                            const location = retrieveProductLocaionByTrackingNumber(r.trackingNumber);
                             // Retrieve the product information from the database
                             ProductTrackingModel.findOne({ productId: request.productId }).exec().then(function(product) {
                                 if( product == null ) {
                                     reject();
                                     return;
                                 }
+
+                                const location = retrieveProductLocaionByTrackingNumber(product.trackingNumber);
 
                                 // Call the function logLocation to log the product location on to the blockchain.
                                 traceContract.methods
