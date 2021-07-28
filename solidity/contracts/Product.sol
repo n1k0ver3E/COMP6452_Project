@@ -358,7 +358,8 @@ contract ProductSC {
         address manufacturerId,
         address distributorId,
         address retailerId,
-        address ConsumerId
+        address ConsumerId,
+        uint256 statusType
     );
 
     function showOneLineTrack(uint256 _productId)
@@ -372,7 +373,8 @@ contract ProductSC {
             existProduct.manufacturerId,
             existProduct.distributorId,
             existProduct.retailerId,
-            existProduct.ConsumerId
+            existProduct.ConsumerId,
+            uint256(existProduct.statusType)
         );
     }
 
