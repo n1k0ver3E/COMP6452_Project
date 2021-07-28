@@ -9,6 +9,7 @@ import AddDocument from './AddDocument'
 import Product from './Product'
 import Tracking from './Tracking'
 import Recall from './Recall'
+import SupplyChain from './SupplyChain'
 import CurrentActiveUser from '../../components/CurrentActiveUser'
 
 const Participant: FC = () => {
@@ -45,6 +46,7 @@ const Participant: FC = () => {
               <Route exact path={`${path}/product`} component={Product} />
               <Route exact path={`${path}/tracking`} component={Tracking} />
               <Route exact path={`${path}/recall`} component={Recall} />
+              <Route exact path={`${path}/supplychain`} component={SupplyChain} />
             </Switch>
           </div>
         </div>

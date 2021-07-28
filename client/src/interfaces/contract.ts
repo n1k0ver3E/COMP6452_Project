@@ -199,3 +199,11 @@ export interface IShippingProductInfoPayload {
   logisticsAddress: string
   trackingNumber: string
 }
+
+export interface ISupplyChainOneLine {
+  manufacturerAddress: string
+  distributorAddress: string
+  retailerAddress: string
+  ConsumerAddress: string
+  statusType: number
+}
