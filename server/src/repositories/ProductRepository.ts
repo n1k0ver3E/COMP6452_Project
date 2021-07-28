@@ -1,6 +1,5 @@
 import { ProductModel } from '../models'
 import { IProduct } from '../interfaces/product'
-//Fix bug
 import { ProductStatus } from '../enums/productContract'
 
 const createProduct = (productDetails: IProduct): Promise<IProduct> => {
