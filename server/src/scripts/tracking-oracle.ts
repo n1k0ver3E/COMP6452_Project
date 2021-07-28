@@ -26,7 +26,7 @@ const eth = new Eth(provider);
 const traceContract = new eth.Contract(Product['abi'], contractAddress);
 
 // Dummy setting to simulate the data logging.
-const maxTick = 10
+const maxTick = 2
 
 // Dummy function to get the dummy location. Each oracle will have to implement their own approach to retrieve by the trackingNumber.
 function retrieveProductLocaionByTrackingNumber(trackingNumber: string) {
@@ -48,7 +48,7 @@ Mongoose().initialiseMongoConnection().then(function(mongo) {
 
         // Retrieve the data from the database. Filter by the address.
         // This query for products that need to update the location information.
-        ProductTrackingModel.find({ trackerAddress: addresses.oracle, $or: [{ tick: { $exists: false } }, { tick: { $lte: maxTick } }] }).exec().then(function(row) {
+        ProductTrackingModel.find({ trackerAddress: addresses.oracle, $or: [{ tick: { $exists: false } }, { tick: { $lt: maxTick } }] }).exec().then(function(row) {
             let promises = row.map((r) => {
                 return new Promise<void>((resolve, reject) => {
 
@@ -81,7 +81,7 @@ Mongoose().initialiseMongoConnection().then(function(mongo) {
         }).then(() => {
             // Retrieve the data from the database. Filter by the address.
             // This query for products that need to update the location information.
-            return ProductTrackingModel.find({ trackerAddress: addresses.logistic, $or: [{ tick: { $exists: false } }, { tick: { $lte: maxTick } }] }).exec().then(function(row) {
+            return ProductTrackingModel.find({ trackerAddress: addresses.logistic, $or: [{ tick: { $exists: false } }, { tick: { $lt: maxTick } }] }).exec().then(function(row) {
                 let promises = row.map((r) => {
                     return new Promise<void>((resolve, reject) => {
                         try {

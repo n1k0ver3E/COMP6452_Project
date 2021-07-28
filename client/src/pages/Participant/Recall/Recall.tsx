@@ -8,24 +8,80 @@ import { ProductContractAPIContext } from '../../../contexts/ProductContractAPI'
 import DocumentImage from '../../../assets/documents.png'
 import RecallProductSuccess from '../../../components/RecallProductSuccess'
 import getAccounts from '../../../utils/getAccounts'
+import { ProductStatus } from '../../../enums/contract'
 
 const Recall: FC = () => {
-  
   const [error, setError] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>('')
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [recallSuccess, setRecallSuccess] = useState<boolean>(false)
-
+  const { productContract } = useContext(ProductContractContext)
+  const [showTable, setShowTable] = useState<boolean>(false)
+  const [productDetails, setProductDetails] = useState({
+    productId: -1,
+    productName: '',
+    status: '',
+  })
 
   const { accounts } = useContext(ProfileContractContext)
 
-  const { productContract } = useContext(ProductContractContext)
-  const { recallProduct } = useContext(
-    ProductContractAPIContext
-  )
+  const { recallProduct } = useContext(ProductContractAPIContext)
 
   const [inputProductId, setInputProductId] = useState<number>(0)
 
+  const queryProductInfo = async (productId: number) => {
+    //const { accountAddress, accountName, accountType } = data
+    //setIsLoading(true)
+    //setShowErrorNotice(false)
+
+    try {
+      const _accounts = await getAccounts(accounts)
+      const resp = await productContract?.methods
+        .products(productId)
+        .call({ from: _accounts[0] })
+
+      if (resp && resp.productId !== '0') {
+        setProductDetails({
+          productId: resp.productId,
+          productName: resp.productName,
+          status: ProductStatus[resp.statusType],
+        })
+        setShowTable(true)
+      } else {
+        setShowTable(false)
+      }
+    } catch (error) {}
+  }
+
+  // const handleProductStatus = async (e: any) => {
+  //   e.preventDefault()
+  //   setIsLoading(true)
+
+  //   const _accounts = await getAccounts(accounts)
+
+  //   try {
+  //     const recallResp = await productContract?.methods
+  //       .products(inputProductId)
+  //       .call({ from: _accounts[0] })
+
+  //     if (recallResp) {
+  //       if (recallResp.productId === "0") {
+  //         setProductStatus(`Product id ${inputProductId} doesn't exists`)
+  //       } else {
+  //         setProductStatus(ProductStatus[recallResp.statusType])
+  //       }
+
+  //       setIsLoading(false)
+  //       setError(false)
+  //       setErrorMessage('')
+  //     }
+  //   } catch (error) {
+  //     //setRecallSuccess(false)
+  //     setIsLoading(false)
+  //     setError(true)
+  //     setErrorMessage(error.message)
+  //   }
+  // }
 
   const handleRecall = async (e: any) => {
     e.preventDefault()
@@ -34,21 +90,20 @@ const Recall: FC = () => {
     const _accounts = await getAccounts(accounts)
 
     try {
-      const recallResp = await productContract?.methods.recallProduct(
-        inputProductId
-      )
-       .send({ from: _accounts[0] })
+      const recallResp = await productContract?.methods
+        .recallProduct(inputProductId)
+        .send({ from: _accounts[0] })
 
       if (recallResp) {
         const recallProductResult = await recallProduct(inputProductId)
 
-        console.log( recallProductResult );
+        console.log(recallProductResult)
 
         if (recallProductResult) {
           setRecallSuccess(true)
           setIsLoading(false)
           setError(false)
-          setErrorMessage('');
+          setErrorMessage('')
         } else {
           setRecallSuccess(false)
           setIsLoading(false)
@@ -87,11 +142,12 @@ const Recall: FC = () => {
                     <form className="mt-5">
                       <div className="is-fullwidth">
                         <input
-                        className="input"
+                          className="input"
                           type="number"
                           min="0"
                           onChange={(e) => {
                             setInputProductId(parseInt(e.target.value))
+                            queryProductInfo(parseInt(e.target.value))
                           }}
                           placeholder="Product ID"
                         ></input>
@@ -139,7 +195,6 @@ const Recall: FC = () => {
                           <span className="file-name">{documentName}</span>
                         </label>
                       </div> */}
-
                       <button
                         className={
                           isLoading
@@ -152,6 +207,32 @@ const Recall: FC = () => {
                         Recall
                       </button>
                       <br />
+
+                      {showTable && (
+                        <div className="is-success is-light mb-5">
+                          <div className="title is-6">
+                            <strong>Product Information</strong>
+                          </div>
+
+                          <table className="table is-striped table-style">
+                            <thead>
+                              <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Status</th>
+                              </tr>
+                            </thead>
+
+                            <tbody>
+                              <tr>
+                                <td>{productDetails.productId}</td>
+                                <td>{productDetails.productName}</td>
+                                <td>{productDetails.status}</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
                     </form>
                   </>
                 ) : (
