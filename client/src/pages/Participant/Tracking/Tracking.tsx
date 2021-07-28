@@ -13,7 +13,7 @@ import { ProductStatus } from '../../../enums/contract'
 //import { IProductLocation } from '../../interfaces/trace'
 
 const Track: FC = () => {
-  const { web3, accounts } = useWeb3()
+  const { accounts } = useWeb3()
   const [inputProductId, setInputProductId] = useState<number>(0)
   const [isLocationRequest, setIsLocationRequested] = useState<boolean>(false)
   //const {  accounts } = useContext(ProfileContractContext)
@@ -53,31 +53,31 @@ const Track: FC = () => {
       }
     } catch (error) {}
 
-    try {
-      const _accounts = await getAccounts(accounts)
-      const resp = await traceContract?.methods
-        .tracks(productId)
-        .call({ from: _accounts[0] })
+    // try {
+    //   const _accounts = await getAccounts(accounts)
+    //   const resp = await traceContract?.methods
+    //     .tracks(productId)
+    //     .call({ from: _accounts[0] })
 
-      if (resp && resp.trackingNumber !== '') {
-        web3?.eth.getBlockNumber((err: any, blockNumber: number) => {
-          if (resp.nextRequestForLocationBlockNumber > blockNumber) {
-            setIsLocationRequested(true)
-            setRequestButtonText(
-              `Please wait for ${
-                (resp.nextRequestForLocationBlockNumber - blockNumber)
-              } blocks`
-            )
-          } else {
-            setIsLocationRequested(false)
-            setRequestButtonText('Request location')
-          }
-        })
-      } else {
-        setIsLocationRequested(true)
-            setRequestButtonText('Request location')
-      }
-    } catch {}
+    //   if (resp && resp.trackingNumber !== '') {
+    //     web3?.eth.getBlockNumber((err: any, blockNumber: number) => {
+    //       if (resp.nextRequestForLocationBlockNumber > blockNumber) {
+    //         setIsLocationRequested(true)
+    //         setRequestButtonText(
+    //           `Please wait for ${
+    //             (resp.nextRequestForLocationBlockNumber - blockNumber)
+    //           } blocks`
+    //         )
+    //       } else {
+    //         setIsLocationRequested(false)
+    //         setRequestButtonText('Request location')
+    //       }
+    //     })
+    //   } else {
+    //     setIsLocationRequested(true)
+    //         setRequestButtonText('Request location')
+    //   }
+    // } catch(error) { console.log(error); }
   }
 
   const handleRequestLocation = async (e: any) => {
@@ -118,6 +118,7 @@ const Track: FC = () => {
                       type="number"
                       min="1"
                       onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                        setIsLocationRequested(false)
                         setInputProductId(parseInt(e.target.value))
                         queryProductInfo(parseInt(e.target.value))
                         queryLogs(parseInt(e.target.value))

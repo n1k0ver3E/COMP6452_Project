@@ -1,5 +1,6 @@
 import Mongoose from '../config/db';
 import { ProductTrackingModel, ProductLocationModel, ProductLocationRequestModel } from '../models/TraceModel';
+import secrets from "../../secrets.json";
 
 const Eth: any = require('web3-eth');
 
@@ -8,9 +9,10 @@ var addresses = require("./../../../solidity/addresses.json");
 
 // Read the trace contract's address
 const contractAddress = addresses.trace;
-console.log("Trace contract address is:", contractAddress);
+console.log("\x1b[32mTrace contract address is:\x1b[0m", contractAddress);
+console.log("Blockchain url is:", Eth.givenProvider || secrets.blockchainUrl);
 
-const eth = new Eth(Eth.givenProvider || 'ws://localhost:7545');
+const eth = new Eth(Eth.givenProvider || secrets.blockchainUrl );
 
 const traceContract = new eth.Contract(Product['abi'], contractAddress);
 
@@ -27,9 +29,14 @@ Mongoose().initialiseMongoConnection().then(function(mongo) {
 
         // Get the ProductTracking events from the blockchain.
         traceContract.events.ProductTracking({ fromBlock: fromBlockProductTracking }, function(err: any, ev: any) {
+            if( err != null ) {
+                console.log(err);
+            }
+
+
             if (ev === null)
                 return;
-            
+
             // Search for the event in the mongoDB
             ProductTrackingModel.find({
                 productId: ev.returnValues.productId,
@@ -50,7 +57,7 @@ Mongoose().initialiseMongoConnection().then(function(mongo) {
                     // Save the data to the database.
                     return doc.save().then(() => {
                         // Log the saved record to console.
-                        console.log(`Reverse Oracle [ProductTracking] blockNumber=${doc.blockNumber} productId=${doc.productId} trackerAddress=${doc.trackerAddress} trackingNumber=${doc.trackingNumber}`);
+                        console.log(`\x1b[32mReverse Oracle\x1b[0m [\x1b[33mProductTracking\x1b[0m] blockNumber=${doc.blockNumber} productId=${doc.productId} trackingNumber=${doc.trackingNumber} trackerAddress=${doc.trackerAddress}`);
                     });
                 }
             });
@@ -61,6 +68,10 @@ Mongoose().initialiseMongoConnection().then(function(mongo) {
 
         // Get the ProductLocationRequest events from the blockchain.
         traceContract.events.ProductLocationRequest({ fromBlock: fromBlockProductLocationRequest }, function(err: any, ev: any) {
+            if( err != null ) {
+                console.log(err);
+            }
+            
             if (ev === null)
                 return;
 
@@ -83,7 +94,7 @@ Mongoose().initialiseMongoConnection().then(function(mongo) {
                     // Save the data to database
                     return doc.save().then(() => {
                         // Output the info to the console.
-                        console.log(`Reverse Oracle [ProductLocationRequest] blockNumber=${doc.blockNumber} productId=${doc.productId}`);
+                        console.log(`\x1b[32mReverse Oracle\x1b[0m [\x1b[33mProductLocationRequest\x1b[0m] blockNumber=${doc.blockNumber} productId=${doc.productId}`);
                     });
                 }
             });
@@ -94,6 +105,10 @@ Mongoose().initialiseMongoConnection().then(function(mongo) {
 
         // Get the ProductLocation events from the blockchain.
         traceContract.events.ProductLocation({ fromBlock: fromBlockProductLocation }, function(err: any, ev: any) {
+            if( err != null ) {
+                console.log(err);
+            }
+            
             if (ev === null)
                 return;
 
@@ -118,7 +133,7 @@ Mongoose().initialiseMongoConnection().then(function(mongo) {
                     // Save the data to the database
                     return doc.save().then(() => {
                         // Output the info to the console.
-                        console.log(`Reverse Oracle [ProductLocation] blockNumber=${doc.blockNumber} productId=${doc.productId} location=${doc.latitude/100000},${doc.longitude/100000}`);
+                        console.log(`\x1b[32mReverse Oracle\x1b[0m [\x1b[33mProductLocation\x1b[0m] blockNumber=${doc.blockNumber} productId=${doc.productId} location=${doc.latitude / 100000},${doc.longitude / 100000}`);
                     });
                 }
             });
