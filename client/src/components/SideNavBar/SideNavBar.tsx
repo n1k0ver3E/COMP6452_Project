@@ -60,29 +60,33 @@ const SideNavBar: FC<IUserTypeProps> = ({ type }) => {
       title: 'Recall',
       link: '/participant/recall',
     },
+    {
+      title: 'View Supply Chain',
+      link: '/participant/supplychain',
+    },
   ]
 
   const navigationLinks = isRegulator
     ? regulatorMenu.map((menu: IMenuList, idx: number) => (
-        <li key={idx}>
-          <a
-            className={pathName === menu.link ? 'is-active' : ''}
-            onClick={() => navigateTo(menu.link)}
-          >
-            {menu.title}
-          </a>
-        </li>
-      ))
+      <li key={idx}>
+        <a
+          className={pathName === menu.link ? 'is-active' : ''}
+          onClick={() => navigateTo(menu.link)}
+        >
+          {menu.title}
+        </a>
+      </li>
+    ))
     : participationMenu.map((menu, idx: number) => (
-        <li key={idx}>
-          <a
-            className={pathName === menu.link ? 'is-active' : ''}
-            onClick={() => navigateTo(menu.link)}
-          >
-            {menu.title}
-          </a>
-        </li>
-      ))
+      <li key={idx}>
+        <a
+          className={pathName === menu.link ? 'is-active' : ''}
+          onClick={() => navigateTo(menu.link)}
+        >
+          {menu.title}
+        </a>
+      </li>
+    ))
 
   return (
     <div>
