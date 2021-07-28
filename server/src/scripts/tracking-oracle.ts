@@ -55,9 +55,10 @@ Mongoose().initialiseMongoConnection().then(function(mongo) {
                 return new Promise<void>((resolve, reject) => {
 
                     try {
+                        const location = retrieveProductLocaionByTrackingNumber(r.trackingNumber);
                         // Call the function logLocation to log the product location on to the blockchain.
                         traceContract.methods
-                            .logLocation(r.productId, Date.now(), ...retrieveProductLocaionByTrackingNumber(r.trackingNumber))
+                            .logLocation(r.productId, Date.now(), ...location)
                             .send({ from: addresses.oracle }, function(err: any, result: any) {
 
                                 // Increase the tick to simulate the update counter.
@@ -67,7 +68,7 @@ Mongoose().initialiseMongoConnection().then(function(mongo) {
                                 // Save the update result to the database.
                                 r.save().then(() => {
                                     // Log the information to console.
-                                    console.log(`\x1b[32mOracle\x1b[0m [\x1b[33mProductTracking\x1b[0m] Oracle: productId=${r.productId} tick=${r.tick}`);
+                                    console.log(`\x1b[32mOracle\x1b[0m [\x1b[33mProductTracking\x1b[0m] Oracle: productId=${r.productId} tick=${r.tick} location=${location[0]/100000}, ${location[1]/10000}`);
 
                                     // Make as success.
                                     resolve();
@@ -88,11 +89,11 @@ Mongoose().initialiseMongoConnection().then(function(mongo) {
                 let promises = row.map((r) => {
                     return new Promise<void>((resolve, reject) => {
                         try {
+                            const location = retrieveProductLocaionByTrackingNumber(r.trackingNumber);
                             // Call the function logLocation to log the product location on to the blockchain.
                             traceContract.methods
-                                .logLocation(r.productId, Date.now(), ...retrieveProductLocaionByTrackingNumber(r.trackingNumber))
+                                .logLocation(r.productId, Date.now(), ...location)
                                 .send({ from: addresses.logistic }, function(err: any, result: any) {
-
 
                                     // Increase the tick to simulate the update counter.
                                     // We limit the automatically log to `maxTick`
@@ -102,7 +103,7 @@ Mongoose().initialiseMongoConnection().then(function(mongo) {
                                     r.save().then(() => {
 
                                         // Log the information to console.
-                                        console.log(`\x1b[32mOracle\x1b[0m [\x1b[33mProductTracking\x1b[0m] Logistic: productId=${r.productId} tick=${r.tick}`);
+                                        console.log(`\x1b[32mOracle\x1b[0m [\x1b[33mProductTracking\x1b[0m] Logistic: productId=${r.productId} tick=${r.tick} location=${location[0]/100000}, ${location[1]/10000}`);
 
                                         // Make as success.
                                         resolve();
@@ -123,6 +124,7 @@ Mongoose().initialiseMongoConnection().then(function(mongo) {
                 let promises = requests.map((request) => {
                     return new Promise<void>((resolve, reject) => {
                         try {
+                            const location = retrieveProductLocaionByTrackingNumber(r.trackingNumber);
                             // Retrieve the product information from the database
                             ProductTrackingModel.findOne({ productId: request.productId }).exec().then(function(product) {
                                 if( product == null ) {
@@ -132,7 +134,7 @@ Mongoose().initialiseMongoConnection().then(function(mongo) {
 
                                 // Call the function logLocation to log the product location on to the blockchain.
                                 traceContract.methods
-                                    .logLocation(request.productId, Date.now(), ...retrieveProductLocaionByTrackingNumber(product.trackingNumber))
+                                    .logLocation(request.productId, Date.now(), ...location)
                                     .send({ from: product?.trackerAddress }, function(err: any, result: any) {
 
                                         // Update the status request status.
@@ -142,7 +144,7 @@ Mongoose().initialiseMongoConnection().then(function(mongo) {
                                         request.save().then(() => {
 
                                             // Log the information to console.
-                                            console.log(`\x1b[32mOracle\x1b[0m [\x1b[33mProductLocationRequest\x1b[0m] productId=${request.productId}`);
+                                            console.log(`\x1b[32mOracle\x1b[0m [\x1b[33mProductLocationRequest\x1b[0m] productId=${request.productId} location=${location[0]/100000}, ${location[1]/10000}`);
 
                                             // Mark as success.
                                             resolve();
