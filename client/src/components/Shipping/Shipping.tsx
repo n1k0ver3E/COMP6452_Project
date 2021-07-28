@@ -13,8 +13,8 @@ import getAccounts from '../../utils/getAccounts'
 
 const sendProductInitialState: ISendProductDetails = {
   productId: 'DEFAULT',
-  receiverAddress: '',
-  logisticsAddress: '',
+  receiverAddress: '0xa92F035FACFcA5fb017D73B06A0944f958b3cd29',
+  logisticsAddress: '0xBeD0b19c7795DDa6bb49aE4aEfBd2AcA4B437234',
   trackNumber: '',
 }
 
@@ -28,9 +28,9 @@ const Shipping: FC = () => {
     sendProductInitialState
   )
   const [isReceiverAddressFieldValid, setIsReceiverAddressFieldValid] =
-    useState<boolean>(false)
+    useState<boolean>(true)
   const [isLogisticsAddressFieldValid, setIsLogisticsAddressFieldValid] =
-    useState<boolean>(false)
+    useState<boolean>(true)
   const [isTrackNumberFieldValid, setIsTrackNumberFieldValid] =
     useState<boolean>(false)
   const [products, setProducts] = useState<ICreateProductPayload[]>([])
@@ -72,21 +72,21 @@ const Shipping: FC = () => {
       setSuccess(false)
     }
 
-    if (name === 'receiverAddress') {
-      if (value === '') {
-        setIsReceiverAddressFieldValid(false)
-      } else {
-        setIsReceiverAddressFieldValid(true)
-      }
-    }
-
-    if (name === 'logisticsAddress') {
-      if (value === '') {
-        setIsLogisticsAddressFieldValid(false)
-      } else {
-        setIsLogisticsAddressFieldValid(true)
-      }
-    }
+    // if (name === 'receiverAddress') {
+    //   if (value === '') {
+    //     setIsReceiverAddressFieldValid(false)
+    //   } else {
+    //     setIsReceiverAddressFieldValid(true)
+    //   }
+    // }
+    //
+    // if (name === 'logisticsAddress') {
+    //   if (value === '') {
+    //     setIsLogisticsAddressFieldValid(false)
+    //   } else {
+    //     setIsLogisticsAddressFieldValid(true)
+    //   }
+    // }
 
     if (name === 'trackNumber') {
       if (value === '') {
@@ -115,18 +115,19 @@ const Shipping: FC = () => {
         )
         .send({ from: _accounts[0] })
 
-      if(sendProductResp) {
+      if (sendProductResp) {
         // Get event
         const { productId, productStatus } =
           sendProductResp.events.CurrentProductStatus.returnValues
-        const { receiverAddress, logisticsAddress, trackNumber } = sendProductData
+        const { receiverAddress, logisticsAddress, trackNumber } =
+          sendProductData
 
         const apiPayload = {
           productId,
           productStatus,
           receiverAddress,
           logisticsAddress,
-          trackNumber
+          trackNumber,
         }
 
         // API CALL
@@ -134,7 +135,9 @@ const Shipping: FC = () => {
 
         // Do an API call to get update for the dropdown
         setTimeout(async () => {
-          const products = await getProductsByStatus(ProductStatus.MANUFACTURING)
+          const products = await getProductsByStatus(
+            ProductStatus.MANUFACTURING
+          )
           setProducts(products)
 
           // Reset form state, stop loading spinner and hide table
@@ -148,24 +151,28 @@ const Shipping: FC = () => {
         }, 1000)
       }
     } catch (e) {
-      if(e.message.includes('This function can only be executed by the manufacturer')) {
+      if (
+        e.message.includes(
+          'This function can only be executed by the manufacturer'
+        )
+      ) {
         setError(true)
         setErrorMessage(
           'This function can only be executed by the manufacturer. Please also ensure that your account has been approved by the regulator before proceeding.'
         )
         setIsLoading(false)
         setShowTable(false)
-      }else if(e.message.includes('not the logistic address')) {
+      } else if (e.message.includes('not the logistic address')) {
         setError(true)
         setErrorMessage('The logistics address you entered is invalid')
         setIsLoading(false)
         setShowTable(false)
-      }else if(e.message.includes('not the retailer address')) {
+      } else if (e.message.includes('not the retailer address')) {
         setError(true)
         setErrorMessage('The retailer address you entered is invalid')
         setIsLoading(false)
         setShowTable(false)
-      }else {
+      } else {
         setError(true)
         setErrorMessage('Something went wrong. Please try again shortly.')
         setIsLoading(false)
@@ -201,8 +208,8 @@ const Shipping: FC = () => {
         <div className="notification is-success is-light mb-5">
           <div>
             <strong>{productDetails.productName}</strong> of{' '}
-            <strong>{productDetails.productLocation}</strong> has been shipped and
-            successfully transferred to the retail process.
+            <strong>{productDetails.productLocation}</strong> has been shipped
+            and successfully transferred to the retail process.
           </div>
         </div>
       ) : null}
