@@ -85,6 +85,18 @@ const getProductById = (productId: number) => {
   return ProductModel.find({ productId })
 }
 
+const recallProduct =  async (productId: number) =>  {
+  const product = await ProductModel.findOne({ productId: { $exists: true, $eq: productId} }).exec();
+  
+  if( product === null || product.status == ProductStatus.RECALLING )
+    return false;
+
+  product.status = ProductStatus.RECALLING;
+  await product.save();
+
+  return true;
+}
+
 export default {
   createProduct,
   retailProductInfo,
@@ -93,4 +105,5 @@ export default {
   shippingProductInfo,
   getProductsByStatus,
   getProductById,
+  recallProduct,
 }

@@ -78,20 +78,18 @@ const getProductById = catchAsync(
   }
 )
 
-// const recallProduct = catchAsync(
-//   async (req: Request, res: Response, _next: NextFunction) => {
-//     const { productId: productId } = req.body
-//
-//     console.log(req.body)
-//
-//     const result = await ProductService.recallProduct(productId)
-//
-//     return res.status(httpStatus.OK).json({
-//       success: true,
-//       result,
-//     })
-//   }
-// )
+const recallProduct = catchAsync(
+  async (req: Request, res: Response, _next: NextFunction) => {
+    const { productId: productId } = req.body
+
+    const result = await ProductService.recallProduct(productId)
+
+    return res.status(httpStatus.OK).json({
+      success: true,
+      result,
+    })
+  }
+)
 
 export default {
   createProduct,
@@ -101,4 +99,5 @@ export default {
   purchasingProductInfo,
   getProductsByStatus,
   getProductById,
+  recallProduct,
 }

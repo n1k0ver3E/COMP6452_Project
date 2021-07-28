@@ -47,6 +47,8 @@ const Recall: FC = () => {
         if (recallProductResult) {
           setRecallSuccess(true)
           setIsLoading(false)
+          setError(false)
+          setErrorMessage('');
         } else {
           setRecallSuccess(false)
           setIsLoading(false)

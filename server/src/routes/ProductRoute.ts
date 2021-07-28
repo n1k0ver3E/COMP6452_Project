@@ -13,6 +13,6 @@ router
   .get(ProductController.getProductsByStatus)
 router.route('/id/:id').get(ProductController.getProductById)
 
-// router.route('/recall-product').post(ProductController.recallProduct)
+router.route('/recall-product').post(ProductController.recallProduct)
 
 export default router

@@ -1,15 +1,22 @@
 const fs = require('fs')
-const ipfsAPI = require('ipfs-api')
 const NodeRSA = require('node-rsa')
 
-// @ts-ignore
-const data = new Buffer(fs.readFileSync("fsactc9y.dms"))
+if( process.argv.length < 4 ) {
+    console.log("Please specific <encrypted filename> <output filename>");
+    return;
+}
+
+// Read private key file
 const privateKey = fs.readFileSync("keys/private.pem");
 
+// Create an instance
 const key = new NodeRSA( privateKey );
 
-// write encrypted file
-const decrypted = key.decrypt(data);
+// Read the file and decrypt it
 // @ts-ignore
-fs.writeFileSync("uploads/25cc8da10425373bde2716a55f2090e9" + ".decrypted", decrypted, 'utf8');
-// fs.rmSync( fileContent.path );
+const data = new Buffer(fs.readFileSync(process.argv[2]))
+const decrypted = key.decrypt(data);
+
+// Write out the file
+// @ts-ignore
+fs.writeFileSync(process.argv[3], decrypted, 'utf8');

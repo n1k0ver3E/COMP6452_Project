@@ -50,6 +50,12 @@ const getProductById = (productId: number) => {
   return ProductRepository.getProductById(productId)
 }
 
+const recallProduct = async(productId: number) => {
+  const result = await ProductRepository.recallProduct(productId)
+
+  return result
+}
+
 export default {
   createProduct,
   manuProductInfo,
@@ -58,4 +64,5 @@ export default {
   purchasingProductInfo,
   getProductsByStatus,
   getProductById,
+  recallProduct,
 }

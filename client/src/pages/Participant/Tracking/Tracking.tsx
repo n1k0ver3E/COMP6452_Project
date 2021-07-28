@@ -12,7 +12,8 @@ import getAccounts from '../../../utils/getAccounts'
 
 const Track: FC = () => {
   const { accounts } = useWeb3()
-  const [inputProductId, setInputProductId] = useState<string>('0')
+  const [inputProductId, setInputProductId] = useState<number>(0)
+  const [ isLocationRequest, setIsLocationRequested ] = useState<boolean>(false);
   //const {  accounts } = useContext(ProfileContractContext)
   const { logs, queryLogs } = useContext(TraceContractAPIContext)
   const { traceContract } = useContext(TraceContractContext)
@@ -27,11 +28,12 @@ const Track: FC = () => {
     try {
       const _accounts = await getAccounts(accounts)
       const resp = await traceContract?.methods
-        .requestForLocation(parseInt(inputProductId))
+        .requestForLocation(inputProductId)
         .send({ from: _accounts[0] })
 
       if (resp) {
-        // alert('REQUESTED')
+        alert('REQUESTED')
+        setIsLocationRequested(true);
         console.log(resp)
       }
     } catch (error) {}
@@ -52,23 +54,26 @@ const Track: FC = () => {
                       className="input"
                       type="number"
                       min="1"
-                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                        setInputProductId(e.target.value)
-                      }
+                      onChange={(e: ChangeEvent<HTMLInputElement>) =>{
+                        setInputProductId(parseInt(e.target.value));
+                        setIsLocationRequested(false);
+                      }}
                       placeholder="Product ID"
                     />
                   </div>
                   <button
                     className="button is-link mt-3"
+                    disabled={inputProductId === 0}
                     onClick={(e) => {
                       e.preventDefault()
-                      queryLogs(parseInt(inputProductId))
+                      queryLogs(inputProductId)
                     }}
                   >
                     Get location logs
                   </button>
                   <button
                     className="button is-link mt-3 ml-3"
+                    disabled={inputProductId === 0 || isLocationRequest}
                     onClick={(e) => {
                       e.preventDefault()
                       handleRequestLocation(e)
