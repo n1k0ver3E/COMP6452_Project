@@ -10,14 +10,15 @@ var addresses = require("./../../../solidity/addresses.json");
 
 // Read the tract contract address.
 const contractAddress = addresses.trace;
-console.log("Trace contract address is:", contractAddress);
+console.log("\x1b[32mTrace contract address is:\x1b[0m", contractAddress);
+console.log("Blockchain url is:", Eth.givenProvider || secrets.blockchainUrl);
 
 // Setup the wallet
 const provider = new HDWalletProvider({
     mnemonic: {
         phrase: secrets.mnemonic
     },
-    providerOrUrl: "http://localhost:7545"
+    providerOrUrl: secrets.blockchainUrl
 });
 
 const eth = new Eth(provider);
@@ -49,6 +50,7 @@ Mongoose().initialiseMongoConnection().then(function(mongo) {
         // Retrieve the data from the database. Filter by the address.
         // This query for products that need to update the location information.
         ProductTrackingModel.find({ trackerAddress: addresses.oracle, $or: [{ tick: { $exists: false } }, { tick: { $lt: maxTick } }] }).exec().then(function(row) {
+           
             let promises = row.map((r) => {
                 return new Promise<void>((resolve, reject) => {
 
@@ -65,7 +67,7 @@ Mongoose().initialiseMongoConnection().then(function(mongo) {
                                 // Save the update result to the database.
                                 r.save().then(() => {
                                     // Log the information to console.
-                                    console.log(`Oracle [ProductTracking] Oracle: productId=${r.productId} tick=${r.tick}`);
+                                    console.log(`\x1b[32mOracle\x1b[0m [\x1b[33mProductTracking\x1b[0m] Oracle: productId=${r.productId} tick=${r.tick}`);
 
                                     // Make as success.
                                     resolve();
@@ -82,6 +84,7 @@ Mongoose().initialiseMongoConnection().then(function(mongo) {
             // Retrieve the data from the database. Filter by the address.
             // This query for products that need to update the location information.
             return ProductTrackingModel.find({ trackerAddress: addresses.logistic, $or: [{ tick: { $exists: false } }, { tick: { $lt: maxTick } }] }).exec().then(function(row) {
+               
                 let promises = row.map((r) => {
                     return new Promise<void>((resolve, reject) => {
                         try {
@@ -99,7 +102,7 @@ Mongoose().initialiseMongoConnection().then(function(mongo) {
                                     r.save().then(() => {
 
                                         // Log the information to console.
-                                        console.log(`Oracle [ProductTracking] Logistic: productId=${r.productId} tick=${r.tick}`);
+                                        console.log(`\x1b[32mOracle\x1b[0m [\x1b[33mProductTracking\x1b[0m] Logistic: productId=${r.productId} tick=${r.tick}`);
 
                                         // Make as success.
                                         resolve();
@@ -139,7 +142,7 @@ Mongoose().initialiseMongoConnection().then(function(mongo) {
                                         request.save().then(() => {
 
                                             // Log the information to console.
-                                            console.log(`Oracle [ProductLocationRequest] productId=${request.productId}`);
+                                            console.log(`\x1b[32mOracle\x1b[0m [\x1b[33mProductLocationRequest\x1b[0m] productId=${request.productId}`);
 
                                             // Mark as success.
                                             resolve();
