@@ -1,5 +1,6 @@
 import { ProductModel } from '../models'
 import { IProduct } from '../interfaces/product'
+import { ProductStatus } from '../enums/productContract'
 
 const createProduct = (productDetails: IProduct): Promise<IProduct> => {
   return ProductModel.create(productDetails)
@@ -38,7 +39,8 @@ const shippingProductInfo = async (productDetails: any) => {
     {
       new: true,
     }
-  )}
+  )
+}
 
 const retailProductInfo = (productDetails: any) => {
   return ProductModel.findOneAndUpdate(
@@ -85,10 +87,10 @@ const getProductById = (productId: number) => {
   return ProductModel.find({ productId })
 }
 
-const recallProduct =  async (productId: number) =>  {
-  const product = await ProductModel.findOne({ productId: { $exists: true, $eq: productId} }).exec();
-  
-  if( product === null || product.status == ProductStatus.RECALLING )
+const recallProduct = async (productId: number) => {
+  const product = await ProductModel.findOne({ productId: { $exists: true, $eq: productId } }).exec();
+
+  if (product === null || product.status == ProductStatus.RECALLING)
     return false;
 
   product.status = ProductStatus.RECALLING;
