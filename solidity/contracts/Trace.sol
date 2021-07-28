@@ -149,6 +149,10 @@ contract Trace {
     productContractSetted
     notInEmergencyMode
     returns(bool success) {
+        require(  -9000000 <= latitude && latitude <= 9000000, "Latitude must be between -9,000,000 (-90.00000) and 9,000,000 (90.00000)" );
+        require(  -18000000 <= longitude && longitude <= 18000000, "Longitude must be between -18,000,000 (-180.00000) and 18,000,000 (180.00000)" );
+
+
         // Retrieve the product.
         ProductTrack storage t = _tracks[ productId ];
 
