@@ -12,6 +12,7 @@ import {
 } from '../../../interfaces/contract'
 
 const initialState: ISupplyChainOneLine = {
+  farmerAddress: '',
   manufacturerAddress: '',
   distributorAddress: '',
   retailerAddress: '',
@@ -48,6 +49,8 @@ const SupplyChain: FC = () => {
     const _accounts = await getAccounts(accounts)
 
     try {
+
+
       const supplychainResp = await productContract?.methods.showOneLineTrack(
         inputProductId
       )
@@ -57,6 +60,7 @@ const SupplyChain: FC = () => {
 
         const
           {
+            farmerId,
             manufacturerId,
             distributorId,
             retailerId,
@@ -66,7 +70,7 @@ const SupplyChain: FC = () => {
             = supplychainResp.events.ShowOneLineTrack.returnValues
         console.log("On-chain product status ", statusType)
         setData({
-
+          farmerAddress: farmerId,
           manufacturerAddress: manufacturerId,
           distributorAddress: distributorId,
           retailerAddress: retailerId,
@@ -86,6 +90,20 @@ const SupplyChain: FC = () => {
         setError(true)
         setErrorMessage('An error occurred.')
       }
+
+      // setData({
+      //   farmerAddress: "000",
+      //   manufacturerAddress: "111",
+      //   distributorAddress: "222",
+      //   retailerAddress: "333",
+      //   ConsumerAddress: "444",
+      //   statusType: 2,
+      // })
+
+      setSupplyChainSuccess(true)
+      setIsLoading(false)
+      setError(false)
+      setErrorMessage('');
 
     } catch (error) {
       setSupplyChainSuccess(false)
@@ -144,6 +162,7 @@ const SupplyChain: FC = () => {
                   </>
                 ) : (
                   <SupplyChainOneLine
+                    farmerAddress={data.farmerAddress}
                     manufacturerAddress={data.manufacturerAddress}
                     distributorAddress={data.distributorAddress}
                     retailerAddress={data.retailerAddress}

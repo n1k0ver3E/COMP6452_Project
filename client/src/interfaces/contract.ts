@@ -201,6 +201,7 @@ export interface IShippingProductInfoPayload {
 }
 
 export interface ISupplyChainOneLine {
+  farmerAddress: string
   manufacturerAddress: string
   distributorAddress: string
   retailerAddress: string
