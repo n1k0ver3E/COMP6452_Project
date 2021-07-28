@@ -60,22 +60,22 @@ const SupplyChain: FC = () => {
 
         const
           {
-            farmerId,
+            FarmerId,
             manufacturerId,
             distributorId,
             retailerId,
-            aConsumerId,
+            ConsumerId,
             statusType
           }
             = supplychainResp.events.ShowOneLineTrack.returnValues
         console.log("On-chain product status ", statusType)
         setData({
-          farmerAddress: farmerId,
+          farmerAddress: FarmerId,
           manufacturerAddress: manufacturerId,
           distributorAddress: distributorId,
           retailerAddress: retailerId,
-          ConsumerAddress: aConsumerId,
-          statusType: 99,
+          ConsumerAddress: ConsumerId,
+          statusType: statusType,
         })
 
 
@@ -171,13 +171,13 @@ const SupplyChain: FC = () => {
                   />
                 )}
               </div>
-              <div className="column right has-text-centered is-half">
+              {/* <div className="column right has-text-centered is-half">
                 <img
                   src={DocumentImage}
                   alt="registration infographics"
                   className="side-image-document"
                 />
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
