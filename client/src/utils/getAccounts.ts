@@ -2,36 +2,34 @@
 
 interface Window {
   ethereum: any
-  addEventListener: any,
+  addEventListener: any
 }
 declare const window: Window
 
 const getAccounts = (defaultAccounts: string[]): Promise<string[]> =>
   new Promise((resolve, reject) => {
-    resolve(defaultAccounts);
-    return;
+    // resolve(defaultAccounts);
+    // return;
 
     try {
       window.ethereum
         .request({ method: 'eth_requestAccounts' })
         .then((accounts: string[]) => {
-          resolve(accounts);
+          resolve(accounts)
         })
         .catch((error: any) => {
           if (error.code === 4001) {
             // EIP-1193 userRejectedRequest error
-            console.log('Please connect to MetaMask.');
+            console.log('Please connect to MetaMask.')
           } else {
-            console.error(error);
+            console.error(error)
           }
 
-          reject(defaultAccounts);
-        });
+          reject(defaultAccounts)
+        })
     } catch {
-      reject(defaultAccounts);
+      reject(defaultAccounts)
     }
   })
-
-
 
 export default getAccounts

@@ -13,7 +13,7 @@ const Regulator: FC = () => {
   return (
     <>
       <HomeNavbar type={'regulator'} />
-      <CurrentActiveUser />
+      {/*<CurrentActiveUser />*/}
       <div className="container mt-5">
         <div className="columns">
           <div className="column is-3">

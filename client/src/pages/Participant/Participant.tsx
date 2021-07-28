@@ -18,7 +18,7 @@ const Participant: FC = () => {
   return (
     <>
       <HomeNavbar type={'participant'} />
-      <CurrentActiveUser />
+      {/*<CurrentActiveUser />*/}
       <div className="container mt-5">
         <div className="columns">
           <div className="column is-3">
@@ -46,7 +46,11 @@ const Participant: FC = () => {
               <Route exact path={`${path}/product`} component={Product} />
               <Route exact path={`${path}/tracking`} component={Tracking} />
               <Route exact path={`${path}/recall`} component={Recall} />
-              <Route exact path={`${path}/supplychain`} component={SupplyChain} />
+              <Route
+                exact
+                path={`${path}/supplychain`}
+                component={SupplyChain}
+              />
             </Switch>
           </div>
         </div>

@@ -27,7 +27,9 @@ const AddDocument: FC = () => {
     useState(undefined)
   const [uploadSuccess, setUploadSuccess] = useState<boolean>(false)
   const { documentContract, accounts } = useContext(DocumentContractContext)
-  const { uploadDocument, getDocumentHash } = useContext(DocumentContractAPIContext)
+  const { uploadDocument, getDocumentHash } = useContext(
+    DocumentContractAPIContext
+  )
   const { registeredAccounts, getAllParticipants } = useContext(
     ProfileContractAPIContext
   )
@@ -66,44 +68,38 @@ const AddDocument: FC = () => {
 
     const _accounts = await getAccounts(accounts)
 
-    if (address.accountAddress !== _accounts[0]) {
-      setError(true)
-      setErrorMessage('This function can only be executed by the owner.')
-      setIsLoading(false)
-      return
-    }
+    // if (address.accountAddress !== _accounts[0]) {
+    //   setError(true)
+    //   setErrorMessage('This function can only be executed by the owner.')
+    //   setIsLoading(false)
+    //   return
+    // }
 
     const hashContent = await getDocumentHash(file)
 
-    console.log("hashContent", hashContent)
+    console.log('hashContent', hashContent)
 
     if (hashContent) {
       const addDocumentResp = await documentContract?.methods
-        .addDocument(
-          accountId.accountId,
-          documentName,
-          hashContent
-        )
+        .addDocument(accountId.accountId, documentName, hashContent)
         .send({ from: _accounts[0] })
       if (addDocumentResp) {
-        const
-          {
-            subDocumentId,
-            documentName,
-            accountId,
-            accountAddress,
-            documentStatus,
-            hashContent
-          }
-            = addDocumentResp.events.AddDocument.returnValues
-        console.log("On-chain subDocumentId", subDocumentId)
+        const {
+          subDocumentId,
+          documentName,
+          accountId,
+          accountAddress,
+          documentStatus,
+          hashContent,
+        } = addDocumentResp.events.AddDocument.returnValues
+        console.log('On-chain subDocumentId', subDocumentId)
 
         const document = await uploadDocument({
           subDocumentId,
           documentName,
           accountId,
           documentStatus,
-          hashContent
+          hashContent,
         })
         setSuccessDocumentContent(document)
         setUploadSuccess(true)
@@ -139,7 +135,6 @@ const AddDocument: FC = () => {
     //         }
     //           = addDocumentResp.events.AddDocument.returnValues
 
-
     //       console.log("On-chain subDocumentId", subDocumentId)
     //       // call API to upd subDocumentId
 
@@ -148,7 +143,6 @@ const AddDocument: FC = () => {
     //   setIsLoading(false)
     // }
     //}
-
   }
 
   const backToAddDocument = () => {
