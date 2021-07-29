@@ -162,20 +162,25 @@ const Shipping: FC = () => {
         )
         setIsLoading(false)
         setShowTable(false)
+        setSuccess(false)
       } else if (e.message.includes('not the logistic address')) {
         setError(true)
         setErrorMessage('The logistics address you entered is invalid')
         setIsLoading(false)
         setShowTable(false)
+        setSuccess(false)
       } else if (e.message.includes('not the retailer address')) {
         setError(true)
         setErrorMessage('The retailer address you entered is invalid')
         setIsLoading(false)
         setShowTable(false)
+        setSuccess(false)
       } else {
         setError(true)
         setErrorMessage('Something went wrong. Please try again shortly.')
         setIsLoading(false)
+        setShowTable(false)
+        setSuccess(false)
         console.log(e.message)
       }
     }

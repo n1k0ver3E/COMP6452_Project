@@ -186,10 +186,12 @@ const Farmer: FC = () => {
           'This function can only be executed by the farmer. Please also ensure that your account has been approved by the regulator before proceeding.'
         )
         setIsLoading(false)
-      }else {
+        setSuccess(false)
+      } else {
         setError(true)
         setErrorMessage('Something went wrong. Please try again shortly.')
         setIsLoading(false)
+        setSuccess(false)
         console.log(e.message)
       }
     }
@@ -205,8 +207,8 @@ const Farmer: FC = () => {
         <div className="notification is-success is-light mb-5">
           <div>
             <strong>{successProductDetails.productName}</strong> of{' '}
-            <strong>{successProductDetails.productLocation}</strong> has been created and
-            successfully transferred to the manufacturing process.
+            <strong>{successProductDetails.productLocation}</strong> has been
+            created and successfully transferred to the manufacturing process.
           </div>
         </div>
       ) : null}

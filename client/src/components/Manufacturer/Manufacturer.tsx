@@ -85,14 +85,10 @@ const Manufacturer: FC = () => {
       // ON-CHAIN INTERACTION
       const _accounts = await getAccounts(accounts)
       const manuProductResp = await productContract?.methods
-        .manuProductInfo(
-          data.productId,
-          data.processingType
-        )
+        .manuProductInfo(data.productId, data.processingType)
         .send({ from: _accounts[0] })
 
       if (manuProductResp) {
-
         // Get event
         const { productId, productStatus } =
           manuProductResp.events.CurrentProductStatus.returnValues
@@ -101,7 +97,7 @@ const Manufacturer: FC = () => {
         const apiPayload = {
           productId,
           processingType,
-          productStatus
+          productStatus,
         }
 
         // API CALL
@@ -121,21 +117,27 @@ const Manufacturer: FC = () => {
 
           // show success message
           setSuccess(true)
-
         }, 1000)
       }
-    }catch(e) {
-      if(e.message.includes('This function can only be executed by the manufacturer')) {
+    } catch (e) {
+      if (
+        e.message.includes(
+          'This function can only be executed by the manufacturer'
+        )
+      ) {
         setError(true)
         setErrorMessage(
           'This function can only be executed by the manufacturer. Please also ensure that your account has been approved by the regulator before proceeding.'
         )
         setIsManufacturingLoading(false)
         setShowTable(false)
-      }else {
+        setSuccess(false)
+      } else {
         setIsManufacturingLoading(false)
         setError(true)
         setErrorMessage('Something went wrong. Please try again shortly.')
+        setShowTable(false)
+        setSuccess(false)
         console.log(e.message)
       }
     }
@@ -151,8 +153,8 @@ const Manufacturer: FC = () => {
         <div className="notification is-success is-light mb-5">
           <div>
             <strong>{productDetails.productName}</strong> of{' '}
-            <strong>{productDetails.productLocation}</strong> has been processed and
-            successfully transferred to the shipping process.
+            <strong>{productDetails.productLocation}</strong> has been processed
+            and successfully transferred to the shipping process.
           </div>
         </div>
       ) : null}
@@ -179,8 +181,12 @@ const Manufacturer: FC = () => {
                 <td>{productDetails.productId}</td>
                 <td>{productDetails.productName}</td>
                 <td>{productDetails.productLocation}</td>
-                <td>{format(new Date (productDetails.farmDate), 'dd MMMM yyy')}</td>
-                <td>{format(new Date(productDetails.harvestDate), 'dd MMMM yyy')}</td>
+                <td>
+                  {format(new Date(productDetails.farmDate), 'dd MMMM yyy')}
+                </td>
+                <td>
+                  {format(new Date(productDetails.harvestDate), 'dd MMMM yyy')}
+                </td>
               </tr>
             </tbody>
           </table>

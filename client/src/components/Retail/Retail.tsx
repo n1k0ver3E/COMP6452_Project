@@ -110,9 +110,7 @@ const Retail: FC = () => {
       }
     } catch (e) {
       if (
-        e.message.includes(
-          'This function can only be executed by the retailer'
-        )
+        e.message.includes('This function can only be executed by the retailer')
       ) {
         setError(true)
         setErrorMessage(
@@ -120,10 +118,13 @@ const Retail: FC = () => {
         )
         setIsLoading(false)
         setShowTable(false)
-      }else {
+        setSuccess(false)
+      } else {
         setError(true)
         setErrorMessage('Something went wrong. Please try again shortly.')
         setIsLoading(false)
+        setShowTable(false)
+        setSuccess(false)
         console.log(e.message)
       }
     }

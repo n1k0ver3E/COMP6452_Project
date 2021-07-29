@@ -134,10 +134,13 @@ const Purchase: FC = () => {
         )
         setIsLoading(false)
         setShowTable(false)
-      }else {
+        setSuccess(false)
+      } else {
         setError(true)
         setErrorMessage('Something went wrong. Please try again shortly.')
         setIsLoading(false)
+        setShowTable(false)
+        setSuccess(false)
         console.log(e.message)
       }
     }
