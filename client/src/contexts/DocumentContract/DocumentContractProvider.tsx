@@ -23,7 +23,10 @@ const DocumentContextProvider: FC = ({ children }): any => {
   useEffect(() => {
     const getDocumentContract = () => {
       if (web3 !== null) {
-        const deployedNetwork = json.networks[5777]
+        //For development network
+        //const deployedNetwork = json.networks[5777]
+        // For ropsten network
+        const deployedNetwork = json.networks[3]
         const instance = new web3.eth.Contract(
           abi,
           deployedNetwork && deployedNetwork.address

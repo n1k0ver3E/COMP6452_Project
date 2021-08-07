@@ -8,8 +8,8 @@ declare const window: Window
 
 const getAccounts = (defaultAccounts: string[]): Promise<string[]> =>
   new Promise((resolve, reject) => {
-    resolve(defaultAccounts);
-    return;
+    // resolve(defaultAccounts);
+    // return;
 
     try {
       window.ethereum

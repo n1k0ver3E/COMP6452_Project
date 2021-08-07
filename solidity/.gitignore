@@ -3,3 +3,4 @@ build/
 contracts/artifacts/
 addresses.json
 yarn.lock
+secrets.json

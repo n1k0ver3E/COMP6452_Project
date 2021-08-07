@@ -66,12 +66,12 @@ const AddDocument: FC = () => {
 
     const _accounts = await getAccounts(accounts)
 
-    if (address.accountAddress !== _accounts[0]) {
-      setError(true)
-      setErrorMessage('This function can only be executed by the owner.')
-      setIsLoading(false)
-      return
-    }
+    // if (address.accountAddress !== _accounts[0]) {
+    //   setError(true)
+    //   setErrorMessage('This function can only be executed by the owner.')
+    //   setIsLoading(false)
+    //   return
+    // }
 
     const hashContent = await getDocumentHash(file)
 
