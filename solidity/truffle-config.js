@@ -1,4 +1,6 @@
 const path = require("path");
+const { projectId, mnemonic } = require('./secrets.json');
+const HDWalletProvider = require('@truffle/hdwallet-provider');
 
 module.exports = {
   // Uncommenting the defaults below
@@ -20,6 +22,12 @@ module.exports = {
       port: 9545,
       //port: 7545,
       network_id: "*",
+    },
+    ropsten: {
+      provider: function () {
+        return new HDWalletProvider(mnemonic, `https://ropsten.infura.io/v3/${projectId}`)
+      },
+      network_id: 3
     },
   },
   compilers: {
