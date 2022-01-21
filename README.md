@@ -178,8 +178,4 @@ This will migrate the JSON files in the contracts folder within the `client` pro
     6.1 Click "Request location" button will show Block Number,Time,Lat,Long in the below data table on the webpage.
     6.2 CLick "Get location logs" button will record the data to Collection  productlocationrequests in Mongo DB.
 
-## COMP6452 project UNSW
-1. z5137192 Prompong Yutasane
-2. z5233249 Warisara Tuntikornvorakul 
-3. z5267024 Yi Fan Pang
-4. z5283054 Rittisak Kwanda
+
