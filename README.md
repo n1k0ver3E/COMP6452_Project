@@ -1,16 +1,33 @@
 # Foodie Chain
 
-## Client
-**Requirements**
+## 0x00 Design and Architecture
+
+### System Architecture
+
+![image-20220414214410923](https://cdn.jsdelivr.net/gh/pyf0311/myPrivateIMGBed/markdown/1649943851595.png)
+
+### Blockchain Platform
+
+![image-20220414222152903](https://cdn.jsdelivr.net/gh/pyf0311/myPrivateIMGBed/markdown/1649946113724.png)
+
+## 0x01 ENV Setting
+
+### 1. Client
+
+#### **Requirements**
+
 - NPM
 - Node v16
 
 - Ensure that you have npm or yarn installed.
+
+```
 npm install
 or
 yarn install
+```
 
-**Run App Locally**
+#### **Run App Locally**
 
 1. Navigate to the client folder
 
@@ -25,17 +42,23 @@ yarn install
     or
     yarn start
     ```
-## Server
-**Requirements**
+### 2. Server
+
+#### **Requirements**
+
 - NPM
+
 - Node v16
 
 - Ensure that you have npm or yarn installed.
-npm install
-or
-yarn install
 
-**Run App Locally**
+  ```
+  $ npm install
+  or
+  yarn install
+  ```
+
+#### **Run App Locally**
 
 1. Navigate to the server folder
 
@@ -50,7 +73,7 @@ yarn install
     or
     yarn run server
     ```
-3. Config the server/secrets.json. The file secrets.json.example is the template
+3. Config the `server/secrets.json`. The file secrets.json.example is the template
     ```
     // server/secrets.json
     // For private blockchain
@@ -78,13 +101,14 @@ yarn install
     $ npm run oracle
     ```
 
-## Foood Chain Smart Contracts
+### 3. Smart Contracts
 
-**Requirements**
+#### **Requirements**
+
 - NPM
 - Node v16
 
-**Run App Locally**
+#### **Run App Locally**
 
 - Ensure that you have npm installed. On the root directory, run the below command to install the dependencies:
 
@@ -94,25 +118,37 @@ yarn install
     yarn install
     ```
 
-1. create secrets.json
-- can find mnemonic from MetaMask settings/security&privacy
-- can find projectIf from MetaMask settings/Networks/
-if you use Ropsten Network, you can find your project ID from New RPC URL https://ropsten.infura.io/v3/{projectId}
-{
+#### Steps
+
+1. create `secrets.json`
+- can find mnemonic from MetaMask settings/security & privacy
+
+- can find projectId from MetaMask settings/Networks/
+
+  ```
+  if you use Ropsten Network, you can find your project ID from New RPC URL https://ropsten.infura.io/v3/{projectId}
+  {
     "mnemonic": "cat dog ...",
     "projectId": "{projectId}"
-}
+  }
+  ```
 
 2. truffle-config
-You can add more networks in networks: {...}
- networks: {
+
+  ```
+   You can add more networks in networks: {...}
+   
+   networks: {
     ropsten: {
       provider: function () {
         return new HDWalletProvider(mnemonic, `https://ropsten.infura.io/v3/${projectId}`)
-      },
-      network_id: 3
+     },
+     network_id: 3
+   },
     },
-  },
+  ```
+  
+  
 
 **Option 1: Configuration for public blockchain (Ropsten network)**
 
@@ -155,20 +191,18 @@ Open up the truffle develop shell, run:
 
 The Truffle Develop will run on port **9454**. At this point you should see the list of **account addresses**, **private keys** and **neumonics**.
 
-Inside, the truffle develop shell, run:
-
-`migrate`
+Inside, the truffle develop shell, run `migrate`.
 
 This will migrate the JSON files in the contracts folder within the `client` project.
 
 7. Configure meta-mask to point to `http://127.0.0.1:9545/`. There's an article that provides instructions on how to configure meta-task, which you can find [here](https://medium.com/fullstacked/connect-react-to-ethereum-b117986d56c1).
 
-## User manual for Foodie Web Application
+## 0x02 User Manual 
 1. Connect to network and choose account via  MetaMask plugin on web browser
 2. For regulator, the fixed account is the first account. (account index = 0)
 3. For participant, other accounts
 4. Please choose the account via MetaMask before performing any operations on Foodie webpage.
-5. For Product section
+5. For product section
     5.1 Only farmer account can perform the operations in "Farmer" tab.
     5.2 Only manufacturer account can perform the operations in "Manufacturer" tab.
     5.3 Only manufacturer account can perform the operations in "Shipping" tab and Receiver Address can be only retailer.
@@ -177,5 +211,4 @@ This will migrate the JSON files in the contracts folder within the `client` pro
 6. For tracking section
     6.1 Click "Request location" button will show Block Number,Time,Lat,Long in the below data table on the webpage.
     6.2 CLick "Get location logs" button will record the data to Collection  productlocationrequests in Mongo DB.
-
 
